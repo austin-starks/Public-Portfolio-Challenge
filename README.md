@@ -2,9 +2,13 @@
 
 Build and deploy a momentum-based options strategy for a fixed 20-name watchlist on a live **$25,000** NexusTrade portfolio — using AI agents and the NexusTrade MCP server.
 
+**Quick start:** [Connect MCP](#3-connect-an-ai-tool-to-nexustrade) → paste [`RUNBOOK.md`](RUNBOOK.md) into a fresh AI session → tell the agent to execute top to bottom.
+
 **Follow along in real time:** [Public Portfolio Challenge on NexusTrade](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)
 
-[![Public Portfolio Challenge live dashboard — click to follow live](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/Blog/PublicPortfolioChallenge/public-portfolio-dashboard-may15.png)](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)
+[![Public Portfolio Challenge live portfolio — click to follow live](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/shared-portfolios/og/69a7dc7cf99e43688fcec567/latest-v4.png)](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)
+
+*Hero image is generated from live portfolio data (same pipeline NexusTrade uses for shared-portfolio link previews).*
 
 ## What is the Public Portfolio Challenge?
 
@@ -104,7 +108,7 @@ Optional: track progress in [`CAMPAIGN_LOG.md`](CAMPAIGN_LOG.md).
 | File | Purpose |
 | ---- | ------- |
 | [`RUNBOOK.md`](RUNBOOK.md) | Full agent brief — paste into a fresh MCP session |
-| [`CAMPAIGN_LOG.md`](CAMPAIGN_LOG.md) | Example campaign log from a live run |
+| [`CAMPAIGN_LOG.md`](CAMPAIGN_LOG.md) | Raw operator log from a live run — updated as the campaign progresses |
 
 ---
 
