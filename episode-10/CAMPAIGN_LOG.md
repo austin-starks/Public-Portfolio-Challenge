@@ -635,6 +635,471 @@ On the owner's word ("let's deploy the sweep winner"), the certified book replac
 orders. The campaign's final deliverable is now live: the only candidate whose every certified fold and every test
 window finished positive, deployed with a bit-exact reproduction proof.
 
+## PHASE 3 (2026-06-12, post-deploy): the owner fixes the engine, and we ask the question again
+
+Hours after DEPLOY #2, the owner shipped the engine work this campaign's failures pointed at, in a parallel session
+(full trace: `NexusTrade/designs/optimization/cert6-ga-retest-live-log.md`). Three changes landed on the optimizer:
+
+1. **The GA fold-winner bug is fixed.** Root cause of every degenerate winner in CERT #1–#5: `select_validation_winner`
+   hardcoded validation-Sharpe ranking and ignored the configured fitness/constraints entirely. Fold selection now
+   runs through the same constrained, degradation-penalized policy the sweep leaderboard uses.
+2. **CERT #6** (that session, study `6a2c16476fe8883ed248c3a1`) retested CERT #4 with activity constraints
+   (≥9 names, ≥35% participation). The constraints worked — every winner broad (11–15 names), no mutants — and the
+   cert *still* got worse where it matters: fold-0 OOS −23.2% vs CERT #4's −8.1%, mean down to +99.5. Diagnosis
+   unchanged from CERT #5: the degenerates were a symptom; the disease is short-validation-window noise against a
+   huge genome space, and honest broad winners overfit it too. The fix is right to ship; it does not make GA WF a
+   certifier.
+3. **`backtest_only` certification mode now exists** — fixed book, train/val/OOS backtests per fold, no inner
+   optimizer, `winnerStableAcrossFolds: true` by construction. Its maiden run certified an unrelated H10 book and
+   honestly FAILED it (OOS +93.8 / **−33.2** / +117.7 / **−24.3**, worst DD 42%) for 12 units of compute. This is
+   the certification instrument the runbook's design always wanted.
+
+**Tape regression on the new image: PASS, bit-exact.** The deploy shares a binary with the backtest path, so before
+anything else the live book's F3 window was re-run on the new image (`6a2c3039e495d50d8418d639`):
++137.5075198730467% / Sortino 4.349855707416185 / fees 29.90 — every digit equal to the pre-deploy Gate-7 run. The
+deployed book's evidence chain survives the engine update.
+
+On the owner's word ("we can try again"), two arms launched (~16:25 UTC):
+
+- **CERT #3f** `6a2c32669b8c4fff97dfc97c` (root `6a2c32679b8c4fff97dfc984`, 388 units, 859.52 tokens) — byte-for-byte
+  rerun of the CERT #3e config (same v16 seed, same 5 gene_intents, same calendar) on the new engine. Purpose:
+  the unified-selection refactor touches the sweep WF path that certified the DEPLOYED book; this checks that path
+  still produces ≈ [+21.3, +102.0, +97.6, +132.4]. Pre-registered expectation: reproduce.
+- **SWEEP v2** `6a2c329fe7f9f85975da89f3` (root `6a2c32a0e7f9f85975da89fa`, 1300 units, 2881.88 tokens) — the
+  genuinely new search: seeded from the deployed winner `6a2c044d…bacf6`, five axes the first sweep never explored
+  (per-name allocation 10/14/22, cooldown 14/21/30, roll DTE 35/45/60, rank window 126/189/252/keep, TP 100/150/200),
+  with a constrained selection policy (participation ≥0.25, validation return ≥0, Sortino primary). If its fold-3
+  winner beats the deployed book on certification AND the burnout battery, it becomes a redeploy candidate;
+  otherwise the live book stands.
+
+- **CERT #7** `6a2c343dc400a53b0a4c6c75` (root `6a2c343dc400a53b0a4c6c7e`, 1156 units, 2562.56 tokens) — launched
+  once the owner deployed the MCP `fold_selection_policy` field. GA on the v16 seed, CERT #4 parameters, full
+  certification quality gates (participation ≥0.35, names ≥9, validation return ≥0, validation Sortino ≥0.5,
+  degradation penalty 0.5). Pre-registered prediction: fold-0 improves vs CERT #6's −23% because the gates exclude
+  its negative-validation winner, but the arm stays below deploy grade — a fold-0 `NoEligibleCandidate` hard fail
+  is a live possibility and would itself be the correct, informative outcome.
+
+Methodology note, logged before results: these are the seventh through ninth studies scored on the same four OOS
+windows. The folds are no longer pristine — fine for engine regression and search, but any redeploy decision will
+lean on the 2026 burnout window and live performance, not the increasingly-seen calendar.
+
+### Phase-3 results (~16:45 UTC): all three arms resolved, live book stands
+
+**CERT #3f — not a reproduction, a semantic change (as the refactor intended).** Same grid, same seed, same
+calendar as CERT #3e, but the unified selector picked a different winner in every fold — fold winners were
+previously raw validation-Sharpe argmax; they now go through the configured policy. New OOS:
+[+31.6, +63.6, +90.9, **+1016.9**] vs #3e's [+21.3, +102.0, +97.6, +132.4]. All folds positive, min fold improved,
+all winners broad (14–16 names). Implication for the record: CERT #3e's numbers are an artifact of the OLD selector
+and are not reproducible on the new engine — but the deployed book's own evidence (standalone backtests, burnout
+battery, Gate-7 bit-exact repro) is book-level and unaffected.
+
+**The +1017% wild card: killed by burnout, spectacularly.** Fold-3's winner materialized faithfully as
+`6a2c36249b8c4fff97dfce71` (F3 standalone `6a2c36439b8c4fff97dfcea6`: +1028.8% / Sortino 9.45 / DD 32.5 — parity ✓).
+Then the 2026 burnout (`6a2c3644e7f9f85975da9261`): **−35.6%, maxDD 49.0%** — a third of NAV gone in four months,
+brushing the 55% kill ceiling, on the same window where the deployed book made **+107.4% at DD 25.5**. This is the
+campaign's single cleanest proof that certified fold returns — even from an honest, constraint-selected,
+deterministic grid — can be pure regime fit. The burnout window is not optional.
+
+**SWEEP v2 — stabler, broader, and not better.** OOS [+17.9, +13.4, +90.6, +97.1], all positive, drawdowns the
+lowest of any arm (worst 32.7%, fold-0 only 8.5%), and a campaign first: one candidate (`b8cd2099…`) won BOTH
+folds 0 and 1 — the first repeated fold winner in nine studies. But the fold-3 winner certifies at +97.1% vs the
+deployed book's +132.4%, failing the pre-registered redeploy condition at the first hurdle. No burnout needed;
+the family is a lower-octane cousin of the live book, worth remembering if the owner ever wants a calmer variant.
+
+**CERT #7 — GA's third strike, delivered by the engine itself.** Fold-0 selected a winner that passed every
+quality gate (14 names, 0.70 participation, validation +4.6% / Sortino 1.37) and still went **−14.7%** OOS
+(DD 45.4%). Fold-1 then hard-failed with the new enriched error: *"no individual passes fold selection constraints
+on validation statistics (every candidate violated at least one configured floor)"* — the `NoEligibleCandidate`
+outcome working exactly as designed, and the honest answer: in that window the GA bred nothing worth certifying.
+GA fold-0 has now failed under three selectors — buggy (−8%), activity-constrained (−23%), fully gated (−15%).
+The pathology is structural, not a selection bug. Engine notes for the owner: the error message now propagates
+properly (vs the empty-error zombie era — fixed and verified), but the study charged its full 2,562.56 tokens
+while completing 577/1156 units before the hard fail; partial-failure billing may deserve a look. Also: CERT #3f's
+leaderboard rows display zeroed validation stats and stale-looking parameter labels (same display-layer issue class
+as before; the materialized objects are correct).
+
+**Phase-3 verdict: the deployed book survives its third gauntlet.** Re-asked with a fixed engine, wider genes,
+constrained selection, and three optimizer arms, the answer is unchanged — nothing produced a candidate that beats
+`6a2c044d99fc925d9b7bacf6` on certification AND burnout. The strongest challengers each failed exactly one of the
+two, which is precisely why both are required. Live book stands; Gate-8 live parity remains the only open item.
+
+### CERT #8 — the validation-window hypothesis, tested (owner-directed, engine QA only)
+
+Every post-mortem in this log blamed the same suspect: GA selection overfits because the fold validation windows
+are short (8–14 weeks under the default 80/20 dev split). CERT #8 tests exactly that and nothing else: identical
+to CERT #7 (v16 seed, pop 12 × gen 8, frozen OOS calendar, full quality gates, degradation 0.5) except
+`validation_percent: 50` — fold validation windows stretch to 8–20 months, spanning regime changes instead of
+sitting inside one. The OOS windows are unchanged, so fold-for-fold comparison is clean. Study
+`6a2c50e575bb49474ae1e87b` (root `6a2c50e575bb49474ae1e884`, 1156 units, 2,562.56 tokens).
+
+**Result: hypothesis confirmed — this is the best certification of the entire campaign, from either engine.**
+
+| Fold-0 OOS across GA arms | selector | result |
+|---|---|---|
+| CERT #4 | buggy (val-Sharpe argmax) | −8.1% |
+| CERT #6 | activity constraints | −23.2% |
+| CERT #7 | full quality gates | −14.7% (then fold-1 NoEligibleCandidate) |
+| **CERT #8** | full gates + **50% validation** | **+66.3%** |
+
+Full CERT #8 OOS: **[+66.3, +137.7, +124.5, +366.7]** — all four folds positive, mean +173.8 / median +131.1,
+Sortinos [1.89, 2.84, 3.33, 5.76], worst maxDD 33.7%, every fold winner broad (10–20 names, participation
+0.5–1.0). Fold-for-fold it beats the sweep cert (CERT #3e: +21/+102/+98/+132) everywhere. Selection noise — not
+GA breeding, not gate strictness — was the binding constraint all along: give the selector a validation window
+long enough to contain a regime change and validation→OOS transfer appears, even for GA.
+
+Honest caveats, logged with the result: (a) winnerStableAcrossFolds is still false; (b) fold-0's Sortino 1.89
+still sits under Baseline B's 2.37 floor; (c) the 50% split halves the training window (fold-0 trains on 7.5
+months of pure bear), so this trades breeding data for selection honesty; and (d) this is the tenth study scored
+on these OOS folds, and the 50% idea was itself motivated by watching the previous nine fail — a researcher
+degree of freedom the folds have now absorbed. Per the owner's instruction this was engine QA only: **no
+redeploy**. If any CERT #8 winner is ever considered for deployment, the bar is unchanged — materialize the book,
+verify parity, and survive the 2026 burnout window that just executed the +1017% pretender.
+
+### CERT #8 burnout + the bestiary: what every version of this strategy actually does
+
+The owner asked the right question — strip the study IDs and say what each book *does*. Every materialized
+candidate was pulled with `get_portfolio` and read condition-by-condition (labels lie; objects don't). They are
+all one organism: the **MLT skeleton** — 20-name universe, three regime sleeves (core: market near highs, every
+14d, top names by 126-day momentum; dip: SPY <0.92× its 252d high, every 7d, by 252-day momentum, +10% budget;
+crash: <0.82×, +30% budget), an affordability ladder of 150–365 DTE ATM calls → call verticals, budgets ~28/10/30%
+of NAV, and exits (roll near expiry, take profit, OGEP froth valves). Every optimizer arm just moved three levers:
+**per-name size, take-profit level, roll timing.**
+
+| Book | The three levers (verified on the object) | Personality | F3 window | 2026 burnout |
+|---|---|---|---|---|
+| **v16** (deploy #1, override) | 8%/name of portfolio, TP +100, roll 45, valves 68/74/80 | the balanced template | +85.7 / DD 20.2 | lockbox +23.4 |
+| **Sweep winner (LIVE)** `6a2c044d` | **22%/name of buying power**, TP +100, roll 45, valves loosened to 95/110/130 | concentrated conviction — 1-2 leaders at a time, sits in cash between strikes | +137.5 / DD 17.4 | **+107.4 / DD 25.5 / So 5.99** |
+| GA pick (CERT #4) `6a2ba33a` | 8%/name, roll 35, top-20 | broad v16, slightly faster recycling | +249.9 / DD 31.2 | +111.8 / DD 39.1 |
+| CERT #3f wild card `6a2c3624` | 28%/name of BP, 63-day rank, **all exits gated by "P&L ≥ 75%"** — losers can never be closed (gene-compiler cross-talk ANDed the TP gene onto every CloseOption incl. the DTE roll) | ride-or-die: winners run, losers ride to zero | +1028.8 / DD 32.5 | **−35.6 / DD 49.0** |
+| SWEEP v2 winner `6a2c5428…f010` | **14%/name of BP**, TP +150, roll 35-60 (didn't bind) | the live book, diversified — more names, calmer path | +97.1 cert / DD 15.1 | not run (lost cert head-to-head) |
+| **CERT #8 winner** `6a2c539b…ef0e` | 8%/name of portfolio, **TP +185**, **roll 33**, valve triggers GA-mutated (+179/30d-hold, +38/4-DTE, +43) | broad and patient — 17-19 names, lets winners nearly triple, recycles expiring options early | **+194.6 / DD 27.1** | **+132.6 / DD 36.5 / So 3.48** |
+
+**CERT #8 winner: the first challenger to survive every test.** The full five-window battery, measured directly
+on the deployable object (`6a2c539b75bb49474ae1ef0e`), head-to-head with the live book:
+
+| Window | CERT #8 winner | Live book (deployed) |
+| --- | --- | --- |
+| F0 2023-05 → 2024-01 | **+97.6%** / So 2.80 / DD 27.4 / 16 names (`6a2c574e75bb49474ae1f53c`) | +18.4% / So 1.31 / DD 14.1 |
+| F1 2024-01 → 2024-09 | **+208.2%** / So 3.74 / DD 34.5 / 19 names (`6a2c575075bb49474ae1f552`) | +37.3% / So 2.58 / DD 12.2 |
+| F2 2024-09 → 2025-05 | **+226.2%** / So 4.01 / **DD 54.3** / 20 names (`6a2c5753957d1c9f1ef4fa84`) | +122.6% / So 7.06 / DD 11.3 |
+| F3 2025-05 → 2026-02 | **+194.6%** / So 4.26 / DD 27.1 / 19 names (`6a2c53b675bb49474ae1ef87`) | +137.5% / So 4.35 / DD 17.4 |
+| 2026-02 → 2026-06 burnout | **+132.6%** / So 3.48 / DD 36.5 / 17 names (`6a2c53b83eb2e9a34a1ec80d`) | +107.4% / So 5.99 / DD 25.5 |
+
+It out-returns the live book in **every window** — often by 2–5× — with 16–20 names participating everywhere,
+the best breadth of the campaign. A milestone no other candidate reached: its window Sortinos
+(2.80 / 3.74 / 4.01 / 4.26) clear **all four 90%-of-Baseline-B floors** [2.37, 1.69, 1.61, 0.97] — the gate that
+killed every previous candidate, including the live book (fold-0). Held against the frozen gates this is the
+cleanest pass the campaign has produced: Gate 1 breadth ✓ (16–20 ≥ 9 everywhere), Gate 2 returns ✓ (smashes every
+bar), Gate 3 all-folds-positive ✓ (certified [+66, +138, +125, +367]), Gate 4 Sortino-vs-B ✓ (first ever),
+Gate 5 drawdown ✓ — **by 0.73pp** (F2 window maxDD 54.27% vs the 55% ceiling). Gate 6 posture: not yet audited
+(open item).
+
+**The flag, stated plainly:** the F2 window's 54.3% drawdown is an already-observed path, not a tail hypothesis.
+Live, that path trips the 30% drawdown brake mid-decline and asks the owner to keep approving orders while the
+book is cut in half — it finished that window +226%, but only for someone who held. The owner has stated the risk
+is accepted. The trade on offer vs the live book: roughly double the return for roughly double the drawdown, far
+more breadth (single-name risk largely gone — 8%/name vs the live book's 22%-of-BP), lower Sortino.
+
+**Recommendation: deploy `6a2c539b75bb49474ae1ef0e` on the owner's explicit word** (permission layer requires the
+book named). Pre-deploy items pending: owner is fixing the exit-gene compiler bug first; after that engine deploy,
+re-verify the tape (tolerance-0 repro of this book and the live book on the new image) and run the Gate-6 posture
+audit before the clone. Caveats carried into the decision: exits are GA-mutated values (TP +185%, quirky valve
+triggers) — unprincipled but mechanically verified sane and empirically robust across all five windows; the
+certified +366.7% belongs to the genome, the deployable object's own numbers are the table above.
+
+Engine notes from this round (for the owner): (1) **GA materialization parity gap recurs** — fold-3 certified
++366.7% but the leaderboard book (validation stats identical to all digits) scores +194.6% standalone;
+selectedIndividualId ≠ leaderboard individualId, GA arms only — sweep books have materialized faithfully every
+time. The honest number is always the deployable object's. (2) **GA `resolvedParameters` under-report** — the
+display showed only {selectTopLimit, rollTriggerDte} while the actual object also carried mutated TP (+185) and
+valve triggers. (3) **The CERT #3f wild card exposed real gene-compiler cross-talk**: the take-profit gene ANDed
+`Option position P&L % ≥ 75` onto every exit strategy's condition — including the DTE-45 roll — creating a book
+that structurally cannot cut losers. Any sweep whose exit gene compiles this way will look like a genius in
+melt-ups and a disaster everywhere else; this is the single most dangerous silent failure found all campaign.
+
+The arc of the whole campaign in one sentence: every optimizer, given honest selection, rediscovers the same
+trade-off — concentration buys Sortino, breadth buys return, exits decide survival — and the only books that died
+were the ones whose exits were broken.
+
+**Contamination audit after the owner's exit-gene fix (object-level, `6a2c542875bb49474ae1f010`):** SWEEP v2's
+results STAND — its exit operands compiled to benign `AND always`, exits reachable for losers. But the audit
+surfaced that the TP axis has been dead or poisoned in every sweep ever run (CERT #3e no-op, CERT #3f poisoned,
+SWEEP v2 no-op): **no sweep has ever honestly tested take-profit on this family.** It also caught two more shapes
+of the same applicator flaw — the roll gene sprays its DTE trigger onto every CloseOption, and genes STACK on
+re-swept seeds ("Entry cooldown AND Entry cooldown") — both benign here, both added to the fix-verification list.
+Post-fix plan (research, not a deploy gate): one small clean sweep on the CERT #8 seed, TP {100, 150, 185, 200} ×
+roll {33, 45}, which simultaneously validates the owner's fix end-to-end and gives the first honest answer to
+whether the deploy candidate's GA-mutated TP +185 is load-bearing or incidental.
+
+## DEPLOY #3 AND THE GATE-8 CATCH (2026-06-12 evening): the names were lying to everyone
+
+The CERT #8 winner was deployed and reverted within three hours, and the failure taught the campaign its deepest
+lesson. Full sequence, honestly:
+
+**The deploy (19:31–19:45 UTC).** Owner accepted the risk profile and gave the word. Pre-deploy checks all green:
+tape regression bit-exact on the post-fix engine, Gate-6 posture audited (burnout window clean; F2 crash-window
+median 67% acknowledged and accepted by the owner), chain cache verified live (the old book's SNDK signal resolved
+into a real Mar-2027 vertical at 19:31 after an afternoon of `OPTION_CHAIN_EMPTY_FOR_REQUESTED` — a server-side
+cache outage that had silently blocked all order generation). Cloned `6a2c539b…ef0e` → live at ~19:35, Gate-7
+bit-exact, monitor attached.
+
+**The catch (19:45).** The new book's first live tick fired BOTH regime sleeves simultaneously — impossible with
+sane logic — and the condition audit showed why: the evaluated conditions were `DaysSinceFired ≠ 141` and
+`SPY ≠ 95.26 × 1634-day max`, trivially true garbage. Gate-8 failed on the first tick, orders were quarantined in
+manual approval, nothing filled.
+
+**The root cause (after two wrong theories).** Not the live-trading deploy; not a corrupted clone. The candidate's
+conditions were GA-mutated AT BIRTH — CERT #8's optimizer legitimately mutates comparators, constants, and window
+lengths (that is what open-ended GA search is), and the fold's statistics gates measure performance, not genome
+sanity. The killer: **the display names never regenerate after mutation.** Every layer — leaderboard strings,
+strategyNames, and the `condition.name` fields inside the stored objects — still read `≥ 14 / 0.92 / 252` while
+the actual `comparison`/`value`/`window` fields underneath read `≠ 141 / 95.26 / 1634`. This log's own "verified
+on the object" claims for the CERT #8 genome were fooled: the verification script printed condition *names*, not
+fields. (The trigger values — TP +185.2, roll 33 — were real fields and remain correct.)
+
+**What that makes of the CERT #8 evidence — the strangest finding of the campaign.** Decoded at field level, the
+mutated genome is a coherent accidental strategy: always-true entry gates, dead crash sleeve, dead valves —
+i.e. "buy top-20 momentum daily within ~38% budget, TP +185%, roll at 33 DTE, no regime machinery at all."
+**Every number in the five-window battery above was honestly measured on exactly those semantics** (Gate-7's
+bit-exact source≡target proof guaranteed we always measured the stored logic — it just wasn't the logic the names
+described). So the battery stands as data about a strategy nobody designed; the strategy everyone THOUGHT was
+deployed has never been tested.
+
+**Also resolved: the +366.7% certified fold winner is unreachable by design.** The leaderboard materializes the
+root optimizer's final population (12 individuals, checked exhaustively) — the per-fold `selectedIndividualId`s
+are never among them. Certified GA numbers and deployable GA books were systematically different objects all day
+(+366.7 vs +194.6 here; +276.5 vs +249.9 for the CERT #4 pick).
+
+**The owner shipped fixes the same evening (`b650f78d31` + follow-ups):** GA mutation now clears stale names and
+materialization regenerates labels; `get_walk_forward_study_results` now materializes each fold's actual
+`selectedIndividualId` (returns `selectedChatPortfolioId`); `get_optimization_results` adds a per-row
+`conditionFieldAudit`. New protocol, permanent: **Gate-7/Gate-8 verification reads `comparison`/`value`/`window`
+fields, never names.**
+
+**RE-CORRECTION to the sweep-pick record above:** the same stale-name trap claimed an earlier victim in this log.
+The morning "CORRECTION" asserting the deployed sweep winner's valves sat at OGEP 95/110/130 was itself read from
+stale names — the raw fields say **68/74/80** (the display name "OGEP posture 68/74/80" was right all along), and
+the cooldown fields are 14∧21 / 7∧21 / 7∧21, i.e. effectively 21 days everywhere — matching the leaderboard's
+reported genes, which were never wrong for this book. The sweep materialization pipeline was honest; only the GA
+one mutated under stale labels.
+
+**REVERT (DEPLOY #4, ~20:45 UTC): the sweep winner is back on the live book, verified at field level.**
+
+1. Source `6a2c044d99fc925d9b7bacf6` audited on raw fields: core ≥14 ∧ ≥21 ∧ SPY ≥ 0.92×252d-max; dip < 0.92;
+   crash < 0.82; roll DTE≤45 unconditional; TP pnl≥100 unconditional; valves OGEP 68/74/80 trims ≥50/≥20/≥0. Clean.
+2. Cloned → `69a7dc7acdb6bf6a4681d36c`; target re-audited on raw fields: **identical, field for field** (the new
+   clone path even strips the legacy no-op `1=1` operands).
+3. Gate-7: target backtest `6a2c70dd4d76579261903285` vs the original deploy-day baseline `6a2c0b84dd9e9fb055815995`
+   at tolerance 0: **identical=true, zero tape divergence** — same book, same evidence chain as this morning's
+   DEPLOY #2.
+4. Monitor re-attached with a new fifth kill-threshold: **condition integrity** — the weekly audit now verifies
+   raw fields against the expected genome and treats any deviation as pause+alert.
+5. Orphaned pending orders: none remain — strategy replacement auto-cancels pending orders (owner-confirmed),
+   so the CERT #8 book's OSCR/MU set and the pre-clone SNDK pair died with their strategies. Gate-8 live parity
+   re-check runs at the next market tick (Monday open), reading evaluated condition FIELDS.
+
+**Postscript — the +366.7% genome is gone forever.** With the owner's materialization fix live,
+`get_walk_forward_study_results` on CERT #8 now attempts to materialize each fold's `selectedIndividualId` — and
+every fold returns `materializationError: "selectedIndividualId not found in individuals collection"`. The
+per-fold winners were never persisted; only the final-generation population survived the run. The number that
+headlined CERT #8 belongs to a genome that no longer exists anywhere, which is the materialization-parity gap's
+final form: pre-fix GA certifications are unfalsifiable history. Future GA studies on the fixed engine persist
+their fold winners; for this one, the book of record is and will remain the leaderboard sibling (`6a2c539b…`)
+and its honestly-measured +194.6%.
+
+The day ends where it began — the sweep winner live, now with its conditions proven at the only layer that
+trades. The CERT #8 family goes back to research: the owner can extract true fold winners via the new
+`selectedChatPortfolioId` path, and the "accidental always-on book" remains a genuinely interesting data point
+that earned its five-window numbers fairly and was deployed under a name that described a different strategy.
+
+### Fix validation round (late evening): the TP axis finally exists, and the audit instrument works
+
+With the owner's naming/materialization/TakeProfitPct fixes live, three validation runs closed out the night:
+
+- **FIX-VAL d** `6a2c73654d765792619034a2` (TakeProfitPct × RollTriggerDte on the accidental CERT #8 seed,
+  hand-authored config with the correct `scope: Action`): the TP gene **works** — all 8 cells real and distinct,
+  the first live take-profit axis in any sweep. The new per-row `conditionFieldAudit` immediately exposed the
+  seed's poisoned conditions (`notEqual 141`, `≠ 95.26 × 1634d max`) right in the leaderboard — the instrument
+  this morning's incident was missing. Fold-1's `NoEligibleCandidate` hard fail was verified HONEST: all 8 cells
+  had negative validation returns in that window, and the `percentChange ≥ 0` floor correctly refused them all.
+  Lesson recorded: earlier "invalid target field" rejections were this operator hand-authoring the wrong scope
+  (`Strategy` instead of `Action`) — the supported path is `gene_intents`, where the compiler and validator do the
+  field discovery (and now explicitly redirect P&L-exit intents to TakeProfitPct).
+- **One persistence gap remains, now with a clean repro:** this brand-new post-fix study STILL reports
+  `materializationError: "selectedIndividualId not found in individuals collection"` on its completed fold —
+  the fold-winner persistence fix is not reaching sweep studies. (CERT #8's missing winners are unrecoverable
+  history; this one is a fresh, fixable case.)
+- **TP-HONEST** `6a2c7420aab6fc246d750efb` — the experiment that matters: TP {75, 100, 150, 200} × roll {33, 45}
+  on the CLEAN live book (`6a2c044d`), gene_intents path, val 50%. The first honest answer to "is the live book's
+  TP +100 the right take-profit" in campaign history.
+
+**TP-HONEST results: the live book's TP +100 survives its first honest challenge.** Study COMPLETE, all four
+folds positive: OOS [+22.2, +37.6, +111.7, +99.4], mean +67.7, worst fold maxDD 24.8. The `conditionFieldAudit`
+on every variant shows clean fields (≥14 / 0.92 / 252) — the clean seed propagated correctly through the fixed
+applicator, no spray, no stacking. Two findings:
+
+1. **TP 75% won folds 1 AND 3** (dominant candidate, the first time any config repeated in a sweep with the TP
+   axis alive) — but its fold-3 OOS of +99.4% sits well BELOW the incumbent TP-100 book's +137.5% on the same
+   window. The sweep preferred TP 75 on validation (−15.3 vs −17.7 in a window where every variant scored
+   negative) and the preference did not pay out-of-sample. Verdict: no TP variant produced evidence to displace
+   the live book's +100; the incumbent stands, now with the first honest TP reading behind it instead of a
+   dead axis.
+2. Oddity flagged for the owner, not chased tonight: every cell's fold-3 validation return was negative
+   (−15 to −18) over 2023-09→2025-05, a span where this book family gained strongly in standalone backtests —
+   worth a look at how fold-validation evaluation seeds its starting state.
+
+**Persistence gap, third clean repro:** all four folds of this brand-new gene_intents study also report
+`materializationError: "selectedIndividualId not found in individuals collection"` — sweep WF fold winners are
+still not persisted post-fix.
+
+### Verification round after the full-stack persistence deploy (owner workflow followed exactly)
+
+New tooling exercised end-to-end on a fresh study (**PERSIST-VAL** `6a2c7cf74024704b66dcdf89`, TP {100,150} ×
+roll {35,45} on the clean live-book seed, gene_intents, val 50%):
+
+- `get_sweep_surface` ✓ — full field catalog, default genes, and the TakeProfitPct/Action rule stated in guidance.
+- `preview_only` ✓ — compiled genes (correct scope/field) and cost returned before any billing.
+- **Fold-winner persistence: PARTIAL.** Folds 0 and 3 returned `selectedChatPortfolioId` (`6a2c7de2fc767c83e41150bb`
+  — same winner key won both, correctly deduped). Folds 1 and 2 still `materializationError`: their shared winner
+  individual (`…d4b2`) is absent while folds 0/3's (`…d4b4`) persisted. One study, both behaviors — clean repro
+  for the owner.
+- **Field audit of the persisted winner** (`6a2c7de2…`, TP150/roll35): conditions clean (≥14 / 0.92 / 252),
+  TakeProfitPct correctly wrote the pnl trigger (150). **But RollTriggerDte still sprays**: its `dte ≤ 35`
+  trigger was appended to the TP strategy and ALL THREE valves, not just the roll — the applicator-scope flaw
+  flagged this afternoon survives the fix wave.
+
+**And the big one — fold-validation evaluation is unfaithful (S0.2-class defect, now proven).** The live book
+itself IS the TP100/roll45 cell of these sweeps. Standalone backtest over fold-3's exact validation window
+(2023-09-16 → 2025-05-29): **+195.86%** / Sortino 2.31 / 17 names (`6a2c7cc4fc767c83e4114ee1`). The fold
+evaluation reports that identical genome over that identical declared window at **−17.71%** — reproduced in BOTH
+TP-HONEST and PERSIST-VAL. A 213-point gap on the same object and window means sweep-WF fold-winner selection is
+currently driven by numbers that do not describe the declared validation segment. Consequences: TP-HONEST's
+"TP 75 preferred" verdict is VOID (selection noise on corrupted stats — consistent with its OOS underperforming
+the incumbent); any sweep-WF certification's winner CHOICE is suspect until fixed, though the OOS measurement
+path appears intact (CERT #3e fold OOS matched standalone within window-boundary tolerance, S0.2-style). The
+live book is unaffected: its standing evidence is standalone-measured.
+
+**Forensic box for the validation defect (three measurements, one corner):** for the identical genome
+(live book ≡ TP100/roll45 cell) over fold-3's declared validation window 2023-09-16 → 2025-05-29:
+
+1. Fresh-start standalone: **+195.86%** (`6a2c7cc4fc767c83e4114ee1`) — rules out "evaluation is honest".
+2. Continuation of the training run, measured over the same sub-span (`6a2c7e419b5374cbeb807c9e`, full
+   2022-01-01 → 2025-05-29 run, equity 51,430.92 → 98,613.08 across the sub-span): **+91.74%** — rules out
+   "validation inherits training state".
+3. Reported validation: **−17.71%** — and identically −17.71 for TP100, TP150, AND TP200 at BOTH roll values
+   (only TP75 differs, at −15.29). Identical stats across six genomes that differ in roll timing and TP level
+   means the evaluated span is one where (a) no position ever reaches +100% (so TP 100/150/200 never separate)
+   and (b) no position ever ages into its roll trigger (so roll 33 vs 45 never separate) — i.e. a SHORT window,
+   and a negative one. The evaluator is scoring some short negative sub-span, not the declared 20-month segment.
+   Owner has the code; the campaign has the receipts.
+
+### THE VALIDATION FIX LANDS (`faadf93005`) — and the fixed engine re-elects the live book
+
+The owner's diagnosis matched the forensic box exactly: sweep fold scoring had been using `trainingPercent` on the
+GLOBAL range with a truncated holdout (`training_windows.count` instead of `validation_windows.count`) — the
+"short, wrong sub-span" in person. Fixes deployed: fold-calendar dates for sweep scoring, full validation window,
+OosScoring with proper earliest_date, fold-winner individuals protected from batch-save overwrites, plus a
+permanent E2E gate (`make walk-forward-sweep-e2e`). Trust boundary declared: post-deploy sweep studies trusted;
+pre-deploy sweep studies' validation-driven winner choices are not (CERT #3e and SWEEP v2 winner SELECTIONS
+included — their OOS measurements stand, the choices among cells do not).
+
+**PERSIST-VAL-2** (`6a2c8f559b5374cbeb809443`, identical config to PERSIST-VAL, post-fix engine) — every check:
+
+- **Validation scoring: FIXED.** Fold-3 winner's validation is +232.4% over the real 20-month window (was −17.71
+  garbage). Fold validation numbers now look like the windows they claim to describe.
+- **Persistence: FIXED.** 4/4 folds returned `selectedChatPortfolioId` (`…9538`, `…953c`, `…9540`, `…9544`).
+- **Materialization + field audit: PASS.** Fold-3's winner book audits clean at field level (≥14/0.92/252,
+  TP trigger 100, roll 45). The roll-spray gap remains (dte triggers appended to TP/valves — owner-acknowledged,
+  behaviorally inert here since the value equals the seed's own roll).
+- **The poetry: with honest validation stats, the sweep's fold-3 winner IS the live book's exact configuration**
+  (TP 100 / roll 45). Its fold OOS: +132.408 / Sortino 4.159 / DD 17.6, dollarsSold 240,847.998 — the identical
+  trade tape as the live book's standalone F3 run (the small return delta vs +137.51 is the known OOS-boundary
+  day). The deployed configuration, whose original CERT #3e selection ran on corrupted validation numbers, has
+  now been re-selected by the repaired engine on honest ones — the live book's certification lineage is restored,
+  this time on arithmetic that checks out.
+
+Post-fix open list (owner-acknowledged): RollTriggerDte trigger spray, gene stacking on re-sweep, GA
+materialization parity, partial-fail billing, zeroed mid-run leaderboard stats, E2E gate not yet in CI.
+
+### CERT #3g — CERT #3e's FULL grid re-run on the fixed engine: the pristine record does not survive
+
+This is the honest one. PERSIST-VAL-2 re-elected the live book, but it only swept TP × roll on a narrow grid where
+the deployed config (TP100/roll45) was the obvious winner. CERT #3g re-runs CERT #3e's **entire original 5-gene
+grid** (TP, cooldown, budget, ROC window, OGEP gate — 388 units, same calendar) on the corrected validation
+engine — the real test of whether the deployed book's certification reproduces. Study `6a2cbd479b5374cbeb80cbf5`.
+
+**It does not.** Side by side:
+
+| | CERT #3e (corrupted validation) | CERT #3g (fixed validation) |
+| --- | --- | --- |
+| Fold-0 OOS | +21.27% | **−1.59%** |
+| Fold-1 OOS | +101.99% | +58.71% |
+| Fold-2 OOS | +97.57% | +115.79% |
+| Fold-3 OOS | +132.41% | +89.13% |
+| Aggregate | mean +88.3, **min +21.3, all positive** | mean +65.5, **min −1.59, one negative** |
+| Fold-3 winner | TP100 / 22%-name / no-OGEP-gate = **the deployed book** | TP75 / 28%-name / OGEP-gated = **a different book** (field-audited, clean) |
+
+Two hard conclusions, stated without spin:
+
+1. **CERT #3e's headline — "all four folds positive, min +21.3%, the only campaign candidate with zero negative
+   folds" — was partly an artifact of corrupted validation selection.** On honest validation, the same grid with
+   the same (no-constraint) selection policy picks a thin 5-name, 0.25-participation, −8.4%-validation winner at
+   fold-0 that goes −1.59% OOS. The pristine record that justified DEPLOY #2's "most robust candidate" framing
+   does not reproduce on the fixed engine.
+2. **The full grid no longer re-selects the deployed book at fold-3.** Honest validation prefers a TP75/28%
+   variant (validation +130.5%) whose OOS is +89.1% — lower than the deployed book's own +137.5%. The selector,
+   now honest, is choosing a worse-transferring cell: a clean live demonstration that validation-optimal ≠
+   OOS-optimal, which is the entire reason walk-forward exists.
+
+**What this does and does not change:**
+- The deployed book's **own performance evidence is untouched** — its +137.5% F3, +107.4% burnout, five-window
+  battery, and Gate-7 bit-exact repro are book-level measurements, not selection outputs. The live book trades
+  exactly as measured.
+- What weakens is the **selection-provenance claim**: "a clean walk-forward sweep certified this exact book with
+  all folds positive." That claim rested on corrupted arithmetic. The honest engine neither reproduces the
+  all-positive record nor re-selects this book from the full grid.
+- The likely repair is the constraint set this campaign already built but CERT #3e/#3g did not use: re-run with
+  `certification: true` (participation ≥0.35, names ≥9, validation return ≥0, Sortino ≥0.5). That should evict
+  fold-0's thin degenerate winner and may restore an all-positive, broader-book certification — now on honest
+  validation. **Not run yet; flagged as the clear next step rather than asserted.**
+
+No deploy action taken. The live book stays as-is on the owner's standing decision; this is a provenance finding
+for the record, not a trigger to change the live portfolio. Per-fold winners all persisted and materialized
+(`selectedChatPortfolioId` on 4/4), field-audited clean — the fix-validation itself passed end to end.
+
+### CERT #3h / #3h-50 — the clean contest, with quality gates, short vs long validation
+
+The honest re-do of certification: CERT #3e's full grid on the fixed engine WITH the certification quality gates
+(participation ≥0.35, names ≥9, validation return ≥0, Sortino ≥0.5), run at both the default short-validation
+split and the 50% long-validation split CERT #8 proved was the campaign's best fold-0 lever.
+
+- **CERT #3h** (short validation + gates, `6a2cc5654024704b66dd3ea5`): **hard-failed at fold-0 with
+  `NoEligibleCandidate`** — not one of 388 cells clears the gates on the ~3-month early-2023 validation window.
+  Verdict: this book family CANNOT be honestly certified on the default short split. The gates correctly refuse
+  to crown anything from a 3-month noise window.
+- **CERT #3h-50** (long validation + gates, `6a2cc5af9b5374cbeb80e758`): **COMPLETE, all four folds positive** —
+  OOS [+50.43, +14.21, +165.78, +85.20], mean +78.9, min +14.2, worst DD 29.9%, every fold winner broad
+  (9–15 names, participation 0.45–0.75). **This is the first honestly-certified, all-positive sweep of the
+  entire campaign** — the strategy family certifies cleanly once validation windows are long enough to be
+  meaningful and the gates evict degenerates. The approach is sound; the original CERT #3e cleanliness is
+  recoverable on honest arithmetic, but ONLY with long validation.
+
+**The persistent truth about the deployed book, three honest contests in:** none of CERT #3g, #3h, or #3h-50
+re-select it. The honest fold-3 winners are TP75/28% (#3g, +89.1% OOS) and TP150/28%/ROC189 (#3h-50, +85.2% OOS,
+field-audited clean) — both broad, both legitimate, both with LOWER out-of-sample return than the deployed book's
+own +137.5% on the identical window. The pattern is unmistakable and worth stating plainly: **the deployed book
+is consistently OOS-superior but validation-suboptimal.** Honest validation selection keeps crowning other cells
+that then transfer worse. This is the deep lesson of the whole campaign in one line — the best validation score
+is not the best future performance, and a single walk-forward selection (however honest) is a noisy crown.
+
+**Where this leaves the live book:** its standing rests on the strongest base available — its own directly
+measured OOS and burnout performance (+137.5% F3, +107.4% 2026, five windows all positive), which beats every
+honestly-selected alternative on out-of-sample. What it lacks is a clean "the contest picked me" certificate;
+the contest, run honestly, picks worse-performing books. For deploy purposes the OOS evidence is the stronger
+warrant anyway. **No change to the live portfolio recommended or taken.** The campaign now has, separately: a
+sound strategy family (CERT #3h-50 proves clean certification is achievable), a live book justified by direct
+performance evidence, and a fully repaired engine whose every fix was verified end to end.
+
 ### MCP issues observed (phase 2, for the owner)
 
 1. **WF sweep launcher has no gene_intents path** — `run_walk_forward_study engine_kind:sweep` demands a raw SweepConfig;
