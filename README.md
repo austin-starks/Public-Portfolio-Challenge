@@ -9,7 +9,7 @@
 [![Live portfolio](https://img.shields.io/badge/Live-$25K_portfolio-22c55e?style=for-the-badge)](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)
 [![MCP](https://img.shields.io/badge/Connect-via_MCP-4bc0c0?style=for-the-badge)](https://nexustrade.io/developers)
 [![Runbook](https://img.shields.io/badge/Paste-the_runbook-c9a84c?style=for-the-badge)](episode-10/BAKEOFF_RUNBOOK.md)
-[![No clone](https://img.shields.io/badge/No_code-checkout-64748b?style=for-the-badge)](#get-started)
+[![OAuth](https://img.shields.io/badge/Auth-OAuth_no_keys-64748b?style=for-the-badge)](#get-started)
 
 <br />
 
@@ -42,14 +42,16 @@ In February 2026 I deposited **$25,000** into a live [Public](https://public.com
 
 Not paper. Not a backtest screenshot. **Real money, documented in real time.**
 
-The live story is a blog series:
+The live story is a blog series. **Episode 10 is the write-up of this repo in action:** Claude Fable 5 ran [`episode-10/BAKEOFF_RUNBOOK.md`](episode-10/BAKEOFF_RUNBOOK.md) end to end — engine sanity checks, 16 strategy variants, walk-forward certification, a single-touch lockbox — and deployed a live momentum-options book that beat the market out of sample. Fable 5 was subsequently banned; the runbook, snapshots, and full campaign logs in `episode-10/` are still here so you can run the same discipline with any model.
 
 | | |
 | --- | --- |
 | **[Full series →](https://nexustrade.io/blog/series/public-portfolio-challenge)** | Ten episodes and counting: model bakeoffs, deploy day, production bugs, week-one gains, panic sells, engine rewrites, and the open runbook. |
 | **[Episode 1 →](https://nexustrade.io/blog/im-giving-an-ai-access-to-my-public-trading-account-heres-how-you-can-watch-it-destroy-25000-20260228)** | Where it started — why $25k, why Public, why total transparency. |
+| **[Episode 10 →](https://nexustrade.io/blog/claude-fable5-built-my-live-options-strategy-then-got-banned-20260614)** | The full story of Fable 5 running this runbook — every gate, engine bug, and dead end logged in [`FABLE_CAMPAIGN.MD`](episode-10/FABLE_CAMPAIGN.MD). |
+| **[Episode 10 on Medium →](https://medium.com/p/b5b2db76dc6c)** | Same article, syndicated on Medium — included here so readers who follow the challenge off-platform can find it without hunting. |
 
-**This repo is the open playbook.** The blog is my run. The runbook is yours.
+**This repo is the open playbook.** Episode 10 documents one agent's run through it. The runbook is yours to replay with whatever model you have.
 
 ---
 
@@ -61,7 +63,7 @@ The live story is a blog series:
 
 ### No install
 
-Connect the NexusTrade MCP server to Cursor, Claude, or any OAuth-capable client. No repo checkout. No API keys to rotate (OAuth is the default path).
+Connect the NexusTrade MCP server to Cursor, Claude, or any OAuth-capable client. No NexusTrade install, no API keys to rotate — OAuth signs you in once in the browser. (Grab `start.py` + `example_profile.json` from the repo, or just copy them from GitHub.)
 
 </td>
 <td width="33%" valign="top">
@@ -248,6 +250,8 @@ Either way, the agent designs a strategy on your names, backtests it, compares i
 | [Live portfolio](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567) | Positions and P&L in real time |
 | [Blog series](https://nexustrade.io/blog/series/public-portfolio-challenge) | The full documented journey |
 | [Episode 1](https://nexustrade.io/blog/im-giving-an-ai-access-to-my-public-trading-account-heres-how-you-can-watch-it-destroy-25000-20260228) | How the challenge began |
+| [Episode 10](https://nexustrade.io/blog/claude-fable5-built-my-live-options-strategy-then-got-banned-20260614) | Fable 5 ran this runbook and deployed a live book — full story + links to campaign logs |
+| [Episode 10 on Medium](https://medium.com/p/b5b2db76dc6c) | Syndicated copy of the same article (for readers off NexusTrade) |
 | [Developers](https://nexustrade.io/developers) | MCP setup |
 | [MCP tools reference](https://nexustrade.io/docs/api-reference/mcp-tools-utility) | Every tool the runbook can call |
 | [API overview](https://nexustrade.io/docs/api-reference/overview) | REST + auth |
@@ -258,7 +262,7 @@ Either way, the agent designs a strategy on your names, backtests it, compares i
 
 <br />
 
-**Fork it. Paste the runbook. Run the same discipline on your own idea.**
+**Fork it. Run `start.py` for a strategy built on your own names — or paste the runbook for the full discipline.**
 
 If it survives walk-forward and the lockbox, deploy it. If it doesn't, you found that out before risking a dollar.
 
