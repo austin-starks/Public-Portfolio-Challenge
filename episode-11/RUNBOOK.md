@@ -26,6 +26,13 @@ anything reaches me.
 ### Fixed
 - **Universe (20):** ANET DUOL HOOD LLY GS META TSM AVGO XOM COP OSCR AMAT ADI DDOG OKTA NET APP GLD MU SNDK.
 - **Capital:** $25,000, Day interval. **Structure:** momentum-ranked long-dated calls (~150–365 DTE), affordability ladder. Only knobs move.
+- **Spread-shape rule (NEW — hard constraint):** **no long-dated, *thin* debit spreads.** Axes:
+  *long/short = DTE*, *thin/wide = strike width / max profit*.
+  - **Long-dated (≥ ~120 DTE) must be WIDE** — an outright long call (uncapped), or a debit spread whose
+    short leg is far enough OTM for a large max profit (**up to ~$10K/contract**).
+  - **Short-dated** spreads **may be thin** (narrow width).
+  - **Forbidden: long-dated AND thin** — e.g. the live book's current `ATM/+3 … +20` verticals
+    (9–15-month, only ~$1–2.5K max profit). Those are the shape we're removing.
 
 ### Resolve the deployment target FIRST (don't skip — prior runs got this wrong)
 There are **two different "deployments"** and they're ~30 points apart:
@@ -60,7 +67,7 @@ agent brief **short and natural** — it has its own planner; over-specifying ma
   "automationMode": "automated",
   "maxIterations": 38,
   "messages": [{ "sender": "User", "content":
-    "Retune my live momentum long-dated-call options book on these 20 names (ANET DUOL HOOD LLY GS META TSM AVGO XOM COP OSCR AMAT ADI DDOG OKTA NET APP GLD MU SNDK) so its BACKTEST median deployment is near 70% with returns close to the live book. Seeds: live 69a7dc7acdb6bf6a4681d36c, optimizer source 6a2c044d99fc925d9b7bacf6, deploy-build 6a2eba08d0e6238f8baab940. Run a SYSTEMATIC SWEEP (not GA) with the posture-cap selection policy: medianDeployment between 65 and 72, participationRate >= 0.35, distinctUnderlyingsTraded >= 9, primary sortinoRatio. Sweep the levers that move deployment: per-name size, total budget, and the regime gate (try an always-on gate, SPY>200SMA, and SPY>=0.92x252d-max). The sweep leaderboard IS the candidate source — pick the top 2-3 cells nearest 70% from it, do not hand-build replacements. Backtest the finalists over BOTH the full cycle INCLUDING the 2022 bear (2022-01-01 to today) AND the last 12 months, and report return, max drawdown, Sortino, and median deployment for each next to the live book. Do NOT deploy and do NOT place any orders. Present for review."
+    "Retune my live momentum long-dated-call options book on these 20 names (ANET DUOL HOOD LLY GS META TSM AVGO XOM COP OSCR AMAT ADI DDOG OKTA NET APP GLD MU SNDK) so its BACKTEST median deployment is near 70% with returns close to the live book. Seeds: live 69a7dc7acdb6bf6a4681d36c, optimizer source 6a2c044d99fc925d9b7bacf6, deploy-build 6a2eba08d0e6238f8baab940. Run a SYSTEMATIC SWEEP (not GA) with the posture-cap selection policy: medianDeployment between 65 and 72, participationRate >= 0.35, distinctUnderlyingsTraded >= 9, primary sortinoRatio. Sweep the levers that move deployment: per-name size, total budget, and the regime gate (try an always-on gate, SPY>200SMA, and SPY>=0.92x252d-max). The sweep leaderboard IS the candidate source — pick the top 2-3 cells nearest 70% from it, do not hand-build replacements. Backtest the finalists over BOTH the full cycle INCLUDING the 2022 bear (2022-01-01 to today) AND the last 12 months, and report return, max drawdown, Sortino, and median deployment for each next to the live book. Structure rule (hard): NO long-dated thin debit spreads — long-dated structures (>=120 DTE) must be outright long calls or WIDE spreads (far-OTM short leg, max profit up to ~10K); only short-dated spreads may be thin/narrow. Do NOT deploy and do NOT place any orders. Present for review."
   }]
 }
 ```
@@ -108,6 +115,11 @@ When the agent finishes, **independently re-verify over MCP** before presenting 
    read, and 2022 behavior — pick the best *balance* at ~70%, preferring shallower drawdown and
    steadier cross-window behavior. One weak window ≠ disqualified.
 6. **Reproducibility:** `conditionFieldAudit` matches intended knobs; `compare_backtests {tolerance_bps:0}` identical. Verify by field, never by display name.
+7. **Spread-shape compliance (hard reject).** Inspect the finalist's option structures (`get_portfolio` →
+   leg strikes/DTE per template). **Reject any long-dated (≥~120 DTE) debit spread that is thin** (short
+   leg near the long leg / small max profit). Long-dated legs must be outright calls or **wide** spreads
+   (max profit up to ~$10K). Thin is allowed **only** short-dated. If the finalist contains a long+thin
+   structure, it fails — pick the next candidate or have the agent re-run with the wide-only constraint.
 
 ---
 
