@@ -1,158 +1,203 @@
-# Episode 11 — Posture-Retune, orchestrated by Claude Code
+# Episode 11 — Portfolio Certification, orchestrated by Claude Code
 
 > **Paste this whole file into Claude Code** with the NexusTrade MCP server connected (Austin's
-> account). Claude Code is the **orchestrator**: it launches a NexusTrade **Aurora agent**
-> (`create_agent`) to create + optimize the strategies, **monitors** it, then runs the **mandatory
-> verification checks itself over MCP** (the agent's numbers are not trusted on their own), and
-> presents a finalist. **Nothing deploys and no orders are placed** until I explicitly say
-> "deploy + clean up" — and even then only through the gated cleanup in Stage E.
-> Not generalized: this operates on my real artifacts.
+> account). I need to know whether my **current live book holds up under the engine it runs on now**.
+> Claude Code is the **orchestrator + independent verifier**: it runs a **walk-forward certification**
+> of the live book itself (deterministic tool, no Aurora agent needed), reads the out-of-sample folds,
+> and delivers a **PASS / FAIL certification verdict**. If it FAILS, Claude Code runs a **walk-forward
+> re-optimization (sweep + certification)** and certifies the winner. **Nothing deploys and no orders
+> are placed** until I explicitly say "deploy + clean up" — and even then only through the gated
+> cleanup in Stage E. Not generalized: this operates on my real artifacts.
+
+> **Operating principles:**
+> - **The objective is certification.** Median deployment is **settled** — do NOT tune it, do NOT
+>   target any deployment number. The only question is: *is the current book strong under this engine?*
+> - **No Aurora agent for the certify path.** Walk-forward `backtest_only` is deterministic — Claude
+>   Code calls it directly. An agent is **optional** only as an idea-generator if the re-opt gene
+>   design needs exploration; the default is no agent.
+> - **The subject is the LIVE book**, certified as a *fixed* portfolio first; re-optimization is the
+>   fallback, not the default.
 
 ---
 
 > **Tools:** the NexusTrade MCP tools are deferred — load schemas via ToolSearch as you need them
-> (`create_agent`, `get_agent`, `backtest_portfolio`, `audit_backtest_posture`,
-> `get_optimization_results` / `list_optimizations`, `fetch_portfolios`, `clone_strategies_to_portfolio`,
-> the reconcile tool, `create_orders`). Log your run to `episode-11/CAMPAIGN_LOG.md` (agentId, the
-> checks, the finalist, and — if Stage E runs — the reconcile preview/fills).
+> (`run_walk_forward_study`, `get_walk_forward_study_results`, `list_walk_forward_studies`,
+> `get_sweep_surface`, `backtest_portfolio`, `audit_backtest_posture`, `get_optimization_results`,
+> `fetch_portfolios`, `get_portfolio`, `compare_backtests`, `clone_strategies_to_portfolio`, the
+> reconcile tool, `create_orders`). Log your run to `episode-11/CAMPAIGN_LOG.md` (the study IDs, the
+> per-fold OOS table, the certification verdict, the finalist if re-opt runs, and — if Stage E runs —
+> the reconcile preview/fills).
 
 ## The job
 
-Retune my live momentum-LEAP options book toward a chosen **median-deployment target (~70%)** while
-keeping returns **close to the live book**, judged **holistically** (no "green on every fold"). The
-Aurora agent does the creating/optimizing; **Claude Code independently verifies** everything before
-anything reaches me.
+**Certify that my current live momentum-LEAP options book is strong under the engine it runs on.** Judge
+it **holistically** across out-of-sample walk-forward folds (no "green on every fold" rule). If it
+certifies, say so plainly and stop. If it does **not** certify, **re-optimize + re-certify** and
+present the certified winner. Claude Code does the running AND the independent verification — there is
+no agent whose numbers need second-guessing here; the numbers are Claude Code's own.
 
 ### Fixed
 - **Universe (20):** ANET DUOL HOOD LLY GS META TSM AVGO XOM COP OSCR AMAT ADI DDOG OKTA NET APP GLD MU SNDK.
-- **Capital:** $25,000, Day interval. **Structure:** momentum-ranked long-dated calls (~150–365 DTE), affordability ladder. Only knobs move.
-- **Spread-shape rule (hard constraint):**
-  - **Long-dated exposure (≥ ~120 DTE) = outright long calls ONLY** (uncapped convexity, no short leg).
-    No long-dated debit spreads.
-  - **Any debit / vertical spread must be short-dated — expiring in ≤ ~1 month (≤ 30 DTE).** Thin is fine
-    there.
-  - (The shape this excludes: long-dated *and* capped verticals like `ATM/+3 … +20` at ~$1–2.5K max profit.)
+- **Capital:** $25,000, Day interval. **Structure:** momentum-ranked long-dated calls (~150–365 DTE), affordability ladder. Only knobs move (and only if re-opt runs).
+- **Spread-shape rule (hard constraint — still in force):**
+  - **Long-dated exposure (≥ ~120 DTE) = outright long calls ONLY** (uncapped convexity, no short leg). No long-dated debit spreads.
+  - **Any debit / vertical spread must be short-dated — expiring in ≤ ~1 month (≤ 30 DTE).** Thin is fine there.
+  - (Excludes: long-dated *and* capped verticals like `ATM/+3 … +20`.)
 
-### Resolve the deployment target first
-There are **two different "deployments"** and they're ~30 points apart:
-- **Current live snapshot:** ~**93%** (the book is near fully invested *right now* — a position state).
-- **Backtest median (2024→now):** ~**60.6%** (the strategy's *typical* exposure in simulation).
+### Median deployment — settled, not a target
+The book's backtest-median deployment (~60–69% depending on window) is **acceptable as-is**. Do **not**
+optimize toward any deployment number. If certification or re-opt happens to move it, that's fine —
+report it, don't steer it. (If I ever want to cap *live* exposure, that's Stage E cleanup, not here.)
 
-**The optimizer/sweep tunes the BACKTEST MEDIAN.** So "≈70%" means steering the backtest median to
-~70% — which, from ~61%, is actually a small *increase*, not a trim. State this explicitly in the
-deliverable so the direction isn't misread. If what I actually want is to cap the *live exposure*,
-that's the **cleanup stage (E)**, not the optimizer.
-
-### My three seeds (pinned — confirm by field/posture, never by name)
-| Seed | ID | What it is |
+### The subject + references (confirm by field/posture, never by name)
+| Role | ID | What it is |
 |---|---|---|
-| **A — LIVE** | `69a7dc7acdb6bf6a4681d36c` | Deployed book. ~93% net deployed now; backtest median ~60.6%. The performance bar. |
-| **B — optimizer source** | `6a2c044d99fc925d9b7bacf6` | Raw sweep winner A was cloned-and-cleaned from (opt `6a2c026699fc925d9b7ba68c`). |
-| **C — deploy-build** | `6a2eba08d0e6238f8baab940` | Paper "MLT v16 — DEPLOY BUILD". Mid-posture reference (~43%). |
+| **SUBJECT — LIVE** | `69a7dc7acdb6bf6a4681d36c` | Deployed book. **This is what we certify.** The thing that must hold up out-of-sample. |
+| ref — optimizer source | `6a2c044d99fc925d9b7bacf6` | Prior sweep source (opt `6a2c026699fc925d9b7ba68c`). Reference only. |
+| ref — deploy-build | `6a2eba08d0e6238f8baab940` | Paper "MLT v16 — DEPLOY BUILD". Reference only. |
 
 ---
 
-## Stage A — Claude Code launches the Aurora agent
+## Stage A — Walk-forward CERTIFICATION of the live book (fixed portfolio)
 
-Use a **systematic sweep**, not the GA — the sweep is the reliable, certified path; the GA overfits on
-this workload. Keep the agent brief **short and natural** — it has its own planner; over-specifying
-makes it loop.
+Claude Code runs this directly. Certify the live book **as-is** (no inner optimizer) so we see how the
+*current* strategy generalizes out-of-sample.
+
+**Pre-flight (do first):**
+1. `get_portfolio 69a7dc7acdb6bf6a4681d36c` — capture the current strategy set, `conditionFieldAudit`,
+   and the **exit ladder**. Note any **LaunchAgent** strategy: it can't run historically and contaminates
+   backtests (it fires once and logs thousands of `cooldownSkip` events). For a clean certification,
+   certify a **LaunchAgent-free copy** of the book if one is present (clone the rebalance + close rules
+   only) and say you did so.
+2. **Spread-shape check** the live structures (`get_portfolio` → leg DTE/strikes). The live book has
+   historically held **long-dated vertical spreads** (Mar-'27 ATM/+3/+10/+20) — if those are still the
+   deployed structure, that is a **hard spread-shape violation** and the book **cannot certify as-is**;
+   report it and go straight to Stage C-re-opt with "long-dated = outright calls, spreads ≤30 DTE".
+3. **Sanity-check the exit ladder for a convexity cap.** If multiple "always" take-profit closes exist
+   (e.g. P/L ≥ 20% / 50% / 200%), the **lowest one binds first** and effectively caps every winner at
+   ~+20% — which defeats the uncapped-convexity rationale for outright calls. Flag it; it is the most
+   likely reason returns trail a let-winners-run book.
 
 ```jsonc
-// mcp__nexustrade__create_agent
+// mcp__nexustrade__run_walk_forward_study   (preview_only first to see the fold calendar + cost)
 {
-  "modelConfig": { "planningModel": "google/gemini-3-flash-preview",
-                   "executionModel": "openrouter::deepseek/deepseek-v4-flash:nitro" },
-  "automationMode": "automated",
-  "maxIterations": 38,
-  "messages": [{ "sender": "User", "content":
-    "Retune my live momentum long-dated-call options book on these 20 names (ANET DUOL HOOD LLY GS META TSM AVGO XOM COP OSCR AMAT ADI DDOG OKTA NET APP GLD MU SNDK) so its BACKTEST median deployment is near 70% with returns close to the live book. Seeds: live 69a7dc7acdb6bf6a4681d36c, optimizer source 6a2c044d99fc925d9b7bacf6, deploy-build 6a2eba08d0e6238f8baab940. Run a SYSTEMATIC SWEEP (not GA) with the posture-cap selection policy: medianDeployment between 65 and 72, participationRate >= 0.35, distinctUnderlyingsTraded >= 9, primary sortinoRatio. Sweep the levers that move deployment: per-name size, total budget, and the regime gate (try an always-on gate, SPY>200SMA, and SPY>=0.92x252d-max). The sweep leaderboard IS the candidate source — pick the top 2-3 cells nearest 70% from it, do not hand-build replacements. Backtest the finalists over BOTH the full cycle INCLUDING the 2022 bear (2022-01-01 to today) AND the last 12 months, and report return, max drawdown, Sortino, and median deployment for each next to the live book. Structure rule (hard): long-dated exposure (>=120 DTE) must be OUTRIGHT LONG CALLS with no short leg (no long-dated spreads at all); any debit/vertical spread must be short-dated, expiring in <=1 month (<=30 DTE). Do NOT deploy and do NOT place any orders. Present for review."
-  }]
+  "portfolio_id": "69a7dc7acdb6bf6a4681d36c",   // or the LaunchAgent-free clone id
+  "global_start_date": "2022-01-01",
+  "global_end_date":   "<TODAY>",
+  "fold_count": 5,
+  "inner_mode": "backtest_only",                // certify the FIXED book — no per-fold optimizer
+  "mode": "validation",                          // per-fold independent OOS
+  "walk_forward_mode": "anchored",
+  "oos_width_days": 252,
+  "embargo_days": 14,
+  "interval": "Day",
+  "preview_only": true                           // flip to false to actually run
 }
 ```
 
-Record the returned `agentId`. (Standard split shown; a budget comparison arm such as
-`nvidia/nemotron-3-ultra-550b-a55b` for both roles is fine — 0.25 tokens, clears the cost guard.)
+Run `preview_only:true` first; confirm the fold calendar covers 2022→today — it must include both the
+**2022 bear** and the **April-2025 selloff** (the deepest drawdown for this book is an April-2025 event,
+so the folds have to span it). Then run for real and record the `study_id`.
 
 ---
 
-## Stage B — Monitor
+## Stage B — Monitor the study
 
-Poll `mcp__nexustrade__get_agent <agentId>` until terminal (`completed`/`stopped`). The payload is
-huge — parse it (jq/python), don't dump it. Per poll, capture: `status`, `currentIteration`,
-`currentState.thought/action`, and the last few messages.
+Poll `list_walk_forward_studies` / `get_walk_forward_study_results <study_id>` until terminal
+(`COMPLETE`/`ERROR`/`CANCELLED`). Parse with jq — payloads are large, don't dump them.
 
 **Watch for the known failure modes (surface them, don't paper over):**
-- **Optimizer/sweep silent-fail** — `List Optimizations` returns 0 / no `optimizationId`. If so, report it; do not let the agent quietly pivot to hand-built variants and pass them off as optimizer output.
-- **Create-YAML emitting `Alert` instead of `RebalanceOption`** for option books.
-- **Backtest "failed to create the backtest configuration"** loops.
-- **Wrong window** — agent defaulting to "since 2024" and skipping 2022.
-- **Stall** — `updatedAt` frozen + iteration not advancing for many minutes.
-
-If it stalls or a tool fails repeatedly, **stop, summarize exactly what broke, and wait for me** (I may be fixing the planner/tools in another tab).
+- **Study silent-fail / ERROR** — no fold stats / empty `validationAggregate`. Report it; don't invent a verdict.
+- **Wrong window** — fold calendar not starting 2022-01-01 / skipping the bear.
+- **Backtest contamination** — LaunchAgent firing in folds (you should have stripped it in Stage A).
+- **Zero-trade / NaN folds** — upstream position-marking corruption; report which folds, don't average over NaNs.
+- (No 30-min "stall" worry here — there's no Aurora agent. A study that's genuinely hung past its
+  estimated cost/time → stop, summarize, wait for me; I may be fixing the engine in another tab.)
 
 ---
 
-## Stage C — Claude Code's mandatory checks (DO NOT trust the agent's numbers)
+## Stage C — Mandatory certification checks (these ARE the verdict)
 
-When the agent finishes, **independently re-verify over MCP** before presenting anything:
+Read the per-fold OOS results and decide PASS / FAIL holistically. **Do not certify on a single
+aggregate number.**
 
-1. **Was the sweep load-bearing?** Read the optimization (`get_optimization_results` /
-   `get_walk_forward_study_results`) and confirm the finalists came **from its leaderboard**, that the
-   **`medianDeployment` constraint was actually applied** (not just Sortino), and that the leaderboard
-   surfaces per-candidate medianDeployment. If the good candidates were hand-built, say so.
-2. **Re-backtest each finalist yourself** (`backtest_portfolio`, $25k) over **three windows**: the
-   **2022 bear (2022-01-01→2023-01-01)**, the **full cycle (2022-01-01→today)**, and the **last 12
-   months** — the agent's "full cycle" likely skipped 2022.
-3. **Re-measure deployment** with `audit_backtest_posture` on the full-cycle backtest — do **not** trust
-   the optimizer's stat. Confirm the finalist's median lands **~70% (65–72)**, and report whether it
-   ever runs >70% outside a declared regime.
-4. **Surface the deployment↔drawdown tradeoff honestly.** Put deployment and maxDD side by side; do
-   **not** lead with the headline return — at this leverage, more deployment buys more drawdown.
-5. **Holistic judgement** (no per-fold green rule): full-cycle return + maxDD + Sortino, the last-12mo
-   read, and 2022 behavior — pick the best *balance* at ~70%, preferring shallower drawdown and
-   steadier cross-window behavior. One weak window ≠ disqualified.
-6. **Reproducibility:** `conditionFieldAudit` matches intended knobs; `compare_backtests {tolerance_bps:0}` identical. Verify by field, never by display name.
-7. **Spread-shape compliance (hard reject).** Inspect the finalist's option structures (`get_portfolio` →
-   leg DTE/strikes per template). **Reject if** any long-dated (≥~120 DTE) structure is a **debit spread**
-   (long-dated must be **outright long calls**, no short leg), **or** any debit/vertical spread has **>~30
-   DTE** (spreads must expire ≤1 month). If the finalist violates this, it fails — pick the next candidate
-   or have the agent re-run with "long-dated = naked calls, spreads ≤30 DTE".
+1. **Per-fold OOS table.** For each fold: train window, OOS window, OOS return, OOS maxDD, OOS Sortino,
+   median deployment, distinct underlyings, participation. Plus the `validationAggregate`.
+2. **Independent re-backtest spot-check.** Re-run `backtest_portfolio` ($25k) on the **full cycle
+   (2022-01-01→today)**, the **2022 bear (2022-01-01→2023-01-01)**, and the **last 12 months**, and
+   `audit_backtest_posture` the full-cycle run. Confirm the study's fold numbers are consistent with a
+   fresh backtest — verify the study and a standalone backtest agree with each other.
+   - **Baseline:** for this 20-name options book, set `baseline_symbol` to a material underlying or use
+     an equal-weight universe B&H — **do NOT default to SPY** (SPY only colours the excess metric, but
+     get it right). Note this in the deliverable.
+3. **Degradation:** compare train vs OOS per fold. Large train→OOS collapse = overfit / not robust, even
+   if the full-cycle backtest looks great.
+4. **Drawdown honesty.** Put OOS maxDD next to OOS return per fold; lead with risk, not the headline
+   return. At this leverage a fold can post a huge return and a 50–77% drawdown.
+5. **Holistic PASS test (no per-fold green rule):** certify **PASS** if the *majority* of OOS folds are
+   profitable, OOS Sortino is positive and reasonably steady (rough floor ~0.5), drawdown is within
+   tolerance you'd actually hold, deployment is stable across folds, and train→OOS degradation is modest.
+   One weak fold ≠ FAIL. Persistent OOS losses, exploding drawdown, or train-only strength = **FAIL**.
+6. **Reproducibility / field audit.** `conditionFieldAudit` matches the intended knobs;
+   `compare_backtests {tolerance_bps:0}` where you re-run the same config. Verify by **field, never by
+   display name**.
+7. **Spread-shape compliance (hard reject).** Re-confirm the certified structure is outright long calls
+   for long-dated exposure (no short leg ≥~120 DTE) and any spread is ≤30 DTE. A violation = automatic FAIL.
+
+---
+
+## Stage C-re-opt — ONLY if Stage C returns FAIL
+
+Re-optimize + re-certify with a walk-forward **sweep** study (this is the certified path; GA overfits and
+is rejected for deploy certification). Claude Code drives it directly.
+
+1. `get_sweep_surface` on the live book (or a clean clone) to get the real sweepable field names.
+2. `run_walk_forward_study` with `engine_kind:"sweep"`, `inner_mode:"optimize"`, `certification:true`,
+   `mode:"validation"`, `fold_count:5`, anchored, 2022-01-01→today, and **`gene_intents`** for the levers
+   that matter — explicitly including the **take-profit ladder** (fix the +20% convexity cap → let winners
+   run, e.g. single TP ≥ ~150–300% or none), plus per-name size, total budget, DTE bracket, entry cooldown,
+   and rank window. `certification:true` applies the activity-floor + percentChange≥0 + sortino≥0.5 policy
+   and defaults `validation_percent` to 50. **Keep the spread-shape rule in the gene design** (long-dated =
+   outright calls; spreads ≤30 DTE).
+3. Read the leaderboard / fold winners (`get_walk_forward_study_results`, `get_optimization_results`), pick
+   the **certified** winner (passes the certification policy across folds, best holistic balance), then run
+   **Stage C checks 1–7 on that winner** before it is allowed to be the finalist.
 
 ---
 
 ## Stage D — Present, then stop
 
 Deliver a decision-ready package and **stop**:
-- Side-by-side table: **Live book vs each finalist** — median deployment, 2022-bear return/maxDD,
-  full-cycle return/maxDD/Sortino, last-12mo, with the **trade made explicit** ("≈70% deploy buys/costs
-  X return and Y drawdown vs live").
-- Plain-English rules + `conditionFieldAudit` of the finalist; its `chatPortfolioId`.
-- Which sweep cell it is and why it beats the runners-up.
-- Honest caveats (hindsight in the frozen 20, options spread cost, leverage/fragility, the
-  median-vs-snapshot point). **No deploy. No orders.** Wait for me.
+- **Certification verdict up top: PASS or FAIL**, one line, with the reason.
+- **Per-fold OOS table** (train/OOS windows, OOS return/maxDD/Sortino/deployment) + the aggregate.
+- If re-opt ran: live-book-as-is vs certified winner, side by side, with the **trade made explicit**, the
+  winner's plain-English rules + `conditionFieldAudit` + `chatPortfolioId`, and why it beats the runners-up.
+- **Honest caveats:** hindsight in the frozen 20, options spread cost, leverage/fragility, the exit-ladder
+  convexity point, any baseline/LaunchAgent caveats, and that the worst drawdown was the **April-2025**
+  event (not 2022). **No deploy. No orders.** Wait for me.
 
 ---
 
 ## Stage E — Fresh-portfolio cleanup (GATED — only after I say "deploy + clean up")
 
-Goal: make my **live positions equal a fresh deploy of the chosen finalist today** — not polluted by
-old strategies — via **delta** trades (don't round-trip overlaps). Tool flow:
+Only runs if I say so, and only for the finalist I name (the certified live book itself, or the re-opt
+winner). Goal: make my **live positions equal a fresh deploy of the chosen finalist today** — not
+polluted by old strategies — via **delta** trades (don't round-trip overlaps).
 
 1. **Clone the finalist onto the live book FIRST** — `clone_strategies_to_portfolio` (source = finalist,
    target = live `69a7dc7acdb6bf6a4681d36c`), field-verify. This is the "deploy", and it sets the live
    book's strategies that the next step reconciles against. (`reconcile_portfolio_to_strategy` has **no**
-   `strategy_source` arg — it reconciles the live book against **its own** strategies, so the clone has
-   to happen first.)
+   `strategy_source` arg — it reconciles the live book against **its own** strategies, so the clone has to
+   happen first.) *If the finalist IS the already-deployed live book unchanged, no clone is needed — say so.*
 2. **Reconcile preview** — `reconcile_portfolio_to_strategy({ portfolio_id: "69a7dc7acdb6bf6a4681d36c",
-   mode: "delta" })`. **Preview-only — it never places orders.** It returns `target`, `current`,
-   `orders` (already in `create_orders` shape), estimated cost, realized P&L, and wash-sale flags.
-3. **Show me the preview and get explicit approval.** Sanity-check: orders touch only the delta
-   (overlaps untouched), costs sane, `target` == a fresh deploy.
-4. **Stage the orders** — `create_orders({ portfolio_id: "69a7dc7acdb6bf6a4681d36c", orders: <the
-   orders array from step 2> })`. These are staged **UNAPPROVED**; the tool never submits to the broker.
-   **I approve them manually in the NexusTrade UI** — there is no approval tool and you cannot approve
-   them for me. Options auto-stage as LIMIT.
+   mode: "delta" })`. **Preview-only — it never places orders.** Returns `target`, `current`, `orders`
+   (already in `create_orders` shape), estimated cost, realized P&L, and wash-sale flags.
+3. **Show me the preview and get explicit approval.** Sanity-check: orders touch only the delta (overlaps
+   untouched), costs sane, `target` == a fresh deploy.
+4. **Stage the orders** — `create_orders({ portfolio_id: "69a7dc7acdb6bf6a4681d36c", orders: <the orders
+   array from step 2> })`. Staged **UNAPPROVED**; the tool never submits to the broker. **I approve them
+   manually in the NexusTrade UI** — there is no approval tool and you cannot approve them for me. Options
+   auto-stage as LIMIT.
 5. **Verify** — after I've approved + they fill, re-run the reconcile preview; the delta `orders` array
    should be ~empty. Report fills, any remainder, realized P&L, and wash-sale flags.
 
@@ -162,8 +207,10 @@ Never run Stage E without my explicit go for that specific finalist. Default `mo
 ---
 
 ## Working rules
-- Claude Code **orchestrates** (launch agent → monitor → verify → present); the agent **creates/optimizes**.
-- **Sweep, not GA**, for this bounded knob-retune; the leaderboard is the candidate source.
-- **State the deployment target as backtest-median ~70%;** reconcile it with the ~93% live snapshot.
-- **Independently re-verify** (windows incl. 2022, posture audit, field audit) — never trust the agent's stat.
+- Claude Code **runs and verifies** the certification directly — no Aurora agent in the loop for certify.
+- **Certify the FIXED live book first** (`inner_mode: backtest_only`); re-optimize only on FAIL.
+- **Walk-forward, validation mode, anchored, 5 folds, 2022→today** — OOS folds are the verdict, not a single backtest.
+- **Median deployment is settled** — never tune toward a deployment number.
+- **Spread-shape rule is a hard reject**; the exit-ladder convexity cap is a known footgun — check it.
+- **Baseline ≠ SPY** for this options book; **strip the LaunchAgent** before certifying.
 - **No deploy, no orders** until Stage E, which is itself gated on my explicit "deploy + clean up".
