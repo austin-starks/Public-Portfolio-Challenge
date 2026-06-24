@@ -208,9 +208,23 @@ Never run Stage E without my explicit go for that specific finalist. Default `mo
 
 ## Working rules
 - Claude Code **runs and verifies** the certification directly — no Aurora agent in the loop for certify.
-- **Certify the FIXED live book first** (`inner_mode: backtest_only`); re-optimize only on FAIL.
+- **Certify the FIXED live book first** (`inner_mode: backtest_only`); re-optimize only on FAIL — **but a structural change counts as a new book: re-sweep it, never carry old knobs (see Standing methodology rules).**
 - **Walk-forward, validation mode, anchored, 5 folds, 2022→today** — OOS folds are the verdict, not a single backtest.
 - **Median deployment is settled** — never tune toward a deployment number.
 - **Spread-shape rule is a hard reject**; the exit-ladder convexity cap is a known footgun — check it.
 - **Baseline ≠ SPY** for this options book; **strip the LaunchAgent** before certifying.
 - **No deploy, no orders** until Stage E, which is itself gated on my explicit "deploy + clean up".
+
+---
+
+## Standing methodology rules (added Ep-11 retro — apply to all future episodes)
+
+These exist because Ep-11 certified a deploy candidate (v3) whose knobs (TP 250 / 5% / 40% / 63D rank / VIX<30 / 0-cooldown) were **inherited from a sweep on a *different* structure** — the 4-rung / 20-name RE-OPT BASE — and never re-searched on v3's own 7-rung / +SPCX ladder, then presented as "optimal." Three rules prevent that:
+
+1. **Re-optimize on ANY structural change — never inherit a genome across structures.** Knobs (TP, total budget, per-name size, rank window, VIX gate, entry cooldown, DTE bracket) are **structure-dependent**. Whenever the structure changes — affordability rungs, strike depths, universe membership (e.g. adding SPCX), DTE family, or entry/exit shape — re-run the `engine_kind:"sweep"` walk-forward on the **new** book *before* certifying. A `backtest_only` cert on inherited knobs only confirms the book **generalizes**; it does **not** establish the knobs are **good for that structure**.
+
+2. **Separate "explore designs" from "optimize the chosen design."** Screen candidate designs → pick one → **then sweep that exact design's knobs** → **then** `backtest_only`-certify. Never sweep only the screen *losers'* variants while leaving the chosen book hand-tuned. If the screen picks design X, the sweep base must be **X itself**, not its neighbours.
+
+3. **Label every deployed parameter's provenance** in the Stage-D deliverable — `swept-on-this-book` / `inherited-from <study-id>` / `hand-set`. "Inherited" is an **amber** flag, not green, until re-swept on the current structure.
+
+**Self-check trigger words:** "carry over the knobs," "reuse the winner's params," "same config on the new ladder," "already certified, no need to re-sweep." Each must prompt: *did the structure change since those knobs were searched? If yes → re-sweep before certifying or deploying.*
