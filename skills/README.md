@@ -57,7 +57,7 @@ The repo commits two discovery symlinks that point back at this folder — no se
 .agents/skills  → ../skills      # Codex CLI (primary), OpenCode/Gemini/Goose (fallback)
 ```
 
-So a fresh `git clone` + opening any of those agents in the repo picks up all 11 skills immediately
+So a fresh `git clone` + opening any of those agents in the repo picks up all 12 skills immediately
 (alongside the MCP wiring the repo already ships in `.codex/config.toml` / `opencode.jsonc`). Symlinks
 work on macOS/Linux/WSL; on native Windows, enable git symlinks or use `install.sh` below.
 
@@ -70,7 +70,7 @@ needed (Cursor `.mdc`, Windsurf/Trae/Cline/Roo/Kilo `.md` rules, Junie `guidelin
 ```bash
 cd skills
 
-./install.sh --list                 # show the 11 skills
+./install.sh --list                 # show the 12 skills
 ./install.sh --dry-run              # preview, no changes
 ./install.sh                        # auto-detect your tool, install user-level
 ./install.sh --platform cursor --project   # into ./.cursor/rules/ for this repo
