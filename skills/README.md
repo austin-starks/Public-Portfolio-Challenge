@@ -1,10 +1,11 @@
 # Public Portfolio Challenge — Skills Library
 
 The certification discipline from the Public Portfolio Challenge runbooks, decomposed into composable
-[Claude Code Skills](https://docs.claude.com/en/docs/claude-code/skills). Instead of pasting a
-730-line runbook into a fresh agent, connect the **NexusTrade MCP** and let the agent auto-invoke the
-skill that fits the task. Each skill is one function of the discipline; they cross-reference each other
-by name.
+agent skills on the open [`SKILL.md` standard](https://agentskills.io) (Claude Code, Codex CLI, Cursor,
+Gemini CLI, Copilot, and ~15 other tools). Instead of pasting a 730-line runbook into a fresh agent,
+connect the **NexusTrade MCP** and let the agent auto-invoke the skill that fits the task. Each skill is
+one function of the discipline; they cross-reference each other by name. **`run-episode`** is the
+top-level entry point that sequences a whole episode.
 
 The episode runbooks (`episode-10/`, `episode-11/`) remain as the worked examples these skills distill.
 
