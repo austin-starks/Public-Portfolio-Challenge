@@ -1,5 +1,12 @@
 # Episode 11 / Attempt 3 — Alternative Data on the Certified Book, orchestrated by Claude Code
 
+> **⛔ STATUS: BLOCKED (2026-07-03).** Run #1 found a genuinely good alt-data strategy (V1, the WSB
+> rank-blend — beat the base OOS), but it **cannot deploy**: the historical backfill it was certified on
+> and the real-time feed a live book would run on are different data-generating processes, and that
+> difference can change results. **V1 is parked, not killed.** Forward plan (paper-trade + a 2×/day
+> forward-data-collection agent + PCA source-bridging) is in the **⛔ DEPLOYMENT BLOCKER** section at the
+> bottom. No real-money deploy until it clears.
+
 > **Paste this whole file into Claude Code** with the NexusTrade MCP server connected (Austin's
 > account). My live book now runs the attempt2-certified **top-21 momentum-LEAP** config. This attempt
 > asks one question: **can alternative data — congressional disclosures, Reddit/social, or other online
@@ -360,13 +367,37 @@ signal-freshness gate (Stage E step 0). Deploying it on a naive backfill+scrape 
 Either path fails the gate, so V1 is **parked, not killed**: the trading verdict (V1 > base OOS) still
 stands from run #1; only the *deployability* is blocked, on the freshness/source-consistency work above.
 
-**Unblock path (for a future run, do not attempt inside this attempt):** (a) stand up a real-time WSB
-scrape on the lesson-#13 recipe's field definitions; (b) build an **overlap window** where backfill and
-scrape both exist; (c) PCA / distribution-shift + correlation checks on that overlap to quantify the
-source delta per ticker; (d) if invariant (or after a documented alignment transform), re-cert V1 on the
-real-time-fed series with an aligned base control (lesson #14) and re-confirm the verdict; (e) only then
-is V1 eligible for Stage E. Until (a)–(e) exist, the freshness gate holds V1 out.
+**What we actually have:** run #1 found **genuinely good strategies** — V1 beat the base out of sample
+(mean +55.7% vs +46.3%, all five folds positive, Sortino 2.89 vs 2.35, ~equal drawdown). The edge is
+real. What is *not* settled is whether that edge survives the **source swap**: the backfill the cert was
+built on and the real-time feed a live book would run on are **different data-generating processes**,
+and that difference can move results. So the finding is "good strategy, unproven under the live source,"
+not "no strategy."
 
-**Next:** pivoting to a different alt-data approach (a source that is either natively fresh or whose
-real-time and historical paths are the same DGP), per the Stage-B "two distinct failures on a source →
-park it, log it, move on" rule.
+**Unblock plan (three tracks — a future run, not this attempt):**
+
+1. **Paper-trade V1 live.** Deploy V1 to a **paper** book (no real capital) fed by the real-time signal,
+   and watch it against the cert expectation. This validates the strategy under live conditions and
+   live data plumbing while the source question is still open — the safe way to keep a good strategy
+   moving without tripping the Stage-E real-money gate.
+2. **Stand up a forward real-time dataset (2×/day collection agent).** Launch a scheduled AI agent that
+   collects the WSB signal **twice per day** into its own dataset (`dataset_to_indicator` → custom
+   indicator). This builds a clean, real-time-native history going forward — so a **new** strategy can
+   be trained and certified on the *same* source it will trade on, dissolving the freshness/seam problem
+   by construction (no backfill splice at all). The forward dataset becomes the source of record for
+   the next signal.
+3. **PCA / feature analysis to bridge backfill ↔ real-time.** On the overlap window where both sources
+   exist, run **PCA (and allied distribution-shift / correlation checks)** to (a) find which features
+   actually drive the signal and (b) test whether a **stable mapping** exists between the historical
+   backfill and the real-time feed. If a mapping exists, the years of backfilled history can be aligned
+   and reused under the real-time strategy (long cert window preserved); if it does not, that is itself
+   the answer — the new strategy must be **forward-collected-only** (track 2), and the backfilled cert
+   cannot speak for the live book.
+
+Only after paper-trade behavior matches AND (track 3 bridges the history **or** track 2 has accrued
+enough forward data to certify on its own) is V1 — or its forward-native successor — eligible for
+real-money Stage E. Until then the freshness gate holds it out.
+
+**Next:** run tracks 1–2 in parallel (paper-trade the known-good V1 now; start accruing the forward
+dataset immediately so the clock starts today), with track 3 as the analysis that decides whether the
+existing history can be salvaged or the strategy is rebuilt on forward data.
