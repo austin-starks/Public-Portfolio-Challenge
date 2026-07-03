@@ -118,6 +118,24 @@ Fixed by the runbook: a 20-name watchlist, $25,000 capital, the fold calendar, t
 
 ## What's inside
 
+The discipline lives in two forms. The **skills library** ([`skills/`](skills/)) is the runbooks decomposed into composable agent skills on the [open `SKILL.md` standard](https://agentskills.io) — the **same folder runs in Claude Code, Codex CLI, Cursor, Gemini CLI, Copilot and ~15 other tools** (`skills/install.sh` handles each tool's path + adapter). Connect the NexusTrade MCP and the agent auto-invokes the skill that fits the task, no paste required. The **episode folders** keep the original paste-in runbooks plus the campaign logs from each operator/agent run, as the worked examples the skills distill.
+
+```
+skills/                      ← the skills library (install into ANY agent — see skills/README.md)
+├── README.md                        ← index + how the 11 skills compose
+├── portfolio-certification/         ← umbrella orchestrator (the staged PASS/FAIL run)
+├── walk-forward-oos/                ← the OOS certification engine
+├── breadth-audit/                   ← true participation at fixed $25k
+├── sweep-reoptimization/            ← re-sweep on structural change + provenance
+├── options-structure-rules/         ← spread-shape rule + hard constraints
+├── alt-data-indicators/             ← custom indicators (Reddit, congressional, …)
+├── bug-protocol/                    ← "loudly declare" + hand-off doc template
+├── deploy-gate/                     ← the gated deploy + reconcile flow
+├── engine-sanity/                   ← Stage-S0 pre-flight contract checks
+├── strategy-bakeoff/                ← the SEARCH→CERTIFY multi-family funnel
+└── lockbox-holdout/                 ← single-touch holdout + A/B/C baselines
+```
+
 Each episode is a self-contained folder: the **runbook** to paste, plus the **campaign logs** from each operator/agent run.
 
 ```
@@ -133,6 +151,7 @@ episode-10/
 
 | File | What it is |
 | --- | --- |
+| [`skills/`](skills/) | **The skills library.** 11 composable Claude Code Skills — the whole certification discipline, auto-invoked by the agent instead of pasted. [`skills/README.md`](skills/README.md) is the index. |
 | [`start.py`](start.py) + [`example_profile.json`](example_profile.json) | **Start here (fast path).** `python3 start.py` walks you through your watchlist + risk tolerance, writes `profile.json` and a `prompt.txt` to paste — the agent builds *you* a personalized strategy. No runbook needed. |
 | [`episode-10/BAKEOFF_RUNBOOK.md`](episode-10/BAKEOFF_RUNBOOK.md) | The agent brief you run — walk-forward validation, lockbox, deploy gates. Paste and execute top to bottom. |
 | [`episode-10/RUNBOOK_OG.md`](episode-10/RUNBOOK_OG.md) | The original Episode-1 runbook, kept for reference (the brief has since expanded). |
