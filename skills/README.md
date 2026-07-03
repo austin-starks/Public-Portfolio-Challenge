@@ -12,6 +12,7 @@ The episode runbooks (`episode-10/`, `episode-11/`) remain as the worked example
 
 | Skill | What it does |
 |---|---|
+| **run-episode** | **Entry point** — `/run-episode 10` or `/run-episode 11 attempt 3`: loads the runbook, pins artifacts, and sequences the stages, delegating each to the skill below. |
 | **portfolio-certification** | Umbrella orchestrator — the staged PASS/FAIL run, first principles, the holistic verdict. Pulls in the rest. |
 | **walk-forward-oos** | The certification engine: `run_walk_forward_study` params, monitoring, per-fold OOS checks, calendar alignment. |
 | **breadth-audit** | True participation at fixed $25k — defeats the compounded-NAV breadth illusion (the OSCR-collapse). |
@@ -29,16 +30,16 @@ The episode runbooks (`episode-10/`, `episode-11/`) remain as the worked example
 A full campaign typically flows:
 
 ```
-engine-sanity → strategy-bakeoff ─┬─ options-structure-rules (hard gates)
-                                  ├─ sweep-reoptimization (per-seed)
-                                  ├─ alt-data-indicators   (signal variants)
-                                  └─ walk-forward-oos + breadth-audit (certify)
-                                        → lockbox-holdout (final confirm)
-                                        → deploy-gate (only on "deploy + clean up")
+run-episode  ─▶  engine-sanity → strategy-bakeoff ─┬─ options-structure-rules (hard gates)
+(reads the runbook,                                ├─ sweep-reoptimization (per-seed)
+ sequences the stages)                             ├─ alt-data-indicators   (signal variants)
+                                                   └─ walk-forward-oos + breadth-audit (certify)
+                                                         → lockbox-holdout (final confirm)
+                                                         → deploy-gate (only on "deploy + clean up")
 ```
 
-**bug-protocol** applies at every stage. **portfolio-certification** is the entry point that ties them
-together.
+**run-episode** is the top-level entry point (it sequences a whole episode); **portfolio-certification**
+is the umbrella discipline the stages share; **bug-protocol** applies at every stage.
 
 ## Install (any tool)
 

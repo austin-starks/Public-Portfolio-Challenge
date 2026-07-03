@@ -122,7 +122,8 @@ The discipline lives in two forms. The **skills library** ([`skills/`](skills/))
 
 ```
 skills/                      ← the skills library (install into ANY agent — see skills/README.md)
-├── README.md                        ← index + how the 11 skills compose
+├── README.md                        ← index + how the skills compose
+├── run-episode/                     ← entry point: /run-episode 10 (sequences the stages)
 ├── portfolio-certification/         ← umbrella orchestrator (the staged PASS/FAIL run)
 ├── walk-forward-oos/                ← the OOS certification engine
 ├── breadth-audit/                   ← true participation at fixed $25k
