@@ -5,8 +5,8 @@
 > asks one question: **can alternative data — congressional disclosures, Reddit/social, or other online
 > sources — make the certified book measurably better out of sample?** Claude Code is the
 > **orchestrator + independent verifier**: it builds the alt-data custom indicators with NexusTrade's
-> compute + custom-indicator features, wires them into strategy variants, sweeps the indicator shape,
-> and OOS-certifies against the incumbent bar. **Nothing deploys and no orders are placed** until I
+> compute + custom-indicator features, wires them into hand-built strategy variants (a grid over the
+> indicator shape), and OOS-certifies against the incumbent bar with calendar-aligned base controls. **Nothing deploys and no orders are placed** until I
 > explicitly say "deploy + clean up" (gated Stage E). Not generalized: this operates on my real artifacts.
 
 > **Operating principles:**
@@ -79,6 +79,24 @@ the incumbent; say so plainly. **A null result honestly reported is a valid outc
 | ref — attempt1/attempt2 logs | `episode-11/attempt{1,2}/CAMPAIGN_LOG.md` | Full history incl. the totalBudget bug + breadth saga. |
 | ref — bug-doc template | `episode-11/attempt2/TOTALBUDGET_BUG.md` | The shape of a good bug hand-off doc. |
 
+### Carried over from run #1 (reuse — do NOT rebuild from scratch)
+| Artifact | ID | What it is |
+|---|---|---|
+| **WsbMentions21_Full** | customIndicatorId `6a45fa78248d2f46f43d5d79` | Daily WSB mention counts, ALL 21 tickers, 7,228 pts, **2021-12→2025-12** (lake had no 2026 at build time). Lookahead-safe (UTC post date), values cross-validated exactly by two independent builds. **Extend/refresh forward from 2026-01; only rebuild history if the recipe (lesson #13) changes.** |
+| **V1 — WSB rank-blend** | `6a45fafc248d2f46f43d5f2d` | Base + `weightIndicator` = ROC63 × (1 + log10(1 + SMA21(WsbMentions21_Full))). Run #1's winner. Cert `6a45fc0d…`. |
+| Aligned base control | study `6a45fd55…` | Base certified on V1's clipped calendar (`global_end_date` 2026-01-01). |
+| PelosiBuyDollarsV2 | `6a452180024552e3a78c8ac2` | 11,502 pts, filing-date-stamped — but covers ~1/21 of our names (AVGO): tilt/overlay only, and a rank built on it traded ZERO (sparse-series rule, lesson #10). |
+
+**Run #1 standing verdict (supersede only with new evidence):** on the calendar-aligned 5-fold
+head-to-head, **V1 beat the base** — OOS mean +55.7% vs +46.3%, all 5 folds positive vs a negative
+bear fold, Sortino mean 2.89 vs 2.35, drawdown ~equal (worst 34.5 vs 33.4), 19 names — while the
+base's own full-window re-cert reproduced the attempt2 bar exactly. V2 (attention-only rank) lost
+badly — momentum stays primary, buzz is a tilt. V3 (attention filter) ≈ base. **V1 is the deploy
+candidate-in-waiting, gated on ONE thing: the WSB signal must be refreshed to the present (and kept
+refreshed) before it may drive the live book — a stale rank series is a dead book.** First job of a
+fresh run: check the lake's max month; if it now extends past 2025-12, refresh the indicator,
+re-cert V1 on the longer calendar (+ aligned base control), and re-confirm the verdict.
+
 ---
 
 ## Lessons ledger (from Ep-10, attempt1, attempt2, and the alt-data pre-work — BINDING)
@@ -101,35 +119,46 @@ Do not re-derive these; verify they still hold where cheap, then obey them.
    certification activity floor; a 200D-SMA momentum filter also tested WORST in attempt2),
    long-dated verticals (banned), thin short-dated sleeves at uncapped share (v2's theta-bleed FAIL).
 
-**Engine/platform (attempt2):**
+**Book mechanics (attempt2):**
 6. **Breadth illusions:** "19/21 names" on a compounded run means nothing. Measure simultaneous
    cold-start breadth at fixed $25k. SelectTop truncates the pool BEFORE affordability — a narrow
    top-N re-creates the OSCR-only collapse (that's why the incumbent is top-21).
-7. **Budget accounting was buggy once (totalBudget stacking to ~96% NAV) — trust but verify:** on the
-   first serious backtest of this attempt, re-check median/max deployment vs the configured budget
-   (`audit_backtest_posture`). If deployment materially exceeds budget again, STOP and file a bug doc.
-8. **Reconcile is single-tick** (the live strategy accretes the rest over daily rebalances) and
+7. **Reconcile is single-tick** (the live strategy accretes the rest over daily rebalances) and
    **stale pending orders block new staging** — check for both at Stage E.
-9. **Walk-forward engine has had outages** (BSON "unit value" optimizer-claim error, sweep AND
-   backtest_only). If studies ERROR at unitsDone:0, it's likely engine-side: file it, test the
-   plain-`backtest_portfolio` fallback, and wait — don't fake a cert with full-sample backtests
-   (they may be used as *interim comparisons only*, clearly labeled optimistic).
+8. **SelectTop 21-of-21 never truncates, so the `weightIndicator` rank ORDER is what decides which
+   names the 40% budget funds first.** That rank is the natural alt-data injection point.
 
-**Alt-data pre-work (this week — the compute stack is where the dragons are):**
-10. **`sec_edgar` is corporate filings only** (10-K/10-Q/8-K) — congressional PTRs are NOT there;
-    they need `run_compute` against the House/Senate clerk sources.
-11. **Compute failures seen so far:** oneshot job `6a45b5b4…` failed discovery ("No PTR filings found
-    for Dan Crenshaw"), and interactive mode failed twice on "Timed out acquiring Sprite lease for
-    nt-compute-f6337deb…" (stuck lease / capacity). If a lease timeout recurs, try
-    `cancel_compute_job` on stuck jobs, retry ONCE, then declare and move to the next source — don't
-    hammer the backend.
-12. **Dead indicators exist in the catalog** (several entries with 0 pts). NEVER wire a
-    CustomIndicator node without first confirming its point count via `list_custom_indicators` and
-    spot-checking values. A 0-point indicator silently no-ops the condition.
-13. **Lookahead safety is non-negotiable:** every alt-data point is stamped at the date the
+**Alt-data / custom-indicator craft (attempt3 run #1):**
+9. **`sec_edgar` is corporate filings only** (10-K/10-Q/8-K, and Form 4 via `forms:["4"]`) —
+   congressional PTRs live at the House Clerk: `…/financial-pdfs/{YEAR}FD.zip` (TSV index with
+   FilingType="P" rows + DocID) → `…/ptr-pdfs/{YEAR}/{DocID}.pdf`.
+10. **Verify before wiring:** never reference a CustomIndicator without confirming point count,
+    per-ticker coverage of OUR 21 names, and freshness (`list_custom_indicators`); spot-check
+    values against the primary source. **A rank expression only works with a series that is DENSE
+    across the whole universe** — a sparse/partial-coverage series (e.g. one politician's buys)
+    can only be a tilt/overlay, never a rank input, and a signal whose data has gone stale must
+    not drive a live book.
+11. **Lookahead safety is non-negotiable:** every alt-data point is stamped at the date the
     information was PUBLIC (filing/disclosure/post date), not the trade/event date. Congressional
-    trades have a STOCK Act lag of up to ~45 days — the signal must embed that lag. Audit this
-    explicitly per indicator before any backtest uses it.
+    trades have a STOCK Act lag of up to ~45 days — the signal must embed that lag. Audit
+    explicitly per indicator before any backtest uses it. Cross-validate values with a second,
+    independently-generated build when possible (run #1 verified WSB counts this way, exact match).
+12. **Prefer steerable compute sessions for multi-step data builds** (`compute_session_start/exec`
+    → `compute_session_promote_indicator`): /work persists, you observe every step, and the whole
+    history lands in ONE promoted indicator. List and end stale sessions first
+    (`compute_session_list`); send periodic execs while long work runs. Oneshot `run_compute` is
+    for small, single-query jobs.
+13. **Reddit Arctic lake recipe (proven):** `s3://nexustrade-parquet/reddit/arctic/submissions/
+    YYYY/MM/NNN.parquet`, ~20 shards/month — read ALL shards per month, never sample shard 000
+    (submissions shards are subreddit-sorted). Filter `lower(subreddit)='wallstreetbets'`, select
+    only title/selftext/created_at (~15-25s/month). Guard ambiguous tickers (NET APP GLD COP GS
+    META) with cashtag-or-alias matching. **Check the lake's max month first** and treat signal
+    coverage end as a hard constraint on certification windows and deployability.
+14. **Certification comparisons must be calendar-aligned:** the walk-forward engine clips the fold
+    calendar to the indicator's data coverage, so a variant's study can silently get different
+    folds than the base's. Always run a base CONTROL with the same `global_end_date` as the
+    variant's clipped calendar and compare fold-for-fold. Fixed-book certs use
+    `inner_mode:"backtest_only"` (engine_kind ga/default — sweep is rejected).
 
 ---
 
@@ -158,15 +187,14 @@ When any tool errors, hangs, or returns numbers that contradict the config:
    Note `automaticOrderApproval` state.
 2. **Re-verify the bar** — pull the incumbent cert (`6a45a7aa…`) numbers; spot-check one fresh
    `backtest_portfolio` ($25k, last 12mo) on the base build and `audit_backtest_posture` it
-   (lesson #7 budget check: median deployment should be ~50%, 0 days >90%).
-3. **Inventory existing custom indicators** — `list_custom_indicators`: point counts, asset vs
-   global scope, coverage window, per-ticker coverage of OUR 21 names. Existing candidates:
-   `Pelosi_Disclosed_Buys` (849 pts), `PelosiBuyDollarsV2` (11,502 pts), `Pelosi Recent Buys (6mo)`
-   (1,560 pts), WSB mention counts (NVDA-only, wrong universe — a shape template at best). Cull the
-   0-point corpses from consideration. **Spot-check 3–5 values of each survivor against the primary
-   source** (a known Pelosi filing) and audit timestamps for lookahead (lesson #13).
-4. Deliver a one-paragraph *before* state: what the live book is, what the bar is, which existing
-   indicators are actually usable vs need (re)building.
+   (median deployment should be ~50% against the 40% budget; 0 days >90%).
+3. **Inventory existing custom indicators** — `list_custom_indicators`: point counts, coverage
+   window, per-ticker coverage of OUR 21 names, freshness (lesson #10). Start from the carried-over
+   table above — `WsbMentions21_Full` is the primary asset; check whether the Reddit lake now
+   extends past 2025-12 and refresh it forward if so. Cull 0-point corpses; audit lookahead
+   (lesson #11) on anything new.
+4. Deliver a one-paragraph *before* state: what the live book is, what the bar is, which indicators
+   are current vs need refreshing/building.
 
 ---
 
@@ -177,33 +205,28 @@ Build in DESCENDING order of expected signal + data reliability. Each source get
 the Bug Protocol; after two distinct failures on a source, park it and move on (don't let one broken
 pipeline stall the campaign).
 
-**B1 — Congressional disclosures (primary; the pre-work already started here):**
-- Politicians: start with the best-documented traders already researched (Pelosi — existing
-  indicators; then the deep-research names, e.g. Crenshaw/Gottheimer/Wyden) — but only where PTR
-  discovery actually works (lesson #11: Crenshaw discovery failed once; the prompt was being fixed).
-- Pipeline: `run_compute` (INTERACTIVE preferred — Austin's standing instruction — via
-  `compute_session_start/exec` → `compute_session_promote_indicator`, falling back to oneshot
-  `run_compute` + `dataset_to_indicator` if sessions stay infra-blocked) against House/Senate clerk
-  PTR sources. NOT `sec_edgar` (lesson #10).
-- **Two shapes per politician, both built:** (a) **buy-dollars** — disclosed buy amount midpoint per
-  {date, ticker}; (b) **recent-buys window** — rolling count/sum of buys over a trailing window.
-  Stamped at FILING date (lookahead-safe), asset-scoped to tickers.
-- Coverage reality-check: congressional buys of OUR 21 names may be sparse. Report the per-ticker
-  hit count honestly — an indicator covering 3 of 21 names can only be a *tilt/filter*, not a rank
-  signal, and that constrains Stage C.
-
-**B2 — Reddit/social (WSB mentions/sentiment on the 21 names):**
-- Pipeline: `discover_sources` / `collect_web_data` / `ingest_content` → dataset → indicator; or
-  `build_signal_indicator` templates if one fits. Daily mention counts and/or sentiment per ticker,
-  stamped at post date. The existing WSB-NVDA indicator is the shape precedent (91 pts, worked).
+**B1 — Reddit/WSB (primary — proven signal, proven recipe):**
+- **Refresh, don't rebuild:** in a compute session, run the lesson-#13 recipe over the months the
+  lake has gained since 2025-12, dedupe against the existing series, and promote the extended
+  history as one indicator. Optional enrichment if time allows: a sentiment variant of the same
+  scan (title/selftext polarity), same lookahead rules.
 - Watch for: survivorship/retro-scrape lookahead (a scrape TODAY of historical posts is fine; a
   sentiment model applied retroactively is fine; using deletion-survivors is a caveat to note).
 
+**B2 — Congressional disclosures (aggregate all-Congress, if pursued):**
+- Coverage first: single politicians cover ~1 of our 21 names — only an **all-Congress aggregate**
+  can reach rank-grade coverage. Pipeline: session fetches the House Clerk year indexes
+  (lesson #9), filters FilingType="P", fetches PTR PDFs, text-extracts (count scanned-skipped
+  honestly), parses purchase rows for our 21 tickers, midpoint dollars, stamped at FILING date.
+- **Two shapes, both built:** (a) buy-dollars per {filing date, ticker}; (b) recent-buys rolling
+  window. If per-ticker coverage still comes back sparse, it is a tilt/overlay candidate only
+  (lesson #10) — say so and deprioritize.
+
 **B3 — Opportunistic third source (only if B1+B2 go smoothly):**
-- Candidates via `discover_sources`: insider transactions (corporate Form 4 IS in `sec_edgar`),
-  news-flow intensity (`search_stock_news` derived), or Google-Trends-style attention. Pick ONE, by
-  data quality for our 21 names. Skip entirely if the compute stack burned the time budget — two
-  good indicator families beat three rushed ones.
+- Candidates: insider transactions (corporate Form 4 via `sec_edgar forms:["4"]` — filed dates are
+  free; buy-vs-sell needs the XML), news-flow intensity (`search_stock_news` derived), or
+  Google-Trends-style attention. Pick ONE, by data quality for our 21 names. Two good indicator
+  families beat three rushed ones.
 
 **Stage B exit criteria:** ≥1 indicator family with real coverage of the universe, point counts
 confirmed, lookahead audited, values spot-checked. Log a table: indicator ID · shape · points ·
@@ -223,18 +246,25 @@ changes, only the signal plumbing. Candidate integration shapes (choose per cove
 | S3 | **Entry filter** — only open a name if alt-signal fired within N days (or is above X) | condition | partial OK (filtered subset must stay affordable/broad — re-check cold-start breadth!) |
 | S4 | **Confirmation overlay** — alt-signal relaxes/tightens an existing gate (e.g. VIX) | condition | any |
 
-Then **sweep the indicator shape + integration knobs** (`get_sweep_surface` first for real field
-names; `run_walk_forward_study`, `engine_kind:"sweep"`, `inner_mode:"optimize"`, 5 folds anchored
-2022-01-01→today, validation mode, oos_width 252, embargo 14, preview_only first — confirm the fold
-calendar covers the 2022 bear and Apr-2025):
-- genes: signal shape (buy-dollars vs recent-buys-window vs mention-count vs sentiment) ×
-  lookback/decay window × blend weight (incl. **0 = incumbent as an arm of the same study** — the
-  cleanest apples-to-apples) × integration shape where sweepable.
-- Anything not sweepable gets a small hand-built variant grid, certified `backtest_only` — and
-  labeled hand-set (amber).
-- **Coverage-vs-fold caveat:** if an alt-data series only starts (say) 2021, early anchored folds
-  may see a dead signal. Report per-fold signal-coverage next to per-fold OOS; a variant that only
-  wins where the signal exists is a finding, not a cheat — but say it.
+**Integration is hand-built, not swept:** the sweep engine's `allowedIndicatorTypes` does not
+include CustomIndicator, so indicator-shape exploration is a **hand-built variant grid** via
+`create_portfolio_variant` (deep-copy base + JSON-Pointer patch, dry_run first), each certified
+`backtest_only` and labeled hand-set (amber). Classic knobs (alloc/budget/TP/SelectTop/DTE) remain
+sweepable via `get_sweep_surface` + `gene_intents` if a winner warrants a knob re-sweep (standing
+rule #1).
+
+Run #1's proven S1 shape (reuse as the grid's anchor):
+`weightIndicator = Multiply(ROC63, Plus(1, Log(base 10, Plus(1, IndicatorSimpleMovingAverage(21d,
+CustomIndicator)))))` — momentum primary, log-damped attention tilt. Grid axes worth varying:
+SMA window (10/21/42), tilt strength (log vs linear-capped), and any new signal shapes from Stage B.
+Always include the untouched base as the control arm.
+
+- **Coverage-vs-fold caveat:** the cert calendar clips to the signal's coverage (lesson #14) — run
+  the aligned base control, and report per-fold signal coverage next to per-fold OOS. A variant that
+  only wins where the signal exists is a finding, not a cheat — but say it.
+- **Degenerate-wiring smoke test before any cert:** one 12-mo $25k backtest per variant. Zero or
+  near-zero trades ⇒ the rank/filter isn't resolving (sparse series, wrong ID) — fix or drop before
+  spending on folds.
 
 ---
 
@@ -247,7 +277,8 @@ calendar covers the 2022 bear and Apr-2025):
    deployment. Lead with risk. The bar table at the top is the reference.
 3. **Breadth gate at fixed $25k** (`audit_backtest_breadth`): variant must not degrade cold-start
    participation (S3 filters are the risk here).
-4. **Budget/posture check** (lesson #7) and **spread-shape compliance** (hard reject) on every finalist.
+4. **Posture check** (`audit_backtest_posture`: deployment respects the 40% budget) and
+   **spread-shape compliance** (hard reject) on every finalist.
 5. **Reproducibility:** `compare_backtests {tolerance_bps:0}` on a re-run; field audit vs intended
    knobs; indicator IDs verified against the catalog (right ID, right point count).
 6. **Provenance labels** on every parameter (swept / inherited / hand-set).
@@ -261,7 +292,9 @@ calendar covers the 2022 bear and Apr-2025):
 ## Stage E — Deploy (GATED — only after I say "deploy + clean up")
 
 Same drill as attempt2, only for the finalist I name:
-1. Check for stale pending orders on the live book FIRST (lesson #8) — surface them; I cancel in the UI.
+0. **Signal-freshness gate (hard):** a variant whose alt-data series does not extend to the present
+   with a working refresh path may NOT deploy, whatever its cert says (lesson #10).
+1. Check for stale pending orders on the live book FIRST (lesson #7) — surface them; I cancel in the UI.
 2. `clone_strategies_to_portfolio` (finalist → live `69a7dc7a…`); field-verify the clone.
 3. `reconcile_portfolio_to_strategy({mode:"delta"})` — preview only; expect a single-tick target
    (the live strategy accretes the rest over daily rebalances — say so, don't re-diagnose it as a bug).
@@ -272,9 +305,11 @@ Same drill as attempt2, only for the finalist I name:
 
 ## Working rules
 - Claude Code runs and verifies directly — no Aurora agent in the loop.
-- **Interactive compute preferred** for indicator builds (Austin's standing instruction); oneshot is
-  the fallback; two distinct failures on a source → park it, log it, move on.
-- **Never wire an unverified indicator** (point count + lookahead + spot-check first — lesson #12/#13).
+- **Steerable compute sessions preferred** for indicator builds (Austin's standing instruction —
+  lesson #12); oneshot is for small single-query jobs; two distinct failures on a source → park it,
+  log it, move on.
+- **Never wire an unverified indicator** (point count + coverage + freshness + lookahead +
+  spot-check first — lessons #10/#11); smoke-test every variant before certifying it.
 - **Breadth at fixed $25k; OOS folds are the verdict; robust config over per-fold argmax.**
 - **Null result is a valid result.** Don't torture variants until one "wins" — that's the per-fold-argmax
   trap wearing a costume.
@@ -290,3 +325,48 @@ Same drill as attempt2, only for the finalist I name:
 **Self-check trigger words:** "the indicator looks predictive" (→ certify it, don't eyeball it),
 "reuse the incumbent's knobs" (→ re-sweep the ones the signal touches), "the backtest proves it"
 (→ OOS folds or it didn't happen), "probably an engine quirk" (→ Bug Protocol, verify, don't assert).
+
+---
+
+## ⛔ DEPLOYMENT BLOCKER — Reddit/WSB (V1) real-time freshness (2026-07-03)
+
+**Status: BLOCKED, moving on to a different approach.** V1 (the WSB rank-blend) remains the run-#1
+deploy candidate-in-waiting, but it **cannot deploy** and the blocker is not a cert result — it is a
+data-plumbing + methodology gap on the *freshness gate itself* (lessons #10/#11; Stage E step 0).
+
+**The blocker, precisely:**
+1. **The platform ingests on a backlog, not in real time.** The compute/custom-indicator stack builds
+   the WSB series from the historical Reddit Arctic lake, which lands as periodic *backfills* — it lags
+   the present. A signal that drives a live daily-rebalanced book needs a **to-the-present, kept-fresh**
+   series (a stale rank series is a dead book — the standing gate), and the batch lake does not provide
+   that on its own.
+2. **A scraping workaround exists but changes the data-generating process.** The web-scraper tools
+   (`collect_web_data` / `discover_sources` / `probe_url` / `ingest_content`) are **reliable at
+   scraping** current Reddit and could supply the missing recent tail. **But the scraped real-time
+   source is a *different* source than the historical backfill** — different collection path, dedup,
+   deletion-survivor exposure, and possibly different mention-count distribution. Splicing a real-time
+   feed onto the backfilled history risks a **regime break at the seam**: the same ticker's count could
+   shift level/scale purely because the source changed, not because attention changed.
+3. **Validating the swap is real, unfinished work.** Before a real-time feed may replace/extend the
+   backfill under the live rank, we have to show the two sources are **comparable enough that the signal
+   is invariant to the source** — e.g. **PCA** (and allied distribution-shift checks: per-ticker
+   level/scale alignment, correlation of overlapping-window counts, and a re-cert of V1 on a
+   real-time-fed series vs the backfilled one) to see whether moving from historical backfill to the
+   real-time feed **changes the results**. That analysis has not been done.
+
+**Why this is a stop, not a paper-over:** deploying V1 on the backfilled series alone violates the
+signal-freshness gate (Stage E step 0). Deploying it on a naive backfill+scrape splice would wire an
+**unverified, source-inconsistent** series under the live book — exactly what lessons #10/#11 forbid.
+Either path fails the gate, so V1 is **parked, not killed**: the trading verdict (V1 > base OOS) still
+stands from run #1; only the *deployability* is blocked, on the freshness/source-consistency work above.
+
+**Unblock path (for a future run, do not attempt inside this attempt):** (a) stand up a real-time WSB
+scrape on the lesson-#13 recipe's field definitions; (b) build an **overlap window** where backfill and
+scrape both exist; (c) PCA / distribution-shift + correlation checks on that overlap to quantify the
+source delta per ticker; (d) if invariant (or after a documented alignment transform), re-cert V1 on the
+real-time-fed series with an aligned base control (lesson #14) and re-confirm the verdict; (e) only then
+is V1 eligible for Stage E. Until (a)–(e) exist, the freshness gate holds V1 out.
+
+**Next:** pivoting to a different alt-data approach (a source that is either natively fresh or whose
+real-time and historical paths are the same DGP), per the Stage-B "two distinct failures on a source →
+park it, log it, move on" rule.
