@@ -311,3 +311,37 @@ Verification per skill: `WsbMentions21_Full` (`6a45fa78…`) = 7,228 pts, dense 
 **Weighting verdict:** on this 2-name book, rank tilts are either no-ops or harmful; the meaningful "weight by something" levers would be static sleeves (unequal per-name sizing) — not pursued, since the deep-research tilt (favor MU quality) would have cut the SNDK-driven returns. **S10 stands unchanged as the deploy candidate.** Fundamental probe artifact: valid Fundamental metrics enumerated (peRatioTTM, psRatioTTM, epsActual, totalRevenue, …) via build_portfolio validation.
 
 Minute-run status: both 2026-YTD Minute options runs still RUNNING and healthy (fleet logs show active HEAVY workers; updatedAt now advancing). MINUTE_OPTIONS_HANG_BUG.md downgraded to a status-reporting issue (frozen updatedAt/timeElapsed during prep).
+
+## Round 7 — thin-weekly grid + fill-model correction (2026-07-03/04)
+
+Human mandate: try thin ($5–10 strike, $500–1,000 max-value) WEEKLY debit spreads seriously. Grid W1/W2/W3 (ITM/ATM/near-OTM, 4–10 DTE, close DTE≤1, trend-gated, 10%/name / 20% budget):
+
+| Sleeve | 2022–23 | 2024→ | 2026 YTD | Leg stats |
+|---|---|---|---|---|
+| W1 ITM→ATM `6a484fad…` | −25.1 / 27.9dd | **−95.3 / 100dd** | −93.9 / 99.5dd | PF 0.97 |
+| W2 ATM→+10 `6a484fb4…` | **−13.9 / 56.7dd** | **+2,297.5 / 66.4dd** | +415.9 / 62.5dd | PF 0.99 (leg artifact) |
+| W3 +10→+20 `6a484fbc…` | −41.7 / 44.9dd | +613.7 / 54.5dd | −6.5 / 60.1dd | PF ~1.0 |
+
+### ⚠️ Correction to my initial W2 read (engineer's code-backed rebuttal accepted)
+- My "mid-fill compounding manufactured +2,297%" claim was **wrong**: engine fills opens at mid+0.5·half-spread, closes at full bid/ask, sizes at worst-case (FeeConfig OptionSlippageFraction default 0.5; event_handlers close path).
+- PF 0.99 / 52% win = **per-leg accounting artifact** on 2-leg spreads (short-leg buyback registers as a losing leg on winning spreads); headline percentChange comes from the NAV path, not the trade ledger. PF is the wrong metric for spread edge.
+- **Forensics run:** W2 EOB open MTM = $19k of $191.8k NAV; **cash $172.8k = 21.6× start → return is realized, not end-of-backtest MTM inflation**. Jump scan: no suspicious single-tick jumps.
+- Remaining honest concern (bounded): Day-interval books carry **no NBBO**; synthetic 2% half-spread may under-model real weekly wing markets (3–8% plausible). 0.5→1.0 slippage stress ≈ ×0.77 over ~130 cycles (24×→~18×), not →0. `OptionSlippageFraction` not reachable via MCP variant patch (`/feeConfig` doesn't resolve) — engine-side sensitivity + Minute+NBBO rerun (post minute-hang fix) are the definitive tests.
+- Issue #4 reframed: not an engine bug — (a) leg-level PF semantics are misleading for spread books (docs/metric improvement), (b) Day-bar synthetic-NBBO width is the real modeling gap.
+
+**W2 rehabilitated to candidate status** (best bear behavior of any always-on sleeve: −13.9%). Cert launched: `6a485d1e92135745736acfbe`.
+
+## 🚀 DEPLOYED — 2026-07-04
+
+Human: "deploy to the experimental portfolio and add a note explaining how we make it." Finalist: **S10 Convertible Ladder** (W2 remains the certified alternate; S14 combination FAILED cert — composition failure logged: shared cadence clock + unscoped CloseOption + buyback contamination. Feature request for the platform: strategy-scoped CloseOption to make certified books composable).
+
+Deploy-gate flow executed:
+1. Gates: no alt-data (freshness N/A ✓); live book clean — no strategies/positions/pending orders, $8k cash ✓.
+2. Clone: `clone_strategies_to_portfolio` S10 (`6a4838694ed7c21e3f3adb74`) → live `6a45f218e6b1f2131d1f26be`; 4 strategies added, field-verified.
+3. Target validation backtest `6a4864ba7295f59917ce5ebf`: **+3,109.09% — identical to source to the decimal** ✓.
+4. Reconcile preview: **empty target, 0 orders, $0 cost** — expected (RSI gates dark; fresh deploy = cash). No orders staged; nothing awaiting approval.
+5. Notepad `6a4864cd7295f59917ce5edf` ("S10 Convertible Ladder — how it works & how we built it") attached to the live portfolio.
+
+Live-tape note at deploy: MU $1,001.74 (+2.6% vs 7/2 close), SNDK $1,963 (+12.5%) — bounce possibly underway; RSI>60 trigger may arm within days. First staged orders will require Austin's manual approval in the UI (automaticOrderApproval=false throughout).
+
+**Campaign end state:** 25+ candidates, 8 walk-forward certs (S5 ✓, S10 ✓, W2 ✓, R2 ✓ | V3 ✗, S8 ✗, S12 dominated, S14 ✗), 2 engine bugs fixed+verified, 1 fill-model correction accepted, benchmark suite vs 7 B&H baselines, deep-research dossier on MU/SNDK. Deployed: S10, armed, cash, waiting for its pitch.
