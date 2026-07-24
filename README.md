@@ -146,6 +146,7 @@ episode-10/
 ├── BAKEOFF_RUNBOOK.md             ← paste this into a fresh MCP session
 ├── RUNBOOK_OG.md                  ← the original (Episode 1) runbook, kept for reference
 ├── snapshots/                     ← baseline + incumbent seed portfolios the runbook loads
+├── addendum/                       ← entry/exit redesign, deploy evidence, diagram, and bug note
 ├── FABLE_CAMPAIGN.MD              ← operator run log (Fable 5)
 ├── CLAUDE_CODE_CAMPAIGN_LOG_*.md  ← agent run log (Claude)
 ├── CODEX_CAMPAIGN_LOG_*.md        ← agent run log (Codex)
@@ -159,6 +160,7 @@ episode-10/
 | [`episode-10/BAKEOFF_RUNBOOK.md`](episode-10/BAKEOFF_RUNBOOK.md) | The agent brief you run — walk-forward validation, lockbox, deploy gates. Paste and execute top to bottom. |
 | [`episode-10/RUNBOOK_OG.md`](episode-10/RUNBOOK_OG.md) | The original Episode-1 runbook, kept for reference (the brief has since expanded). |
 | [`episode-10/snapshots/`](episode-10/snapshots) | Baseline A/B and incumbent seed portfolios the runbook loads via `create_portfolio`. |
+| [`episode-10/addendum/`](episode-10/addendum) | Episode 10 entry/exit redesign addendum: runbook, campaign evidence, OOS comparison diagram, and bug note. |
 | Campaign logs | Per-run logs from each operator/agent: [`FABLE_CAMPAIGN.MD`](episode-10/FABLE_CAMPAIGN.MD), [`CLAUDE_CODE_…`](episode-10/CLAUDE_CODE_CAMPAIGN_LOG_20260613T165226Z.md), [`CODEX_…`](episode-10/CODEX_CAMPAIGN_LOG_20260613T165248Z.md), [`CURSOR_…`](episode-10/CURSOR_CAMPAIGN_LOG_20260613T165224Z.md). |
 
 **Episode 11** continues the story on the now-live book — each attempt is its own runbook:

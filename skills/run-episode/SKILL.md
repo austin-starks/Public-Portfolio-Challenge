@@ -41,6 +41,7 @@ the *ordering* and *delegation*):
 | 11 / attempt 1 | `episode-11/attempt1/RUNBOOK.md` | **Certify** the live book; re-optimize on FAIL |
 | 11 / attempt 2 | `episode-11/attempt2/RUNBOOK.md` | **Repair participation**, re-certify |
 | 11 / attempt 3 | `episode-11/attempt3/RUNBOOK.md` | **Alt-data** on the certified book, prove OOS |
+| 10 / addendum | `episode-10/addendum/RUNBOOK.md` | **Redesign entries + exits**, prove sell behavior and retain the incumbent edge |
 
 From the runbook, pin before doing anything: the SUBJECT (live book / build) IDs, the incumbent bar
 (cert study id + per-fold numbers), the fixed universe + capital, and any carried-over artifacts. The
