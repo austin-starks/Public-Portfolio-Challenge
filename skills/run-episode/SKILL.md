@@ -85,6 +85,9 @@ The attempts share a spine; the middle differs:
    - **attempt 3 — alt-data:** **alt-data-indicators** (build/verify the custom indicators) → hand-built
      variant grid → **walk-forward-oos** calendar-aligned cert vs the incumbent. (Signal-freshness gate
      is real — see the attempt-3 runbook's blocker.)
+   - **attempt 9 — entry + exit redesign:** current-engine authoring/sweep inventory → matched
+     entry/exit mechanism families → event-level exit-binding audit → **sweep-reoptimization** on the
+     promoted design → fixed-config **walk-forward-oos** vs a fresh control.
 3. **options-structure-rules** hard-gate + **breadth-audit** gate on every finalist.
 4. **Present, then stop** — verdict up top, per-fold OOS table, side-by-side vs incumbent, provenance
    labels, honest caveats, bug ledger. **No deploy.**

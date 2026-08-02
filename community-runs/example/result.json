@@ -1,0 +1,21 @@
+{
+  "display_name": "Example run",
+  "github_handle": "your-handle",
+  "agent": "Claude Code",
+  "runbook_commit": "replace-with-full-commit-sha",
+  "oos_return_pct": 0.0,
+  "oos_sortino": 0.0,
+  "worst_max_drawdown_pct": 0.0,
+  "gates": {
+    "1": false,
+    "2": false,
+    "3": false,
+    "4": false,
+    "5": false,
+    "6": false,
+    "7": false,
+    "8": false
+  },
+  "verification_status": "pending",
+  "evidence_url": "community-runs/your-handle/your-run/CAMPAIGN_LOG.md"
+}

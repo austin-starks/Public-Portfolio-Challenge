@@ -2,7 +2,7 @@
 
 # Public Portfolio Challenge
 
-**One open runbook. Real money. AI agents that have to prove it out of sample before they deploy.**
+**4 AI agents. One open runbook. Real $25K, live and verifiable.**
 
 <br />
 
@@ -13,13 +13,23 @@
 
 <br />
 
-[![Public Portfolio Challenge — live performance](https://nexustrade-prod.nyc3.cdn.digitaloceanspaces.com/shared-portfolios/og/69a7dc7cf99e43688fcec567/latest-v4.png?v=3)](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)
+[![Public Portfolio Challenge — live performance](https://nexustrade.io/api/share-portfolio/portfolio/69a7dc7cf99e43688fcec567/og-image.png)](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)
 
 *Live portfolio card — generated from current positions. [Open the full dashboard →](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567)*
 
 <br />
 
-**Quick start:** [Connect MCP](#step-3--connect-your-ai-tool) → `python3 start.py` (builds your profile + prompt) → **paste `prompt.txt` into a fresh agent chat**
+<!-- SCOREBOARD:START -->
+| Account value | Total return | Return vs. SPY | Max drawdown | Days live |
+| ---: | ---: | ---: | ---: | ---: |
+| $30,712.48 | +22.85% | +10.78 pp (SPY +12.07%) | −12.33% | 144 |
+
+<sub>As of July 31, 2026. Same-window comparison begins with the first stored live observation. [Portfolio data](https://nexustrade.io/api/share-portfolio/portfolio/69a7dc7cf99e43688fcec567/history) · [Performance data](https://nexustrade.io/api/share-portfolio/69a7dc7cf99e43688fcec567/performance) · [SPY data](https://nexustrade.io/api/stock/SPY/history/price?brokerage=Public) · refreshed weekly by GitHub Actions.</sub>
+<!-- SCOREBOARD:END -->
+
+<br />
+
+**Quick start:** [Copy the live incumbent](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567?deploy=1) · [Connect MCP](#step-3--connect-your-ai-tool) → `python3 start.py` → **paste `prompt.txt` into a fresh agent chat**
 
 </div>
 
@@ -28,10 +38,13 @@
 ## Contents
 
 - [What is this?](#what-is-this)
+- [Agent bakeoff](#agent-bakeoff)
 - [What this repo gives you](#what-this-repo-gives-you)
 - [How the runbook works](#how-the-runbook-works)
 - [What's inside](#whats-inside)
+- [Community leaderboard](#community-leaderboard)
 - [Get started](#get-started)
+- [Risk disclaimer](#risk-disclaimer)
 - [More links](#more-links)
 
 ---
@@ -51,7 +64,22 @@ The live story is a blog series. **Episode 10 is the write-up of this repo in ac
 | **[Episode 10 →](https://nexustrade.io/blog/claude-fable5-built-my-live-options-strategy-then-got-banned-20260614)** | The full story of Fable 5 running this runbook — every gate, engine bug, and dead end logged in [`FABLE_CAMPAIGN.MD`](episode-10/FABLE_CAMPAIGN.MD). |
 | **[Episode 10 on Medium →](https://medium.com/p/b5b2db76dc6c)** | Same article, syndicated on Medium — included here so readers who follow the challenge off-platform can find it without hunting. |
 
-**This repo is the open playbook.** Episode 10 documents one agent's run through it. The runbook is yours to replay with whatever model you have.
+**This repo is the open playbook.** Episode 10 documents one agent's run through it. The runbook is yours to replay with whatever model you have. [The agents don't just trade the account—they commit to this repo.](https://github.com/austin-starks/Public-Portfolio-Challenge/commits/main/)
+
+---
+
+## Agent bakeoff
+
+Four agents received the same Episode 10 discipline. The useful result is not a single giant backtest—it is whether a fixed deploy-shape candidate cleared the frozen out-of-sample gates.
+
+| Agent | Best comparable OOS mean return | Passed every gate? | Outcome | Notable failure |
+| --- | ---: | --- | --- | --- |
+| [Claude Code](episode-10/CLAUDE_CODE_CAMPAIGN_LOG_20260613T165226Z.md#deliverable--verdict-no-deployable-finalist-honest-no-deploy) | **+53.7%** | No | No deploy | Cleared breadth, absolute return/Sortino, drawdown, and posture; failed Gate 4 against the incumbent. |
+| [Codex](episode-10/CODEX_CAMPAIGN_LOG_20260613T165248Z.md#final-wf-verdict) | **+32.3%** | No | No deploy | The strongest fixed deploy-shape candidate still failed the incumbent bar and two fold Sortino floors. |
+| [Cursor](episode-10/CURSOR_CAMPAIGN_LOG_20260613T165224Z.md#session-3--assembled-book-gate-evaluation-2026-06-13t1732z) | **+33.9%** | No | Incomplete; no deploy | Solved breadth at low allocation, then failed Gate 4; later studies were still running when the log ended. |
+| [Claude Fable 5](episode-10/FABLE_CAMPAIGN.MD#head-to-head-for-deploy-both-measured-directly-on-the-deployable-object) | **+88.3%** | No—owner override | Deployed | Strong return and drawdown, but missed strict breadth, fold-Sortino, stability, and posture gates; later engine fixes weakened the selection-provenance claim. |
+
+**Honest headline:** none of the four runs produced a clean pass under every frozen gate. Fable's strategy was deployed after a documented owner override, not because the runbook quietly moved the bars. Follow the links for fold-level evidence and every failure.
 
 ---
 
@@ -120,7 +148,7 @@ Fixed by the runbook: a frozen watchlist (**20 names** in the Episode 10 bakeoff
 
 ## What's inside
 
-The discipline lives in two forms. The **skills library** ([`skills/`](skills/)) is the runbooks decomposed into composable agent skills on the [open `SKILL.md` standard](https://agentskills.io) — the **same folder runs in Claude Code, Codex CLI, Cursor, Gemini CLI, Copilot and ~15 other tools** (`skills/install.sh` handles each tool's path + adapter). Connect the NexusTrade MCP and the agent auto-invokes the skill that fits the task, no paste required. The **episode folders** keep the original paste-in runbooks plus the campaign logs from each operator/agent run, as the worked examples the skills distill.
+The discipline lives in two forms. The **skills library** ([`skills/`](skills/)) is the runbooks decomposed into composable agent skills on the [open `SKILL.md` standard](https://agentskills.io) — the **same folder runs in Claude Code, Codex CLI, Cursor, Gemini CLI, Copilot and ~15 other tools** (`skills/install.sh` handles each tool's path + adapter). Connect the NexusTrade MCP and the agent auto-invokes the skill that fits the task, no paste required. The **episode folders** preserve the complete public timeline: historical indexes for Episodes 1–9, then the original runbooks and campaign logs for the reproducible campaigns.
 
 ```
 skills/                      ← the skills library (install into ANY agent — see skills/README.md)
@@ -140,6 +168,20 @@ skills/                      ← the skills library (install into ANY agent — 
 ```
 
 Each episode is a self-contained folder: the **runbook** to paste, plus the **campaign logs** from each operator/agent run.
+
+Episodes 1–9 predate the current repository format. Their folders preserve the runbook provenance that still exists, the outcome, an honest historical grade, and the canonical article instead of pretending missing artifacts can be reconstructed.
+
+| Episode | Outcome | Grade | Record |
+| ---: | --- | --- | --- |
+| 1 | Opened the real-money challenge and established the public record. | Historical; not scored under current gates | [`episode-01/`](episode-01/) |
+| 2 | Converted expert feedback into a more disciplined agent workflow. | Historical; not scored under current gates | [`episode-02/`](episode-02/) |
+| 3 | Compared 11 AI models on strategy construction. | Research bakeoff; pre-current gates | [`episode-03/`](episode-03/) |
+| 4 | Tested automated hill-climbing and found optimization did not automatically beat the first attempt. | Research result; pre-current gates | [`episode-04/`](episode-04/) |
+| 5 | Reached the first live options deployment milestone. | Deployed under episode-era controls | [`episode-05/`](episode-05/) |
+| 6 | Documented day-one live behavior. | Live observation; not a certification | [`episode-06/`](episode-06/) |
+| 7 | Hit a close-order failure and rebuilt the risk engine around it. | Failure documented and remediated | [`episode-07/`](episode-07/) |
+| 8 | Published the week-one gain with the live book visible. | Live snapshot; not forward evidence | [`episode-08/`](episode-08/) |
+| 9 | Documented the gain, the panic sell, and the human override risk. | Failure documented | [`episode-09/`](episode-09/) |
 
 ```
 episode-10/
@@ -169,10 +211,25 @@ episode-10/
 episode-11/
 ├── attempt1/  RUNBOOK.md + CAMPAIGN_LOG.md                 ← certify the live book, re-optimize on FAIL
 ├── attempt2/  RUNBOOK.md + CAMPAIGN_LOG.md + TOTALBUDGET_BUG.md  ← repair cross-watchlist participation
-└── attempt3/  RUNBOOK.md                                   ← alt-data (Reddit/WSB) on the certified book
+├── attempt3/  RUNBOOK.md                                   ← alt-data (Reddit/WSB) on the certified book
+└── …                                                       ← later focused strategy campaigns
 ```
 
 Each new episode/attempt gets its own folder when the runbook or campaign parameters change materially.
+
+---
+
+## Community leaderboard
+
+**Think your agent can beat the incumbent without moving the gates? Prove it.** Fork the repo, run the campaign on NexusTrade, and open a PR under [`community-runs/`](community-runs/).
+
+<!-- COMMUNITY_LEADERBOARD:START -->
+| Rank | Run | Agent | OOS return | OOS Sortino | Worst max drawdown | Gates | Evidence |
+| ---: | --- | --- | ---: | ---: | ---: | --- | --- |
+| — | No verified community runs yet | — | — | — | — | — | [Submit the first run](community-runs/README.md) |
+<!-- COMMUNITY_LEADERBOARD:END -->
+
+Only runs that pass every current gate are ranked by mean OOS return. Failed runs stay visible—the point is reproducibility, not survivor bias. Start with the [submission guide](community-runs/README.md) and [result template](community-runs/example/result.json).
 
 ---
 
@@ -276,11 +333,20 @@ Either way, the agent designs a strategy on your names, backtests it, compares i
 
 ---
 
+## Risk disclaimer
+
+This repository is educational and documents one person's experiments. It is not investment, legal, tax, or financial advice, and it is not a promise of future results. Live performance, backtests, walk-forward results, and out-of-sample results can all lose money and can differ from brokerage execution because of liquidity, spreads, fees, assignment, latency, data quality, and implementation errors. Options can expire worthless and may create losses beyond the premium for some structures.
+
+Nothing in this repository should place a trade by itself. Review every strategy, connect only accounts you control, keep manual approval enabled until you understand the behavior, and never risk money you cannot afford to lose. The scoreboard is a timestamped public snapshot; verify the current portfolio and disclosures before relying on it.
+
+---
+
 ## More links
 
 | | |
 | --- | --- |
 | [Live portfolio](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567) | Positions and P&L in real time |
+| [Copy the live incumbent](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567?deploy=1) | Open the marketplace copy/deploy flow; review before connecting real money |
 | [Blog series](https://nexustrade.io/blog/series/public-portfolio-challenge) | The full documented journey |
 | [Episode 1](https://nexustrade.io/blog/im-giving-an-ai-access-to-my-public-trading-account-heres-how-you-can-watch-it-destroy-25000-20260228) | How the challenge began |
 | [Episode 10](https://nexustrade.io/blog/claude-fable5-built-my-live-options-strategy-then-got-banned-20260614) | Fable 5 ran this runbook and deployed a live book — full story + links to campaign logs |
@@ -295,7 +361,7 @@ Either way, the agent designs a strategy on your names, backtests it, compares i
 
 <br />
 
-**Fork it. Run `start.py` for a strategy built on your own names — or paste the runbook for the full discipline.**
+**[Copy the incumbent](https://nexustrade.io/shared-portfolio/69a7dc7cf99e43688fcec567?deploy=1), or fork it and beat it. Run `start.py` on your own names—or paste the runbook for the full discipline.**
 
 If it survives walk-forward and the lockbox, deploy it. If it doesn't, you found that out before risking a dollar.
 

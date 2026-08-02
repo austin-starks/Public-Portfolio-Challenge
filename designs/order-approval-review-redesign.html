@@ -1,0 +1,1770 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NexusTrade Order Approval Redesign</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #08090d;
+      --bg-deep: #050609;
+      --panel: #151620;
+      --panel-2: #1b1c2a;
+      --panel-3: #222337;
+      --line: rgba(255, 255, 255, 0.09);
+      --line-strong: rgba(255, 255, 255, 0.15);
+      --text: #f7f8fb;
+      --muted: #9a9cab;
+      --muted-2: #6f7180;
+      --teal: #19d8ca;
+      --mint: #00f2a0;
+      --purple: #8b5cf6;
+      --red: #ff5d67;
+      --amber: #f6b84a;
+      --green: #42e58c;
+      --shadow: 0 28px 90px rgba(0, 0, 0, 0.62);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      color-scheme: dark;
+      background: var(--bg);
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      overflow-x: hidden;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 87% 8%, rgba(25, 216, 202, 0.08), transparent 24rem),
+        radial-gradient(circle at 77% 35%, rgba(139, 92, 246, 0.07), transparent 30rem),
+        var(--bg);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
+    }
+
+    .app-shell {
+      min-height: 100vh;
+      transition: filter 180ms ease, transform 180ms ease;
+    }
+
+    .app-shell.is-dimmed {
+      filter: brightness(0.38) saturate(0.72) blur(2px);
+      transform: scale(0.995);
+    }
+
+    .topbar {
+      height: 72px;
+      padding: 0 26px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      border-bottom: 1px solid rgba(25, 216, 202, 0.16);
+      background: rgba(5, 6, 9, 0.92);
+      backdrop-filter: blur(22px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      flex: 0 0 auto;
+      position: relative;
+      overflow: hidden;
+      color: white;
+      border: 1px solid rgba(25, 216, 202, 0.34);
+      background:
+        linear-gradient(140deg, rgba(25, 216, 202, 0.22), rgba(139, 92, 246, 0.22)),
+        #11131b;
+      box-shadow: 0 0 28px rgba(25, 216, 202, 0.14);
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 21px;
+      font-weight: 700;
+    }
+
+    .logo::after {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      background: linear-gradient(120deg, transparent 35%, rgba(255,255,255,.18), transparent 65%);
+      transform: translateX(-100%);
+      animation: shimmer 6s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 75%, 100% { transform: translateX(-100%); }
+      86% { transform: translateX(100%); }
+    }
+
+    .search {
+      width: min(430px, 30vw);
+      height: 43px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 15px;
+      border: 1px solid rgba(25, 216, 202, 0.25);
+      border-radius: 12px;
+      color: var(--muted);
+      background: rgba(24, 25, 38, 0.72);
+    }
+
+    .search svg {
+      color: var(--teal);
+      flex: 0 0 auto;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 25px;
+      margin-left: auto;
+      color: #d4d5dc;
+      font-size: 13px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .nav span.active {
+      color: white;
+      position: relative;
+    }
+
+    .nav span.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -26px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--teal), var(--mint));
+      box-shadow: 0 0 12px rgba(25, 216, 202, 0.55);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-left: 8px;
+    }
+
+    .icon-button {
+      width: 38px;
+      height: 38px;
+      padding: 0;
+      display: inline-grid;
+      place-items: center;
+      border: 0;
+      border-radius: 10px;
+      color: #d9dbe3;
+      background: transparent;
+      cursor: pointer;
+      transition: background 150ms ease, color 150ms ease;
+    }
+
+    .icon-button:hover {
+      color: white;
+      background: rgba(255,255,255,.07);
+    }
+
+    .profile-dot {
+      width: 34px;
+      height: 34px;
+      border: 2px solid rgba(255,255,255,.8);
+      border-radius: 50%;
+      background: linear-gradient(135deg, #33364b, #171824);
+    }
+
+    .page {
+      width: min(1500px, calc(100% - 48px));
+      margin: 0 auto;
+      padding: 34px 0 80px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 16px;
+      margin-bottom: 26px;
+    }
+
+    .stat {
+      min-height: 98px;
+      padding: 22px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(27, 28, 42, 0.84), rgba(16, 17, 25, 0.88));
+      box-shadow: inset 0 1px rgba(255,255,255,.025);
+    }
+
+    .stat-label {
+      color: var(--muted-2);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .stat-value {
+      margin-top: 7px;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 29px;
+      font-weight: 700;
+      letter-spacing: -.03em;
+    }
+
+    .stat-value.green { color: var(--green); }
+    .stat-value.amber { color: var(--amber); }
+    .stat-value.teal { color: var(--teal); }
+
+    .stat-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: var(--muted);
+      background: rgba(255,255,255,.035);
+    }
+
+    .orders-panel {
+      min-height: 690px;
+      padding: 30px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: linear-gradient(150deg, rgba(17, 18, 26, 0.94), rgba(10, 11, 16, 0.97));
+      box-shadow: 0 22px 70px rgba(0,0,0,.2);
+    }
+
+    .panel-head,
+    .orders-toolbar,
+    .tabs,
+    .order-row {
+      display: flex;
+      align-items: center;
+    }
+
+    .panel-head {
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 26px;
+    }
+
+    .eyebrow {
+      margin: 0 0 7px;
+      color: var(--teal);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1,
+    h2,
+    h3 {
+      font-family: "Space Grotesk", sans-serif;
+    }
+
+    .panel-head h1 {
+      margin-bottom: 7px;
+      font-size: 27px;
+      letter-spacing: -.025em;
+    }
+
+    .panel-head p {
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .segmented {
+      padding: 4px;
+      display: inline-flex;
+      gap: 4px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #0f1017;
+    }
+
+    .segment {
+      height: 34px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 7px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .segment.active {
+      color: #ff8e94;
+      background: rgba(255, 93, 103, 0.14);
+    }
+
+    .orders-toolbar {
+      justify-content: space-between;
+      gap: 20px;
+      padding-bottom: 18px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .tabs {
+      gap: 5px;
+    }
+
+    .tab {
+      height: 38px;
+      padding: 0 15px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 0;
+      border-radius: 9px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 12px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      color: var(--teal);
+      background: rgba(25, 216, 202, 0.1);
+    }
+
+    .count {
+      min-width: 22px;
+      height: 20px;
+      padding: 0 7px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 999px;
+      color: inherit;
+      background: rgba(255,255,255,.07);
+      font-size: 10px;
+    }
+
+    .portfolio-filter {
+      min-width: 210px;
+      height: 42px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      color: var(--muted);
+      background: rgba(255,255,255,.025);
+    }
+
+    .order-list {
+      display: grid;
+      gap: 11px;
+      padding-top: 18px;
+    }
+
+    .order-row {
+      min-height: 100px;
+      display: grid;
+      grid-template-columns: 5px minmax(320px, 1.8fr) minmax(210px, .8fr) 150px;
+      gap: 20px;
+      padding: 17px 18px 17px 0;
+      border: 1px solid rgba(255,255,255,.065);
+      border-radius: 13px;
+      background: rgba(255,255,255,.025);
+      transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+    }
+
+    .order-row:hover {
+      transform: translateY(-1px);
+      border-color: rgba(25,216,202,.19);
+      background: rgba(255,255,255,.04);
+    }
+
+    .side-line {
+      width: 5px;
+      align-self: stretch;
+      border-radius: 0 4px 4px 0;
+      background: var(--red);
+      box-shadow: 0 0 16px rgba(255,93,103,.25);
+    }
+
+    .side-line.buy {
+      background: var(--mint);
+      box-shadow: 0 0 16px rgba(0,242,160,.2);
+    }
+
+    .order-main {
+      align-self: center;
+      min-width: 0;
+    }
+
+    .order-title-line,
+    .badges,
+    .meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .symbol {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+      overflow-wrap: anywhere;
+    }
+
+    .human-contract {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .badge {
+      height: 23px;
+      padding: 0 9px;
+      display: inline-flex;
+      align-items: center;
+      border-radius: 6px;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .055em;
+      text-transform: uppercase;
+    }
+
+    .badge.sell {
+      color: #ff858c;
+      background: rgba(255,93,103,.14);
+    }
+
+    .badge.buy {
+      color: var(--mint);
+      background: rgba(0,242,160,.12);
+    }
+
+    .badge.limit {
+      color: #b89cff;
+      background: rgba(139,92,246,.16);
+    }
+
+    .badge.live {
+      height: 22px;
+      color: #ff7f86;
+      border: 1px solid rgba(255,93,103,.4);
+      background: transparent;
+    }
+
+    .meta {
+      margin-top: 9px;
+      color: var(--muted-2);
+      font-size: 11px;
+    }
+
+    .order-metrics {
+      align-self: center;
+      display: grid;
+      grid-template-columns: auto auto;
+      gap: 4px 16px;
+      font-size: 12px;
+    }
+
+    .metric-name {
+      color: var(--muted-2);
+    }
+
+    .metric-number {
+      color: #e9eaf0;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric-number.credit {
+      color: var(--teal);
+      font-weight: 700;
+    }
+
+    .status {
+      align-self: center;
+      justify-self: end;
+      padding: 8px 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border-radius: 8px;
+      color: var(--amber);
+      background: rgba(246,184,74,.12);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .status.filled {
+      color: var(--green);
+      background: rgba(66,229,140,.12);
+    }
+
+    .status.canceled {
+      color: var(--red);
+      background: rgba(255,93,103,.12);
+    }
+
+    .prototype-toggle {
+      position: fixed;
+      left: 24px;
+      bottom: 24px;
+      z-index: 80;
+      padding: 5px;
+      display: flex;
+      gap: 4px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 12px;
+      background: rgba(19, 20, 30, .9);
+      box-shadow: 0 18px 55px rgba(0,0,0,.4);
+      backdrop-filter: blur(18px);
+    }
+
+    .prototype-toggle button {
+      height: 38px;
+      padding: 0 14px;
+      border: 0;
+      border-radius: 8px;
+      color: var(--muted);
+      background: transparent;
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: .02em;
+      cursor: pointer;
+    }
+
+    .prototype-toggle button.active {
+      color: #08110f;
+      background: linear-gradient(135deg, var(--teal), var(--mint));
+      box-shadow: 0 8px 22px rgba(0,242,160,.18);
+    }
+
+    .approval-sheet {
+      width: 440px;
+      max-width: calc(100vw - 28px);
+      position: fixed;
+      top: 88px;
+      right: 22px;
+      z-index: 50;
+      overflow: hidden;
+      border: 1px solid rgba(25,216,202,.22);
+      border-radius: 20px;
+      background:
+        linear-gradient(155deg, #24233b, #161723 52%, #11121a);
+      box-shadow: var(--shadow), 0 0 0 1px rgba(139,92,246,.04);
+      transform-origin: top right;
+      animation: sheet-in 280ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    @keyframes sheet-in {
+      from { opacity: 0; transform: translateY(-10px) scale(.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .sheet-accent {
+      height: 3px;
+      background: linear-gradient(90deg, var(--teal), var(--mint) 55%, var(--purple));
+      box-shadow: 0 0 18px rgba(25,216,202,.4);
+    }
+
+    .sheet-header {
+      padding: 20px 22px 16px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .sheet-kicker {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--teal);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .11em;
+      text-transform: uppercase;
+    }
+
+    .pulse {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--teal);
+      box-shadow: 0 0 0 5px rgba(25,216,202,.1), 0 0 17px rgba(25,216,202,.7);
+    }
+
+    .sheet-header h2 {
+      margin: 8px 0 4px;
+      font-size: 21px;
+      letter-spacing: -.02em;
+    }
+
+    .sheet-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .sheet-body {
+      padding: 18px 22px 20px;
+    }
+
+    .instrument-block {
+      display: grid;
+      grid-template-columns: 4px 1fr auto;
+      gap: 14px;
+      align-items: center;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .instrument-line {
+      width: 4px;
+      height: 58px;
+      border-radius: 4px;
+      background: var(--red);
+      box-shadow: 0 0 18px rgba(255,93,103,.25);
+    }
+
+    .instrument-block h3 {
+      margin: 8px 0 3px;
+      font-size: 17px;
+      letter-spacing: -.015em;
+    }
+
+    .occ-symbol {
+      color: var(--muted-2);
+      font-family: "Space Grotesk", monospace;
+      font-size: 10px;
+      letter-spacing: .035em;
+    }
+
+    .edit-button {
+      height: 34px;
+      padding: 0 11px;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      color: #c5c7d1;
+      background: rgba(255,255,255,.035);
+      font-size: 11px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    .edit-button:hover {
+      color: white;
+      border-color: rgba(25,216,202,.35);
+      background: rgba(25,216,202,.07);
+    }
+
+    .terms-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 9px;
+      margin-top: 14px;
+    }
+
+    .term {
+      min-height: 70px;
+      padding: 12px 13px;
+      border: 1px solid rgba(255,255,255,.065);
+      border-radius: 11px;
+      background: rgba(5,6,9,.25);
+    }
+
+    .term-label {
+      color: var(--muted-2);
+      font-size: 9px;
+      font-weight: 750;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    .term-value {
+      margin-top: 7px;
+      color: white;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .term-value.teal {
+      color: var(--teal);
+    }
+
+    .fill-promise {
+      margin-top: 12px;
+      padding: 12px 13px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      border: 1px solid rgba(0,242,160,.18);
+      border-radius: 11px;
+      color: #dbfff2;
+      background: linear-gradient(120deg, rgba(0,242,160,.08), rgba(25,216,202,.035));
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .fill-promise svg {
+      flex: 0 0 auto;
+      margin-top: 1px;
+      color: var(--mint);
+    }
+
+    .quote-strip {
+      margin-top: 12px;
+      padding: 11px 13px;
+      display: grid;
+      grid-template-columns: 1fr repeat(3, auto);
+      align-items: center;
+      gap: 15px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(7,8,12,.38);
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .quote-strip strong {
+      color: #e8e9ef;
+      font-family: "Space Grotesk", sans-serif;
+      font-weight: 600;
+    }
+
+    .quote-label {
+      color: var(--muted-2);
+      font-size: 9px;
+      font-weight: 750;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .primary-action {
+      width: 100%;
+      height: 52px;
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      border: 0;
+      border-radius: 12px;
+      color: #06110e;
+      background: linear-gradient(100deg, #15cfc0, #00e5b1 56%, #00f29a);
+      box-shadow: 0 12px 28px rgba(0,242,160,.14), inset 0 1px rgba(255,255,255,.34);
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 14px;
+      font-weight: 750;
+      cursor: pointer;
+      transition: transform 150ms ease, box-shadow 150ms ease;
+    }
+
+    .primary-action:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 15px 34px rgba(0,242,160,.22), inset 0 1px rgba(255,255,255,.38);
+    }
+
+    .action-caption {
+      margin: 8px 0 0;
+      color: var(--muted-2);
+      text-align: center;
+      font-size: 9px;
+    }
+
+    .sheet-footer {
+      padding: 14px 22px 18px;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 9px;
+      border-top: 1px solid var(--line);
+      background: rgba(6,7,11,.2);
+    }
+
+    .secondary-action,
+    .text-action {
+      height: 38px;
+      border-radius: 9px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .secondary-action {
+      padding: 0 14px;
+      color: var(--teal);
+      border: 1px solid rgba(25,216,202,.32);
+      background: rgba(25,216,202,.055);
+    }
+
+    .secondary-action:hover {
+      background: rgba(25,216,202,.1);
+    }
+
+    .text-action {
+      padding: 0 10px;
+      border: 0;
+      color: var(--muted);
+      background: transparent;
+    }
+
+    .text-action:hover {
+      color: white;
+      background: rgba(255,255,255,.04);
+    }
+
+    .text-action.reject:hover {
+      color: #ff9ca2;
+      background: rgba(255,93,103,.07);
+    }
+
+    .modal-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 70;
+      display: grid;
+      place-items: center;
+      padding: 30px;
+      opacity: 0;
+      pointer-events: none;
+      background: rgba(0,0,0,.68);
+      backdrop-filter: blur(8px);
+      transition: opacity 180ms ease;
+    }
+
+    .modal-layer.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .review-modal {
+      width: min(960px, calc(100vw - 40px));
+      max-height: calc(100vh - 44px);
+      overflow: auto;
+      border: 1px solid rgba(25,216,202,.25);
+      border-radius: 22px;
+      background:
+        radial-gradient(circle at 100% 0%, rgba(139,92,246,.13), transparent 24rem),
+        linear-gradient(155deg, #171823, #101117 70%);
+      box-shadow: 0 42px 120px rgba(0,0,0,.74), 0 0 0 1px rgba(255,255,255,.025);
+      transform: translateY(14px) scale(.985);
+      transition: transform 220ms cubic-bezier(.2,.8,.2,1);
+    }
+
+    .modal-layer.open .review-modal {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-accent {
+      height: 4px;
+      background: linear-gradient(90deg, var(--teal), var(--mint) 48%, var(--purple));
+      box-shadow: 0 0 22px rgba(25,216,202,.35);
+    }
+
+    .modal-head {
+      padding: 22px 26px 18px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .modal-head h2 {
+      margin: 6px 0 5px;
+      font-size: 24px;
+      letter-spacing: -.025em;
+    }
+
+    .modal-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .modal-body {
+      padding: 22px 26px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(290px, .75fr);
+      gap: 24px;
+    }
+
+    .review-main,
+    .review-aside {
+      min-width: 0;
+    }
+
+    .plain-order {
+      padding: 18px 19px;
+      border: 1px solid rgba(255,255,255,.075);
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(34,35,55,.72), rgba(15,16,23,.72));
+    }
+
+    .plain-order-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .plain-order h3 {
+      margin: 10px 0 5px;
+      font-size: 21px;
+    }
+
+    .plain-order p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .limit-editor {
+      min-width: 146px;
+      padding: 10px 12px;
+      border: 1px solid rgba(25,216,202,.38);
+      border-radius: 10px;
+      background: rgba(25,216,202,.06);
+    }
+
+    .limit-editor label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--teal);
+      font-size: 8px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .limit-editor input {
+      width: 100%;
+      padding: 0;
+      border: 0;
+      outline: 0;
+      color: white;
+      background: transparent;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .review-table {
+      margin-top: 16px;
+      border-top: 1px solid var(--line);
+    }
+
+    .review-row {
+      min-height: 46px;
+      padding: 0 4px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 16px;
+      border-bottom: 1px solid var(--line);
+      font-size: 11px;
+    }
+
+    .review-row span:first-child {
+      color: var(--muted);
+    }
+
+    .review-row strong {
+      color: #f2f3f7;
+      font-weight: 650;
+      text-align: right;
+    }
+
+    .position-note {
+      margin-top: 15px;
+      padding: 13px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      border: 1px solid rgba(139,92,246,.2);
+      border-radius: 11px;
+      color: #ded6ff;
+      background: rgba(139,92,246,.07);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .position-note svg {
+      flex: 0 0 auto;
+      color: #b79aff;
+    }
+
+    .credit-hero {
+      padding: 19px;
+      border: 1px solid rgba(0,242,160,.2);
+      border-radius: 15px;
+      background:
+        radial-gradient(circle at 90% 0%, rgba(0,242,160,.12), transparent 12rem),
+        linear-gradient(145deg, rgba(0,242,160,.065), rgba(25,216,202,.025));
+    }
+
+    .credit-hero .mini-label {
+      color: #9fe5ce;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .credit-number {
+      margin: 7px 0 2px;
+      color: var(--mint);
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 35px;
+      font-weight: 700;
+      letter-spacing: -.035em;
+      text-shadow: 0 0 24px rgba(0,242,160,.16);
+    }
+
+    .credit-hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 10px;
+    }
+
+    .market-card {
+      margin-top: 13px;
+      padding: 15px 16px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: rgba(4,5,8,.27);
+    }
+
+    .market-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 13px;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+    }
+
+    .live-dot {
+      color: var(--green);
+      font-size: 8px;
+    }
+
+    .market-prices {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .market-price {
+      padding: 9px 5px;
+      text-align: center;
+      border-radius: 8px;
+      background: rgba(255,255,255,.035);
+    }
+
+    .market-price span {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--muted-2);
+      font-size: 8px;
+      text-transform: uppercase;
+    }
+
+    .market-price strong {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 13px;
+    }
+
+    .market-caption {
+      margin: 11px 0 0;
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.5;
+    }
+
+    .approval-summary {
+      margin-top: 13px;
+      padding: 13px 14px;
+      border: 1px solid rgba(25,216,202,.17);
+      border-radius: 11px;
+      color: #d6fffa;
+      background: rgba(25,216,202,.055);
+      font-size: 10px;
+      line-height: 1.5;
+    }
+
+    .approval-summary strong {
+      color: white;
+    }
+
+    .modal-foot {
+      padding: 16px 26px 19px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      border-top: 1px solid var(--line);
+      background: rgba(5,6,9,.23);
+    }
+
+    .modal-foot-note {
+      max-width: 390px;
+      color: var(--muted-2);
+      font-size: 9px;
+      line-height: 1.45;
+    }
+
+    .modal-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-actions .primary-action {
+      width: auto;
+      min-width: 250px;
+      margin-top: 0;
+      padding: 0 22px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 84px;
+      z-index: 120;
+      min-width: 280px;
+      padding: 13px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      border: 1px solid rgba(0,242,160,.23);
+      border-radius: 11px;
+      color: #dffff4;
+      background: rgba(12, 29, 25, .96);
+      box-shadow: 0 18px 50px rgba(0,0,0,.48);
+      transform: translate(-50%, 20px);
+      opacity: 0;
+      pointer-events: none;
+      font-size: 11px;
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .svg {
+      width: 17px;
+      height: 17px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    @media (max-width: 1180px) {
+      .nav {
+        gap: 16px;
+      }
+      .nav span:nth-last-child(-n+3) {
+        display: none;
+      }
+      .order-row {
+        grid-template-columns: 5px minmax(260px, 1fr) 200px 130px;
+      }
+    }
+
+    @media (max-width: 840px) {
+      .topbar {
+        padding: 0 15px;
+      }
+      .search {
+        width: 1fr;
+        flex: 1;
+      }
+      .nav {
+        display: none;
+      }
+      .page {
+        width: min(100% - 26px, 740px);
+      }
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .orders-panel {
+        padding: 20px;
+      }
+      .order-row {
+        grid-template-columns: 5px 1fr auto;
+      }
+      .order-metrics {
+        display: none;
+      }
+      .modal-body {
+        grid-template-columns: 1fr;
+      }
+      .review-modal {
+        max-height: calc(100vh - 24px);
+      }
+    }
+
+    @media (max-width: 560px) {
+      .page {
+        width: calc(100% - 18px);
+        padding-top: 18px;
+      }
+      .stats {
+        display: none;
+      }
+      .top-actions .icon-button:nth-child(-n+2) {
+        display: none;
+      }
+      .orders-panel {
+        padding: 15px;
+        border-radius: 14px;
+      }
+      .panel-head,
+      .orders-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+      .portfolio-filter {
+        width: 100%;
+      }
+      .tabs {
+        overflow-x: auto;
+      }
+      .order-row {
+        grid-template-columns: 4px 1fr;
+      }
+      .status {
+        grid-column: 2;
+        justify-self: start;
+      }
+      .approval-sheet {
+        top: 76px;
+        right: 8px;
+        left: 8px;
+        width: auto;
+      }
+      .sheet-header {
+        padding: 16px;
+      }
+      .sheet-body {
+        padding: 15px 16px;
+      }
+      .sheet-footer {
+        padding: 12px 16px 15px;
+        grid-template-columns: 1fr 1fr;
+      }
+      .sheet-footer .secondary-action {
+        grid-column: 1 / -1;
+      }
+      .terms-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .quote-strip {
+        grid-template-columns: repeat(3, 1fr);
+        text-align: center;
+      }
+      .quote-label {
+        grid-column: 1 / -1;
+        text-align: left;
+      }
+      .prototype-toggle {
+        left: 50%;
+        bottom: 12px;
+        transform: translateX(-50%);
+      }
+      .modal-layer {
+        padding: 8px;
+        place-items: start center;
+      }
+      .review-modal {
+        width: 100%;
+        max-height: none;
+        border-radius: 16px;
+      }
+      .modal-head,
+      .modal-body,
+      .modal-foot {
+        padding-left: 17px;
+        padding-right: 17px;
+      }
+      .plain-order-top,
+      .modal-foot {
+        align-items: stretch;
+        flex-direction: column;
+      }
+      .limit-editor {
+        width: 100%;
+      }
+      .modal-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
+      }
+      .modal-actions .primary-action {
+        width: 100%;
+        min-width: 0;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell" id="appShell">
+    <header class="topbar">
+      <div class="logo" aria-label="NexusTrade">N</div>
+      <div class="search">
+        <svg class="svg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+        <span>Search</span>
+      </div>
+      <nav class="nav" aria-label="Primary navigation">
+        <span>Agent</span>
+        <span>Watchlist</span>
+        <span>Portfolios</span>
+        <span>Live Trading</span>
+        <span class="active">Orders</span>
+        <span>Developers</span>
+        <span>Community</span>
+        <span>Research</span>
+        <span>Learn</span>
+      </nav>
+      <div class="top-actions">
+        <button class="icon-button" aria-label="Notifications">
+          <svg class="svg" aria-hidden="true" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M13.7 21a2 2 0 0 1-3.4 0"></path></svg>
+        </button>
+        <button class="icon-button" aria-label="Messages">
+          <svg class="svg" aria-hidden="true" viewBox="0 0 24 24"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path></svg>
+        </button>
+        <div class="profile-dot" aria-label="Profile"></div>
+      </div>
+    </header>
+
+    <main class="page">
+      <section class="stats" aria-label="Order summary">
+        <article class="stat">
+          <div><div class="stat-label">Total orders</div><div class="stat-value">504</div></div>
+          <div class="stat-icon"><svg class="svg" aria-hidden="true" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"></path></svg></div>
+        </article>
+        <article class="stat">
+          <div><div class="stat-label">Filled</div><div class="stat-value green">136</div></div>
+          <div class="stat-icon"><svg class="svg" aria-hidden="true" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"></path></svg></div>
+        </article>
+        <article class="stat">
+          <div><div class="stat-label">Pending</div><div class="stat-value amber">0</div></div>
+          <div class="stat-icon"><svg class="svg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></div>
+        </article>
+        <article class="stat">
+          <div><div class="stat-label">Needs review</div><div class="stat-value teal">1</div></div>
+          <div class="stat-icon"><svg class="svg" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 3 2 21h20L12 3Z"></path><path d="M12 9v4M12 17h.01"></path></svg></div>
+        </article>
+      </section>
+
+      <section class="orders-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">Live brokerage</p>
+            <h1>Order Management</h1>
+            <p>Track, review, and manage every trading order.</p>
+          </div>
+          <div class="segmented" aria-label="Trading mode">
+            <button class="segment">Paper</button>
+            <button class="segment active">Live</button>
+          </div>
+        </div>
+
+        <div class="orders-toolbar">
+          <div class="tabs" role="tablist">
+            <button class="tab active">All <span class="count">504</span></button>
+            <button class="tab">Needs review <span class="count">1</span></button>
+            <button class="tab">Queued</button>
+            <button class="tab">Filled <span class="count">136</span></button>
+            <button class="tab">Canceled <span class="count">368</span></button>
+          </div>
+          <button class="portfolio-filter">Filter by Portfolio</button>
+        </div>
+
+        <div class="order-list">
+          <article class="order-row">
+            <div class="side-line"></div>
+            <div class="order-main">
+              <div class="order-title-line">
+                <span class="symbol">GLD280121C00570000</span>
+                <span class="badge sell">Sell</span>
+                <span class="badge limit">Limit</span>
+                <span class="badge live">Live</span>
+              </div>
+              <div class="human-contract">GLD Jan 21 ’28 $570 Call · Sell to close</div>
+              <div class="meta"><span>Jul 24, 2026 · 1:33 PM</span><span>•</span><span>1 contract</span></div>
+            </div>
+            <div class="order-metrics">
+              <span class="metric-name">Limit</span><span class="metric-number">$8.65</span>
+              <span class="metric-name">Minimum credit</span><span class="metric-number credit">$865.00</span>
+            </div>
+            <div class="status">Needs review</div>
+          </article>
+
+          <article class="order-row">
+            <div class="side-line"></div>
+            <div class="order-main">
+              <div class="order-title-line">
+                <span class="symbol">GLD280121C00570000</span>
+                <span class="badge sell">Sell</span>
+                <span class="badge limit">Limit</span>
+                <span class="badge live">Live</span>
+              </div>
+              <div class="human-contract">GLD Jan 21 ’28 $570 Call</div>
+              <div class="meta"><span>Jul 24, 2026 · 1:18 PM</span><span>•</span><span>1 contract</span></div>
+            </div>
+            <div class="order-metrics">
+              <span class="metric-name">Filled price</span><span class="metric-number">$8.50</span>
+              <span class="metric-name">Credit</span><span class="metric-number credit">$850.00</span>
+            </div>
+            <div class="status filled">Filled</div>
+          </article>
+
+          <article class="order-row">
+            <div class="side-line"></div>
+            <div class="order-main">
+              <div class="order-title-line">
+                <span class="symbol">GLD280121C00570000</span>
+                <span class="badge sell">Sell</span>
+                <span class="badge limit">Limit</span>
+                <span class="badge live">Live</span>
+              </div>
+              <div class="human-contract">GLD Jan 21 ’28 $570 Call</div>
+              <div class="meta"><span>Jul 24, 2026 · 1:03 PM</span><span>•</span><span>1 contract</span></div>
+            </div>
+            <div class="order-metrics">
+              <span class="metric-name">Filled price</span><span class="metric-number">$7.90</span>
+              <span class="metric-name">Credit</span><span class="metric-number credit">$790.00</span>
+            </div>
+            <div class="status filled">Filled</div>
+          </article>
+
+          <article class="order-row">
+            <div class="side-line buy"></div>
+            <div class="order-main">
+              <div class="order-title-line">
+                <span class="symbol">HOOD280121C00190000</span>
+                <span class="badge buy">Buy</span>
+                <span class="badge limit">Limit</span>
+                <span class="badge live">Live</span>
+              </div>
+              <div class="human-contract">HOOD Jan 21 ’28 $190 Call</div>
+              <div class="meta"><span>Jul 24, 2026 · 11:19 AM</span><span>•</span><span>1 contract</span></div>
+            </div>
+            <div class="order-metrics">
+              <span class="metric-name">Filled price</span><span class="metric-number">$14.84</span>
+              <span class="metric-name">Debit</span><span class="metric-number credit">$1,484.00</span>
+            </div>
+            <div class="status filled">Filled</div>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <aside class="approval-sheet" id="approvalSheet" aria-labelledby="sheetTitle">
+    <div class="sheet-accent"></div>
+    <header class="sheet-header">
+      <div>
+        <div class="sheet-kicker"><span class="pulse"></span>Pending approval</div>
+        <h2 id="sheetTitle">Review 1 live order</h2>
+        <p>Nothing has been sent to your broker.</p>
+      </div>
+      <button class="icon-button" aria-label="Close approval tray">
+        <svg class="svg" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg>
+      </button>
+    </header>
+
+    <div class="sheet-body">
+      <div class="instrument-block">
+        <div class="instrument-line"></div>
+        <div>
+          <div class="badges">
+            <span class="badge sell">Sell to close</span>
+            <span class="badge limit">Limit</span>
+            <span class="badge live">Live</span>
+          </div>
+          <h3>GLD Jan 21 ’28 $570 Call</h3>
+          <div class="occ-symbol">GLD280121C00570000</div>
+        </div>
+        <button class="edit-button" type="button" data-edit>
+          <svg class="svg" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"></path></svg>
+          Edit
+        </button>
+      </div>
+
+      <div class="terms-grid">
+        <div class="term"><div class="term-label">Quantity</div><div class="term-value">1</div></div>
+        <div class="term"><div class="term-label">Limit price</div><div class="term-value">$8.65</div></div>
+        <div class="term"><div class="term-label">Minimum credit</div><div class="term-value teal">$865</div></div>
+      </div>
+
+      <div class="fill-promise">
+        <svg class="svg" aria-hidden="true" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"></path><path d="m9 12 2 2 4-4"></path></svg>
+        <span><strong>Receive at least $865 if filled.</strong><br>The order cannot execute below your $8.65 limit.</span>
+      </div>
+
+      <div class="quote-strip">
+        <span class="quote-label">Market now</span>
+        <span>Bid <strong>$8.65</strong></span>
+        <span>Mid <strong>$8.68</strong></span>
+        <span>Ask <strong>$8.70</strong></span>
+      </div>
+
+      <button class="primary-action" type="button" data-approve>
+        <svg class="svg" aria-hidden="true" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"></path></svg>
+        Approve &amp; send limit order
+      </button>
+      <p class="action-caption">A fill is not guaranteed. Estimated fees are not included.</p>
+    </div>
+
+    <footer class="sheet-footer">
+      <button class="secondary-action" type="button" data-open-modal>Open full review</button>
+      <button class="text-action" type="button" data-ask>Ask Aurora</button>
+      <button class="text-action reject" type="button" data-reject>Reject</button>
+    </footer>
+  </aside>
+
+  <div class="modal-layer" id="modalLayer" aria-hidden="true">
+    <section class="review-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-accent"></div>
+      <header class="modal-head">
+        <div>
+          <p class="eyebrow">Final check · Live brokerage</p>
+          <h2 id="modalTitle">Review limit sell</h2>
+          <p>Everything that will be sent to your broker, in one place.</p>
+        </div>
+        <button class="icon-button" type="button" data-close-modal aria-label="Close full review">
+          <svg class="svg" aria-hidden="true" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"></path></svg>
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <div class="review-main">
+          <div class="plain-order">
+            <div class="plain-order-top">
+              <div>
+                <div class="badges">
+                  <span class="badge sell">Sell to close</span>
+                  <span class="badge limit">Limit</span>
+                  <span class="badge live">Live</span>
+                </div>
+                <h3>1 GLD Jan 21 ’28 $570 Call</h3>
+                <p>Closes 1 of 1 contracts currently held.</p>
+              </div>
+              <div class="limit-editor">
+                <label for="limitPrice">Limit price</label>
+                <input id="limitPrice" value="$8.65" aria-label="Limit price">
+              </div>
+            </div>
+          </div>
+
+          <div class="review-table" aria-label="Order details">
+            <div class="review-row"><span>Action</span><strong>Sell to close</strong></div>
+            <div class="review-row"><span>Order type</span><strong>Limit order</strong></div>
+            <div class="review-row"><span>Time in force</span><strong>Day</strong></div>
+            <div class="review-row"><span>Position after fill</span><strong>0 contracts</strong></div>
+            <div class="review-row"><span>Approval expires</span><strong>Jul 24, 2026 · 7:36 PM</strong></div>
+          </div>
+
+          <div class="position-note">
+            <svg class="svg" aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 8h.01"></path></svg>
+            <span>This is a <strong>closing order</strong>. If it fills, you will no longer hold this GLD call. It does not create a naked short option position.</span>
+          </div>
+        </div>
+
+        <aside class="review-aside">
+          <div class="credit-hero">
+            <div class="mini-label">Minimum gross credit</div>
+            <div class="credit-number">$865.00</div>
+            <p>1 contract × $8.65 × 100 · before fees</p>
+          </div>
+
+          <div class="market-card">
+            <div class="market-head"><span>Current market</span><span class="live-dot">● Live</span></div>
+            <div class="market-prices">
+              <div class="market-price"><span>Bid</span><strong>$8.65</strong></div>
+              <div class="market-price"><span>Mid</span><strong>$8.68</strong></div>
+              <div class="market-price"><span>Ask</span><strong>$8.70</strong></div>
+            </div>
+            <p class="market-caption">Your limit matches the current bid. The quote can move before the broker receives the order, so a fill is not guaranteed.</p>
+          </div>
+
+          <div class="approval-summary">
+            <strong>Approval sends exactly this:</strong><br>
+            Sell to close 1 contract at $8.65 or better.
+          </div>
+        </aside>
+      </div>
+
+      <footer class="modal-foot">
+        <div class="modal-foot-note">Quotes are indicative and may be delayed. Gross credit excludes commissions, fees, and regulatory charges.</div>
+        <div class="modal-actions">
+          <button class="text-action" type="button" data-close-modal>Back</button>
+          <button class="primary-action" type="button" data-approve>
+            <svg class="svg" aria-hidden="true" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"></path></svg>
+            Approve &amp; send limit order
+          </button>
+        </div>
+      </footer>
+    </section>
+  </div>
+
+  <div class="prototype-toggle" aria-label="Prototype view">
+    <button type="button" class="active" data-view="quick">Compact tray</button>
+    <button type="button" data-view="full">Full review</button>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <svg class="svg" aria-hidden="true" viewBox="0 0 24 24"><path d="m4 12 5 5L20 6"></path></svg>
+    <span id="toastText">Prototype action</span>
+  </div>
+
+  <script>
+    (() => {
+      const appShell = document.getElementById("appShell");
+      const sheet = document.getElementById("approvalSheet");
+      const modal = document.getElementById("modalLayer");
+      const toast = document.getElementById("toast");
+      const toastText = document.getElementById("toastText");
+      const viewButtons = [...document.querySelectorAll("[data-view]")];
+      let toastTimer;
+
+      function setView(view) {
+        const full = view === "full";
+        sheet.classList.toggle("hidden", full);
+        modal.classList.toggle("open", full);
+        modal.setAttribute("aria-hidden", String(!full));
+        appShell.classList.toggle("is-dimmed", full);
+        viewButtons.forEach((button) => {
+          button.classList.toggle("active", button.dataset.view === view);
+        });
+      }
+
+      function showToast(message) {
+        toastText.textContent = message;
+        toast.classList.add("show");
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(() => toast.classList.remove("show"), 2600);
+      }
+
+      document.querySelectorAll("[data-open-modal]").forEach((button) => {
+        button.addEventListener("click", () => setView("full"));
+      });
+
+      document.querySelectorAll("[data-close-modal]").forEach((button) => {
+        button.addEventListener("click", () => setView("quick"));
+      });
+
+      viewButtons.forEach((button) => {
+        button.addEventListener("click", () => setView(button.dataset.view));
+      });
+
+      document.querySelectorAll("[data-approve]").forEach((button) => {
+        button.addEventListener("click", () => {
+          showToast("Approved · limit sell ready to send at $8.65");
+        });
+      });
+
+      document.querySelectorAll("[data-edit]").forEach((button) => {
+        button.addEventListener("click", () => {
+          setView("full");
+          window.setTimeout(() => document.getElementById("limitPrice").focus(), 220);
+        });
+      });
+
+      document.querySelectorAll("[data-ask]").forEach((button) => {
+        button.addEventListener("click", () => {
+          showToast("Aurora would explain this exact limit order.");
+        });
+      });
+
+      document.querySelectorAll("[data-reject]").forEach((button) => {
+        button.addEventListener("click", () => {
+          showToast("Prototype · order rejected without pausing the strategy");
+        });
+      });
+
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) setView("quick");
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && modal.classList.contains("open")) {
+          setView("quick");
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

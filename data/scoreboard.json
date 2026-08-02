@@ -1,0 +1,16 @@
+{
+  "shared_portfolio_id": "69a7dc7cf99e43688fcec567",
+  "as_of": "2026-07-31T19:57:32.278000Z",
+  "live_since": "2026-03-09T13:34:06.748000Z",
+  "days_live": 144,
+  "account_value": 30712.48,
+  "total_return_pct": 22.84992,
+  "spy_return_pct": 12.069509,
+  "excess_return_vs_spy_pct": 10.780411,
+  "max_drawdown_pct": 12.328735,
+  "sources": {
+    "portfolio_history": "https://nexustrade.io/api/share-portfolio/portfolio/69a7dc7cf99e43688fcec567/history",
+    "portfolio_performance": "https://nexustrade.io/api/share-portfolio/69a7dc7cf99e43688fcec567/performance",
+    "spy_history": "https://nexustrade.io/api/stock/SPY/history/price?brokerage=Public"
+  }
+}

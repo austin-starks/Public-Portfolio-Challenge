@@ -270,6 +270,27 @@ on 2022-01-03, but it is a historical pre-period holdout rather than the canonic
 strict deployment verdict is nevertheless **FAIL** because the frozen return condition was missed.
 Do not iterate F1 against this result and then reuse this window; the single touch is burned.
 
+## Recent Minute-resolution OOS supplement — MIXED
+
+On 2026-07-24, the frozen F1 book and former TP250 control were rerun at `Minute` resolution over
+two matched 90-calendar-day OOS folds. No parameters were searched or selected. The studies cost
+`16.976` research tokens each:
+
+- F1: `6a63e16aa6248fba1267d1fe`
+- TP250 control: `6a63e176a6248fba1267d20f`
+
+F1 returned `1.05%` and `21.50%` versus the control's `20.86%` and `7.52%`. F1's mean return was
+`11.28%` versus `14.19%`, mean Sortino was `3.85` versus `2.88`, and mean max drawdown was `6.64%`
+versus `4.77%`. F1 traded only five names in each fold and had mean median deployment of `11.00%`
+versus `22.12%` for the control.
+
+Verdict: **MIXED / NO NEW PASS.** This is a fixed-book OOS resolution check, not an untouched
+strategy lockbox because the dates were already included in Day-resolution research. It supports
+profitability and recent risk-adjusted performance but does not establish intraday robustness.
+The old control is also highly interval-sensitive: its `DaysSinceStrategyFired >= 0` gate produced
+extreme churn in the Minute training/validation segments. Full evidence and caveats are in
+`RECENT_MINUTE_OOS.md`.
+
 At this point in the campaign nothing had been deployed, reconciled, staged, approved, or ordered.
 Under the frozen rules, replacing the live book with F1 required an explicit owner override that
 named this failed holdout, or a new strategy campaign with a genuinely untouched future lockbox.
@@ -375,3 +396,70 @@ four OSCR calls; one COP call; one HOOD call; one XOM call; and both legs of the
 It produced `orders: []`, estimated cost `$0`, realized P/L `$0`, no wash-sale flags, no warnings,
 and no canceled orders. The fresh-deploy close-all preview remains valid only for
 `target_basis: fresh_deploy`; it is no longer a blocker for the intended current-book migration.
+
+### ⚠️ BUG/ISSUE — transient stock-screener MCP transport failure
+
+On `2026-07-24`, the first EOD thesis-exit status query for COP, HOOD, LLY, OSCR, and XOM failed
+before execution with `Transport send error` while sending the request to
+`https://nexustrade.io/api/mcp`. A minimal retry of the same five-ticker request succeeded and
+returned generated SQL plus five rows for the `2026-07-23` completed session.
+
+- Expected: one SQL-backed EOD row per live underlying.
+- First observation: no SQL or market data returned because the MCP request failed in transport.
+- Retry observation: all five rows returned; no ticker satisfied both `close < SMA100` and
+  `ROC63 < 0`.
+- Classification: transient MCP transport issue, not an engine or market-data contradiction.
+- Impact: the failed call is discarded; only the successful retry is used for the status report.
+
+### ⚠️ BUG/ISSUE — live-engine indicators do not match the EOD screener series
+
+A direct `query_portfolio_events` audit of the live book at
+`2026-07-24T19:55:08.498Z` returned valid per-condition values for every ticker-specific exit.
+Those values disagree materially with a `screen_stocks` query over
+`financials.sec_stock_price_metrics` for the completed `2026-07-23` session. Examples:
+
+- COP: live engine SMA100 `115.7131`, ROC63 `-0.3072%`; EOD screener SMA100 `118.4690`,
+  ROC63 `-1.9576%`.
+- HOOD: live engine SMA100 `91.3052`, ROC63 `28.5035%`; EOD screener SMA100 `85.7813`,
+  ROC63 `14.8705%`.
+- LLY: live engine SMA100 `1072.0626`, ROC63 `12.1282%`; EOD screener SMA100 `1032.6883`,
+  ROC63 `28.6919%`.
+
+Expected: if the screener is used to reproduce a live strategy condition, it should identify the
+same price series, adjustment policy, and window semantics as the strategy engine, with only the
+current intraday bar explaining any small difference.
+
+Observed: the differences are too large to treat the screener values as exact live thresholds.
+
+**Hypothesis:** the live evaluator and `financials.sec_stock_price_metrics` use different historical
+price sources, adjustment policies, or current-bar/window semantics. This is not yet proven to be an
+engine defect.
+
+Impact: do not use the EOD screener's numeric SMA/ROC levels to predict exact live exits. Use
+`query_portfolio_events` as the authoritative live audit. No certification result is quarantined
+because both sources agree that none of COP, HOOD, LLY, OSCR, or XOM currently satisfies the combined
+thesis-exit condition; the mismatch blocks only cross-source numeric reproduction.
+
+Full investigation handoff:
+[`LIVE_INDICATOR_SERIES_MISMATCH_BUG.md`](./LIVE_INDICATOR_SERIES_MISMATCH_BUG.md).
+
+### Hybrid weekly-entry / intraday-exit Minute test — REJECT
+
+The proposed hybrid preserved Minute evaluation for all exits but constrained `RebalanceOption` to
+minute 30 after the open on the first eligible day after the existing seven-day cooldown. Structured
+validation and an event-bearing replay confirmed the intended behavior.
+
+The matched two-fold recent Minute OOS study (`6a63e73f1e2c5df8d028fdee`) failed decisively against
+current F1 (`6a63e16aa6248fba1267d1fe`):
+
+- mean return: `1.77%` hybrid vs `11.28%` F1;
+- mean Sortino: `0.70` vs `3.85`;
+- mean max drawdown: `5.90%` vs `6.64%`;
+- worst-fold drawdown: `9.64%` vs `7.72%`;
+- traded names: `4 / 3` vs `5 / 5` across the two folds.
+
+The hybrid remained profitable in both folds but retained only `15.67%` of F1's mean return and
+reduced breadth. It is rejected. No live mutation or reconcile was performed.
+
+Full test record:
+[`HYBRID_CADENCE_MINUTE_TEST.md`](./HYBRID_CADENCE_MINUTE_TEST.md).

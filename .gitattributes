@@ -1,0 +1,3 @@
+# Cross-platform skill installers are distribution artifacts, not the project language.
+skills/install.sh linguist-vendored
+skills/**/install.sh linguist-vendored

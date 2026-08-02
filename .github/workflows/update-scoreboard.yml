@@ -1,0 +1,35 @@
+name: Update live scoreboard
+
+on:
+  schedule:
+    - cron: "15 13 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-live-scoreboard
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fetch public performance and render the scoreboard
+        run: python3 scripts/update_scoreboard.py
+      - name: Commit a changed snapshot
+        run: |
+          if git diff --quiet -- README.md data/scoreboard.json; then
+            echo "Scoreboard is already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md data/scoreboard.json
+          git commit -m "Update live portfolio scoreboard"
+          git push
