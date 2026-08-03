@@ -1,12 +1,12 @@
 {
   "shared_portfolio_id": "69a7dc7cf99e43688fcec567",
-  "as_of": "2026-07-31T19:57:32.278000Z",
+  "as_of": "2026-08-03T15:49:24.154000Z",
   "live_since": "2026-03-09T13:34:06.748000Z",
-  "days_live": 144,
-  "account_value": 30712.48,
-  "total_return_pct": 22.84992,
-  "spy_return_pct": 12.069509,
-  "excess_return_vs_spy_pct": 10.780411,
+  "days_live": 147,
+  "account_value": 30307.48,
+  "total_return_pct": 21.18992,
+  "spy_return_pct": 13.460586,
+  "excess_return_vs_spy_pct": 7.729334,
   "max_drawdown_pct": 12.328735,
   "sources": {
     "portfolio_history": "https://nexustrade.io/api/share-portfolio/portfolio/69a7dc7cf99e43688fcec567/history",
