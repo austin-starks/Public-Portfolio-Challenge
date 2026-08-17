@@ -22,5 +22,5 @@ deterministic backtest/certification/compute tools (deferred; load schemas via T
 ## Part of
 
 The **Public Portfolio Challenge** skills library — a functional decomposition of the
-episode-10 / episode-11 certification runbooks. See the library index at
+Episode 10 certification runbooks. See the library index at
 [../README.md](../README.md).

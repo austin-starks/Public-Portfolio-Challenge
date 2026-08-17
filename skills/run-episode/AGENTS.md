@@ -1,6 +1,6 @@
 # run-episode
 
-The single entry point that executes a Public Portfolio Challenge episode or attempt runbook end-to-end, delegating each stage to the functional skills. Use when asked to run/execute/replay an episode — e.g. 'run episode 10', 'execute episode 11 attempt 3', 'run the bakeoff', 'replay the runbook' — with the NexusTrade MCP connected. Reads the target runbook, pins its real artifacts (IDs, the incumbent bar), sequences the stages, and stops at the gated deploy. It orchestrates; the functional skills do the work.
+The single entry point that executes the Public Portfolio Challenge Episode 10 or addendum runbook end-to-end, delegating each stage to the functional skills. Use when asked to run the Episode 10 bakeoff, replay its runbook, or execute its addendum with the NexusTrade MCP connected. Reads the target runbook, pins its real artifacts, sequences the stages, and stops at the gated deploy.
 
 ## Activation
 
@@ -21,5 +21,5 @@ deterministic backtest/certification/compute tools (deferred; load schemas via T
 ## Part of
 
 The **Public Portfolio Challenge** skills library — a functional decomposition of the
-episode-10 / episode-11 certification runbooks. See the library index at
+Episode 10 certification runbooks. See the library index at
 [../README.md](../README.md).

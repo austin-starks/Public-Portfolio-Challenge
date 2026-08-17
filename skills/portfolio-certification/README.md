@@ -1,6 +1,6 @@
 # portfolio-certification
 
-> Orchestrate an out-of-sample certification of a NexusTrade trading strategy or live book — the master discipline behind the Public Portfolio Challenge. Use whenever you must decide PASS/FAIL on whether a portfolio holds up out of sample before deploying real money, replaying the episode-10/episode-11 runbooks, or running a "certify my book" / "prove it out of sample" / "re-certify the fix" task with the NexusTrade MCP connected. Pulls in walk-forward-oos, breadth-audit, sweep-reoptimization, options-structure-rules, bug-protocol, and deploy-gate.
+> Orchestrate an out-of-sample certification of a NexusTrade trading strategy or live book — the master discipline behind the Public Portfolio Challenge. Use whenever you must decide PASS/FAIL on whether a portfolio holds up out of sample before deploying real money, replaying the Episode 10 runbooks, or running a "certify my book" / "prove it out of sample" / "re-certify the fix" task with the NexusTrade MCP connected. Pulls in walk-forward-oos, breadth-audit, sweep-reoptimization, options-structure-rules, bug-protocol, and deploy-gate.
 
 A cross-platform agent skill on the [Agent Skills open standard](https://agentskills.io)
 (`SKILL.md` + `AGENTS.md`). Part of the **Public Portfolio Challenge** skills library.

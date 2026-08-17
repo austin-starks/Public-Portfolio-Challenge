@@ -11,7 +11,7 @@ metadata:
 activation: /bug-protocol
 provenance:
   maintainer: Austin Starks
-  source: public-portfolio-challenge episode-10 / episode-11 runbooks
+  source: public-portfolio-challenge episode-10 runbooks
 ---
 
 # Bug Protocol — "Loudly Declare"
@@ -23,8 +23,8 @@ moments have been confabulated reconcile events, pricing behavior, and budget be
 don't assert.**
 
 Precedent: a `totalBudget` over-deployment bug (a book with a 40% budget deployed ~96% of NAV at cold
-start) was caught exactly this way and **invalidated weeks of results**. See
-`episode-11/attempt2/TOTALBUDGET_BUG.md` for the canonical worked example.
+start) was caught exactly this way and **invalidated weeks of results**. The general lesson is to
+quarantine every result affected by an engine defect and rerun only after the behavior is corrected.
 
 ## The five steps (apply on every failure)
 

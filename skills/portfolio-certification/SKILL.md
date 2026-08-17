@@ -1,6 +1,6 @@
 ---
 name: portfolio-certification
-description: "Orchestrate an out-of-sample certification of a NexusTrade trading strategy or live book — the master discipline behind the Public Portfolio Challenge. Use whenever you must decide PASS/FAIL on whether a portfolio holds up out of sample before deploying real money, replaying the episode-10/episode-11 runbooks, or running a \"certify my book\" / \"prove it out of sample\" / \"re-certify the fix\" task with the NexusTrade MCP connected. Pulls in walk-forward-oos, breadth-audit, sweep-reoptimization, options-structure-rules, bug-protocol, and deploy-gate."
+description: "Orchestrate an out-of-sample certification of a NexusTrade trading strategy or live book — the master discipline behind the Public Portfolio Challenge. Use whenever you must decide PASS/FAIL on whether a portfolio holds up out of sample before deploying real money, replaying the Episode 10 runbooks, or running a \"certify my book\" / \"prove it out of sample\" / \"re-certify the fix\" task with the NexusTrade MCP connected. Pulls in walk-forward-oos, breadth-audit, sweep-reoptimization, options-structure-rules, bug-protocol, and deploy-gate."
 license: MIT
 metadata:
   author: Austin Starks
@@ -11,7 +11,7 @@ metadata:
 activation: /portfolio-certification
 provenance:
   maintainer: Austin Starks
-  source: public-portfolio-challenge episode-10 / episode-11 runbooks
+  source: public-portfolio-challenge episode-10 runbooks
 ---
 
 # Portfolio Certification
@@ -87,7 +87,5 @@ be **calendar-aligned** (run a base control on the variant's clipped calendar �
 ## Source runbooks (worked examples of this discipline)
 
 - `episode-10/BAKEOFF_RUNBOOK.md` — engine sanity checks, 16-variant bakeoff, walk-forward cert, lockbox.
-- `episode-11/attempt1/RUNBOOK.md` — certify the live book; re-optimize on FAIL.
-- `episode-11/attempt2/RUNBOOK.md` — reproduce a live collapse, repair participation, re-certify.
-- `episode-11/attempt3/RUNBOOK.md` — add alternative data to a certified book and prove it OOS.
-- `episode-11/attempt*/CAMPAIGN_LOG.md` — the full lessons ledger these skills distill.
+- `episode-10/addendum/RUNBOOK.md` — redesign entries and exits, then prove the behavior OOS.
+- `episode-10/addendum/CAMPAIGN_LOG.md` — the addendum's full lessons and deployment ledger.

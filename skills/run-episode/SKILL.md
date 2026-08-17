@@ -1,6 +1,6 @@
 ---
 name: run-episode
-description: "The single entry point that executes a Public Portfolio Challenge episode or attempt runbook end-to-end, delegating each stage to the functional skills. Use when asked to run/execute/replay an episode — e.g. 'run episode 10', 'execute episode 11 attempt 3', 'run the bakeoff', 'replay the runbook' — with the NexusTrade MCP connected. Reads the target runbook, pins its real artifacts (IDs, the incumbent bar), sequences the stages, and stops at the gated deploy. It orchestrates; the functional skills do the work."
+description: "The single entry point that executes a Public Portfolio Challenge episode or addendum runbook end-to-end, delegating each stage to the functional skills. Use when asked to run/execute/replay Episode 10, its bakeoff, or its addendum with the NexusTrade MCP connected. Reads the target runbook, pins its real artifacts (IDs, the incumbent bar), sequences the stages, and stops at the gated deploy. It orchestrates; the functional skills do the work."
 license: MIT
 metadata:
   author: Austin Starks
@@ -11,7 +11,7 @@ metadata:
 activation: /run-episode
 provenance:
   maintainer: Austin Starks
-  source: public-portfolio-challenge episode-10 / episode-11 runbooks
+  source: public-portfolio-challenge episode-10 runbooks
 ---
 
 # Run Episode
@@ -27,8 +27,7 @@ the skill that owns it. It does not re-implement the discipline — it sequences
 /run-episode <episode>[ <attempt>]
 ```
 
-Examples: `/run-episode 10` · `/run-episode 11 attempt 3` · "run the episode-10 bakeoff" ·
-"execute episode 11 attempt 2".
+Examples: `/run-episode 10` · `/run-episode 10 addendum` · "run the episode-10 bakeoff".
 
 ## First: load the actual runbook (it is the source of truth for THIS run)
 
@@ -38,9 +37,6 @@ the *ordering* and *delegation*):
 | Episode | Runbook | Shape |
 |---|---|---|
 | 10 | `episode-10/BAKEOFF_RUNBOOK.md` | Multi-family **bakeoff** (search→certify→lockbox→deploy) |
-| 11 / attempt 1 | `episode-11/attempt1/RUNBOOK.md` | **Certify** the live book; re-optimize on FAIL |
-| 11 / attempt 2 | `episode-11/attempt2/RUNBOOK.md` | **Repair participation**, re-certify |
-| 11 / attempt 3 | `episode-11/attempt3/RUNBOOK.md` | **Alt-data** on the certified book, prove OOS |
 | 10 / addendum | `episode-10/addendum/RUNBOOK.md` | **Redesign entries + exits**, prove sell behavior and retain the incumbent edge |
 
 From the runbook, pin before doing anything: the SUBJECT (live book / build) IDs, the incumbent bar
@@ -71,23 +67,14 @@ Delegates, in order:
 5. **deploy-gate** — GATED. Discover the live target via `fetch_portfolios`, owner-confirm, clone,
    field-verify, re-attach monitoring.
 
-## Episode 11 — the certify / repair / alt-data sequence
+## Episode 10 addendum — entry and exit redesign
 
-The attempts share a spine; the middle differs:
+The addendum follows the same certification spine with a redesigned middle:
 
-1. **Stage A** baseline + inventory (bookend rule above). For attempt 2, **reproduce the live collapse
-   with hard numbers first** (`query_portfolio_events`) before fixing.
-2. **The middle (attempt-specific):**
-   - **attempt 1 — certify:** **walk-forward-oos** `backtest_only` on the fixed live book →
-     **portfolio-certification** holistic PASS/FAIL. On FAIL → **sweep-reoptimization**.
-   - **attempt 2 — repair participation:** **breadth-audit** at fixed $25k to quantify the collapse →
-     **sweep-reoptimization** over the sizing levers (structural change ⇒ re-sweep) → re-cert.
-   - **attempt 3 — alt-data:** **alt-data-indicators** (build/verify the custom indicators) → hand-built
-     variant grid → **walk-forward-oos** calendar-aligned cert vs the incumbent. (Signal-freshness gate
-     is real — see the attempt-3 runbook's blocker.)
-   - **attempt 9 — entry + exit redesign:** current-engine authoring/sweep inventory → matched
-     entry/exit mechanism families → event-level exit-binding audit → **sweep-reoptimization** on the
-     promoted design → fixed-config **walk-forward-oos** vs a fresh control.
+1. **Stage A** baseline + inventory (bookend rule above).
+2. **Entry + exit redesign:** current-engine authoring/sweep inventory → matched entry/exit mechanism
+   families → event-level exit-binding audit → **sweep-reoptimization** on the promoted design →
+   fixed-config **walk-forward-oos** vs a fresh control.
 3. **options-structure-rules** hard-gate + **breadth-audit** gate on every finalist.
 4. **Present, then stop** — verdict up top, per-fold OOS table, side-by-side vs incumbent, provenance
    labels, honest caveats, bug ledger. **No deploy.**
