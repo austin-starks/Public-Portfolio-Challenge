@@ -103,16 +103,14 @@ flowchart LR
 | **Lockbox** | A final untouched window. One touch. No peeking. |
 | **Deploy** | Clone to a live portfolio, parity-check, attach monitoring. |
 
-Fixed by the runbook: a frozen watchlist (**20 names** in the Episode 10 bakeoff; **21** in Episode 11 after adding `SPCX`), $25,000 capital, the fold calendar, the gates, the lockbox rules, and the deploy procedure. **Yours to design:** signals, structures, deltas, exits, sizing — anything that clears the gates is valid.
+Fixed by the runbook: a frozen watchlist (**20 names** in the Episode 10 bakeoff), $25,000 capital, the fold calendar, the gates, the lockbox rules, and the deploy procedure. **Yours to design:** signals, structures, deltas, exits, sizing — anything that clears the gates is valid.
 
 <details>
-<summary><strong>The watchlist (frozen — 20 in Ep 10, 21 in Ep 11)</strong></summary>
+<summary><strong>The watchlist (frozen — 20 names)</strong></summary>
 
 <br />
 
-`ANET` · `DUOL` · `HOOD` · `LLY` · `GS` · `META` · `TSM` · `AVGO` · `XOM` · `COP` · `OSCR` · `AMAT` · `ADI` · `DDOG` · `OKTA` · `NET` · `APP` · `GLD` · `MU` · `SNDK` · `SPCX`*
-
-<sub>*`SPCX` was added in Episode 11; the Episode 10 bakeoff runs the first 20.</sub>
+`ANET` · `DUOL` · `HOOD` · `LLY` · `GS` · `META` · `TSM` · `AVGO` · `XOM` · `COP` · `OSCR` · `AMAT` · `ADI` · `DDOG` · `OKTA` · `NET` · `APP` · `GLD` · `MU` · `SNDK`
 
 </details>
 
@@ -161,18 +159,8 @@ episode-10/
 | [`episode-10/RUNBOOK_OG.md`](episode-10/RUNBOOK_OG.md) | The original Episode-1 runbook, kept for reference (the brief has since expanded). |
 | [`episode-10/snapshots/`](episode-10/snapshots) | Baseline A/B and incumbent seed portfolios the runbook loads via `create_portfolio`. |
 | [`episode-10/addendum/`](episode-10/addendum) | Episode 10 entry/exit redesign addendum: runbook, campaign evidence, OOS comparison diagram, and bug note. |
+| [`episode-10/addendum/RAW_RETURN_VNEXT_RESULTS_20260817.md`](episode-10/addendum/RAW_RETURN_VNEXT_RESULTS_20260817.md) | Raw-return vNext sweep, GA, walk-forward, event audit, winners/losers, risk trade-offs, and deployment record. |
 | Campaign logs | Per-run logs from each operator/agent: [`FABLE_CAMPAIGN.MD`](episode-10/FABLE_CAMPAIGN.MD), [`CLAUDE_CODE_…`](episode-10/CLAUDE_CODE_CAMPAIGN_LOG_20260613T165226Z.md), [`CODEX_…`](episode-10/CODEX_CAMPAIGN_LOG_20260613T165248Z.md), [`CURSOR_…`](episode-10/CURSOR_CAMPAIGN_LOG_20260613T165224Z.md). |
-
-**Episode 11** continues the story on the now-live book — each attempt is its own runbook:
-
-```
-episode-11/
-├── attempt1/  RUNBOOK.md + CAMPAIGN_LOG.md                 ← certify the live book, re-optimize on FAIL
-├── attempt2/  RUNBOOK.md + CAMPAIGN_LOG.md + TOTALBUDGET_BUG.md  ← repair cross-watchlist participation
-└── attempt3/  RUNBOOK.md                                   ← alt-data (Reddit/WSB) on the certified book
-```
-
-Each new episode/attempt gets its own folder when the runbook or campaign parameters change materially.
 
 ---
 

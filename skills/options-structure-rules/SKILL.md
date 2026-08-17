@@ -11,7 +11,7 @@ metadata:
 activation: /options-structure-rules
 provenance:
   maintainer: Austin Starks
-  source: public-portfolio-challenge episode-10 / episode-11 runbooks
+  source: public-portfolio-challenge episode-10 runbooks
 ---
 
 # Options Structure Rules

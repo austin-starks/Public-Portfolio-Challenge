@@ -11,7 +11,7 @@ metadata:
 activation: /breadth-audit
 provenance:
   maintainer: Austin Starks
-  source: public-portfolio-challenge episode-10 / episode-11 runbooks
+  source: public-portfolio-challenge episode-10 runbooks
 ---
 
 # Fixed-Capital Breadth Audit

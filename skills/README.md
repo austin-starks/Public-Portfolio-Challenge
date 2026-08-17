@@ -7,13 +7,13 @@ connect the **NexusTrade MCP** and let the agent auto-invoke the skill that fits
 one function of the discipline; they cross-reference each other by name. **`run-episode`** is the
 top-level entry point that sequences a whole episode.
 
-The episode runbooks (`episode-10/`, `episode-11/`) remain as the worked examples these skills distill.
+The Episode 10 runbooks remain as the worked examples these skills distill.
 
 ## The skills
 
 | Skill | What it does |
 |---|---|
-| **run-episode** | **Entry point** — `/run-episode 10` or `/run-episode 11 attempt 3`: loads the runbook, pins artifacts, and sequences the stages, delegating each to the skill below. |
+| **run-episode** | **Entry point** — `/run-episode 10` or `/run-episode 10 addendum`: loads the runbook, pins artifacts, and sequences the stages, delegating each to the skill below. |
 | **portfolio-certification** | Umbrella orchestrator — the staged PASS/FAIL run, first principles, the holistic verdict. Pulls in the rest. |
 | **walk-forward-oos** | The certification engine: `run_walk_forward_study` params, monitoring, per-fold OOS checks, calendar alignment. |
 | **breadth-audit** | True participation at fixed $25k — defeats the compounded-NAV breadth illusion (the OSCR-collapse). |
