@@ -204,7 +204,7 @@ episode-10/
 | [`episode-10/addendum/RAW_RETURN_VNEXT_RESULTS_20260817.md`](episode-10/addendum/RAW_RETURN_VNEXT_RESULTS_20260817.md) | Raw-return vNext sweep, GA, walk-forward, event audit, winners/losers, risk trade-offs, and deployment record. |
 | Campaign logs | Per-run logs from each operator/agent: [`FABLE_CAMPAIGN.MD`](episode-10/FABLE_CAMPAIGN.MD), [`CLAUDE_CODE_…`](episode-10/CLAUDE_CODE_CAMPAIGN_LOG_20260613T165226Z.md), [`CODEX_…`](episode-10/CODEX_CAMPAIGN_LOG_20260613T165248Z.md), [`CURSOR_…`](episode-10/CURSOR_CAMPAIGN_LOG_20260613T165224Z.md). |
 
-**Episode 11** can hold more than one live book. The Moderna / AI-biotech book is at [`episode-11/moderna/`](episode-11/moderna/).
+**Episode 11** can hold more than one live book. [`episode-11/moderna/`](episode-11/moderna/) is **Episode 11 Biotech Live** (Public `5OH86568`). **AI Semis Live** (Public `5OH79160`) is a sibling live book; its runbook is not in this repo yet.
 
 ---
 

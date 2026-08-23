@@ -1,7 +1,7 @@
 # Episode 11 — Moderna / AI-biotech campaign note
 
 **Book:** neoantigen / mRNA value chain (Moderna / AI-biotech)
-**Live target:** `6a5e20a3ea0d6db55c69a171` — Public Portfolio (`5OH86568`)
+**Live target:** `6a5e20a3ea0d6db55c69a171` — **Episode 11 Biotech Live** (Public `5OH86568`)
 **Status as of 2026-08-23 CT:** KEEP design-frozen and cloned to live. No option positions. No staged
 option order IDs. No live P&L headline. Orders still require Austin’s UI approval when the chain is
 live.
@@ -30,13 +30,13 @@ Episode 10.
 
 | Role | ID / value |
 | --- | --- |
-| Live target | `6a5e20a3ea0d6db55c69a171` — Public `5OH86568`, Public brokerage, `initialValue` 5500, cash **$5,494.51** |
+| Live target | `6a5e20a3ea0d6db55c69a171` — **Episode 11 Biotech Live**, Public `5OH86568`, Public brokerage, `initialValue` 5500, cash **$5,494.51** |
 | Paper KEEP (inactive) | `6a8a7c0a14da9860bfda5254` |
 | Chat | `6a8a7c13e718a0c3b750d77a` |
 | Selecting study | `6a8a7a9f2229e2cd48bfa2b7` (`crossFoldRobustSelection`, not fold argmax) |
 | Canonical watchlist | `6a88fe991037666dfebd096c` |
 | Do not mutate | `69a7dc7acdb6bf6a4681d36c` (incumbent Challenge / Baseline C) |
-| Do not mutate | `6a45f218e6b1f2131d1f26be` (MU+SNDK) |
+| Do not mutate | `6a45f218e6b1f2131d1f26be` (**AI Semis Live**) |
 | Lockbox | 2026-04-14 → 2026-08-18 (single touch; already used) |
 | WF span | 2022-01-01 → 2026-04-14 · 4 folds · 252-day OOS · validation 50% · anchored · Day · certification sweep |
 
@@ -124,7 +124,7 @@ Owner signed off: clone KEEP onto live `5OH86568` and stage for UI approval.
 
 ### Field read of the live target after clone (2026-08-23)
 
-`get_portfolio 6a5e20a3ea0d6db55c69a171` confirmed: live, name `Public Portfolio (5OH86568)`,
+`get_portfolio 6a5e20a3ea0d6db55c69a171` confirmed: live, name `Episode 11 Biotech Live`,
 Public / `5OH86568`, `initialValue` 5500, cash **$5,494.51**, buying power **$5,494.51**,
 `automatedApproval.enabled: false`, three strategies with `automaticOrderApproval: false`, no
 option holdings. Cloned strategy IDs on the live book:
