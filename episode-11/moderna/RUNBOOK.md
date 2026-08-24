@@ -53,7 +53,7 @@ those numbers either — name the override.
 
 | Role | Value |
 | --- | --- |
-| Live target | `6a5e20a3ea0d6db55c69a171` — **Episode 11 Biotech Live** (Public `5OH86568`), Public brokerage, `initialValue` 5500, certified at cash **$5,494.51** |
+| Live target | `6a5e20a3ea0d6db55c69a171` — **Public Portfolio Challenge: Biotech** (Public `5OH86568`), Public brokerage, `initialValue` 5500, certified at cash **$5,494.51** |
 | Paper KEEP (inactive) | `6a8a7c0a14da9860bfda5254` |
 | Chat | `6a8a7c13e718a0c3b750d77a` |
 | Study that selected KEEP | `6a8a7a9f2229e2cd48bfa2b7` via **`crossFoldRobustSelection`**, not fold argmax |
@@ -167,7 +167,7 @@ There is **no invented live P&L** in this campaign. Cash plus dust is not a perf
 
 ## Remaining work (only this)
 
-1. **Do not mutate KEEP, Episode 11 Biotech Live rules, Challenge, or AI Semis Live.**
+1. **Do not mutate KEEP, Public Portfolio Challenge: Biotech rules, Challenge, or AI Semis Live.**
 2. **Do not re-touch the lockbox.**
 3. When the options chain is live, Austin approves (or declines) orders in the UI. You may
    *inspect* pending orders and field-audit clone parity. You may not approve.
