@@ -76,12 +76,14 @@ Three Public brokerage books. Each has its own folder. Do not merge them.
 | Book | Public | Capital | Live config | Runbook |
 | --- | --- | ---: | --- | --- |
 | **Public Portfolio Challenge: Original** | live id `69a7dc7acdb6bf6a4681d36c` | $25,000 | Episode 10 incumbent. Do not touch. | [`episode-10/`](episode-10/) |
-| **Public Portfolio Challenge: Biotech** | `5OH86568` · id `6a5e20a3ea0d6db55c69a171` | $5,500 | **KEEP** (design-frozen) | [`episode-11/moderna/`](episode-11/moderna/) |
-| **Public Portfolio Challenge: Semis** | `5OH79160` · id `6a45f218e6b1f2131d1f26be` | $8,000 | **NOW RUNNING S13 A** (G3 was replaced). Auto-approve still false. Monday 9am CT reconcile queues tickets. | [`episode-semis/`](episode-semis/) |
+| **Public Portfolio Challenge: Biotech** | `5OH86568` · id `6a5e20a3ea0d6db55c69a171` | $5,500 | **CALLS ONLY:** 0.50-delta, 365-730 DTE, Constant. Auto-approve false. | [`episode-11/moderna/`](episode-11/moderna/) |
+| **Public Portfolio Challenge: Semis** | `5OH79160` · id `6a45f218e6b1f2131d1f26be` | $8,000 | **CALLS ONLY:** 20% OTM, top 4, +100% TP, Constant. Auto-approve false. | [`episode-semis/`](episode-semis/) |
 
 Semis method and the certified SMH comparison live in [`episode-semis/RUNBOOK.md`](episode-semis/RUNBOOK.md). Biotech KEEP stays in [`episode-11/moderna/RUNBOOK.md`](episode-11/moderna/RUNBOOK.md) — do not rewrite or merge that body.
 
 **August 24 deployment audit:** [`audits/2026-08-24-biotech-semis-deployment-audit.md`](audits/2026-08-24-biotech-semis-deployment-audit.md) records the PSNL, TECH, and PACB cleanup, calendar-matched Biotech control, fresh Semis re-certification, rejected MRNA-core and vertical-first alternatives, Constant-frequency verification, and the completed BTC-dust cleanup.
+
+**August 24 cash-account addendum:** [`audits/2026-08-24-public-cash-account-calls-only-addendum.md`](audits/2026-08-24-public-cash-account-calls-only-addendum.md) records the options-level root cause, calls-only controls and tuning, event-level affordability evidence, and the verified live single-leg replacements.
 
 ---
 
