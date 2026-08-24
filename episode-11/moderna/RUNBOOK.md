@@ -41,7 +41,7 @@ Non-negotiable inherited rules:
    then iterating burns it.
 5. **Verify at field level** (`conditionFieldAudit`), never by `strategy.name` or `condition.name`.
 6. **Do not approve orders.** Stage only. Austin approves in the UI when the chain is live.
-7. **Do not mutate** the incumbent Challenge book or **AI Semis Live** (IDs below).
+7. **Do not mutate** the incumbent Challenge book or **Public Portfolio Challenge: Semis** (IDs below).
 
 Episode 10 Gate 4 vs Baseline C remains the *published Challenge incumbent bar*. It is **not** this
 book's deploy bar. Do not "fail" KEEP for missing `+59.33%` / Sortino `3.02`. Do not quietly move
@@ -59,7 +59,7 @@ those numbers either — name the override.
 | Study that selected KEEP | `6a8a7a9f2229e2cd48bfa2b7` via **`crossFoldRobustSelection`**, not fold argmax |
 | Canonical watchlist | `6a88fe991037666dfebd096c` |
 | Do **not** mutate | `69a7dc7acdb6bf6a4681d36c` (incumbent Challenge / Baseline C) |
-| Do **not** mutate | `6a45f218e6b1f2131d1f26be` (**AI Semis Live**) |
+| Do **not** mutate | `6a45f218e6b1f2131d1f26be` (**Public Portfolio Challenge: Semis**) |
 | Lockbox (already touched) | 2026-04-14 → 2026-08-18 |
 | Walk-forward span | 2022-01-01 → 2026-04-14 |
 | `fold_count` | 4 |
@@ -167,7 +167,7 @@ There is **no invented live P&L** in this campaign. Cash plus dust is not a perf
 
 ## Remaining work (only this)
 
-1. **Do not mutate KEEP, Public Portfolio Challenge: Biotech rules, Challenge, or AI Semis Live.**
+1. **Do not mutate KEEP, Public Portfolio Challenge: Biotech rules, Challenge, or Public Portfolio Challenge: Semis.**
 2. **Do not re-touch the lockbox.**
 3. When the options chain is live, Austin approves (or declines) orders in the UI. You may
    *inspect* pending orders and field-audit clone parity. You may not approve.
