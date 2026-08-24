@@ -65,6 +65,7 @@ The live story is a blog series. **Episode 10 is the write-up of this repo in ac
 | **[Episode 10 →](https://nexustrade.io/blog/claude-fable5-built-my-live-options-strategy-then-got-banned-20260614)** | The full story of Fable 5 running this runbook — every gate, engine bug, and dead end logged in [`FABLE_CAMPAIGN.MD`](episode-10/FABLE_CAMPAIGN.MD). |
 | **[Episode 10 on Medium →](https://medium.com/p/b5b2db76dc6c)** | Same article, syndicated on Medium — included here so readers who follow the challenge off-platform can find it without hunting. |
 | **[Episode 11 addendum →](episode-11/addendum/SHORT_TERM_DEBIT_SPREADS_20260824.md)** | Short-term debit-spread rule, matched walk-forward results, live-book changes, current cadence gates, and Public symbol eligibility. |
+| **[Episode 11 combined-book research →](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md)** | Cash-account constraint, long-call-only search, walk-forward evidence, failed lockbox, event audit, and final no-deploy decision. |
 
 **This repo is the open playbook.** Episode 10 documents one agent's run through it. The runbook is yours to replay with whatever model you have. [The agents don't just trade the account—they commit to this repo.](https://github.com/austin-starks/Public-Portfolio-Challenge/commits/main/)
 
@@ -223,6 +224,7 @@ episode-10/
 | [`episode-10/addendum/`](episode-10/addendum) | Episode 10 entry/exit redesign addendum: runbook, campaign evidence, OOS comparison diagram, and bug note. |
 | [`episode-10/addendum/RAW_RETURN_VNEXT_RESULTS_20260817.md`](episode-10/addendum/RAW_RETURN_VNEXT_RESULTS_20260817.md) | Raw-return vNext sweep, GA, walk-forward, event audit, winners/losers, risk trade-offs, and deployment record. |
 | [`episode-11/addendum/SHORT_TERM_DEBIT_SPREADS_20260824.md`](episode-11/addendum/SHORT_TERM_DEBIT_SPREADS_20260824.md) | Episode 11 addendum: 180-DTE debit-spread ceiling, live Biotech/Semis replacements, matched walk-forward evidence, and symbol-level Public eligibility. |
+| [`episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md`](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md) | Episode 11 combined-book campaign: long calls only, three mechanism families, walk-forward finalist, failed frozen lockbox, optimizer cooldown fix, and no-deploy record. |
 | Campaign logs | Per-run logs from each operator/agent: [`FABLE_CAMPAIGN.MD`](episode-10/FABLE_CAMPAIGN.MD), [`CLAUDE_CODE_…`](episode-10/CLAUDE_CODE_CAMPAIGN_LOG_20260613T165226Z.md), [`CODEX_…`](episode-10/CODEX_CAMPAIGN_LOG_20260613T165248Z.md), [`CURSOR_…`](episode-10/CURSOR_CAMPAIGN_LOG_20260613T165224Z.md). |
 | [`episode-11/moderna/RUNBOOK.md`](episode-11/moderna/RUNBOOK.md) | Biotech KEEP — design-frozen. Live name **Public Portfolio Challenge: Biotech**. Do not rewrite or merge this body. |
 | [`episode-semis/RUNBOOK.md`](episode-semis/RUNBOOK.md) | Semiconductor S13 A — SMH-bar walk-forward, exam-only lockbox. **Now running** on Public `5OH79160`. |

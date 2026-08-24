@@ -3,6 +3,8 @@
 **Date:** August 24, 2026
 **Live books:** Public Portfolio Challenge: Biotech and Public Portfolio Challenge: Semis
 
+> **Status update:** This is a historical snapshot from before the account constraint was confirmed. These two books are cash accounts and cannot execute spreads; their entry strategies were subsequently removed. See the [combined long-call research addendum](./COMBINED_LONG_CALL_RESEARCH_20260824.md) for the current state and failed replacement lockbox.
+
 ## Decision
 
 Debit verticals are now a short-term structure only. Both live books may still use long-dated single-leg calls, but no debit vertical may resolve beyond **180 calendar days to expiration**. This also rejects a long-dated narrow spread such as a 70/75 call debit spread. The rule is based on the resolved expiration and quoted legs, not the authored strategy label.
