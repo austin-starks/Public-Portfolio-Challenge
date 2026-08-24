@@ -38,6 +38,7 @@
 ## Contents
 
 - [What is this?](#what-is-this)
+- [Live books](#live-books)
 - [Agent bakeoff](#agent-bakeoff)
 - [What this repo gives you](#what-this-repo-gives-you)
 - [How the runbook works](#how-the-runbook-works)
@@ -65,6 +66,20 @@ The live story is a blog series. **Episode 10 is the write-up of this repo in ac
 | **[Episode 10 on Medium →](https://medium.com/p/b5b2db76dc6c)** | Same article, syndicated on Medium — included here so readers who follow the challenge off-platform can find it without hunting. |
 
 **This repo is the open playbook.** Episode 10 documents one agent's run through it. The runbook is yours to replay with whatever model you have. [The agents don't just trade the account—they commit to this repo.](https://github.com/austin-starks/Public-Portfolio-Challenge/commits/main/)
+
+---
+
+## Live books
+
+Three Public brokerage books. Each has its own folder. Do not merge them.
+
+| Book | Public | Capital | Live config | Runbook |
+| --- | --- | ---: | --- | --- |
+| **Public Portfolio Challenge: Original** | live id `69a7dc7acdb6bf6a4681d36c` | $25,000 | Episode 10 incumbent. Do not touch. | [`episode-10/`](episode-10/) |
+| **Public Portfolio Challenge: Biotech** | `5OH86568` · id `6a5e20a3ea0d6db55c69a171` | $5,500 | **KEEP** (design-frozen) | [`episode-11/moderna/`](episode-11/moderna/) |
+| **Public Portfolio Challenge: Semis** | `5OH79160` · id `6a45f218e6b1f2131d1f26be` | $8,000 | **NOW RUNNING S13 A** (G3 was replaced). Auto-approve still false. Monday 9am CT reconcile queues tickets. | [`episode-semis/`](episode-semis/) |
+
+Semis method and the certified SMH comparison live in [`episode-semis/RUNBOOK.md`](episode-semis/RUNBOOK.md). Biotech KEEP stays in [`episode-11/moderna/RUNBOOK.md`](episode-11/moderna/RUNBOOK.md) — do not rewrite or merge that body.
 
 ---
 
@@ -203,8 +218,17 @@ episode-10/
 | [`episode-10/addendum/`](episode-10/addendum) | Episode 10 entry/exit redesign addendum: runbook, campaign evidence, OOS comparison diagram, and bug note. |
 | [`episode-10/addendum/RAW_RETURN_VNEXT_RESULTS_20260817.md`](episode-10/addendum/RAW_RETURN_VNEXT_RESULTS_20260817.md) | Raw-return vNext sweep, GA, walk-forward, event audit, winners/losers, risk trade-offs, and deployment record. |
 | Campaign logs | Per-run logs from each operator/agent: [`FABLE_CAMPAIGN.MD`](episode-10/FABLE_CAMPAIGN.MD), [`CLAUDE_CODE_…`](episode-10/CLAUDE_CODE_CAMPAIGN_LOG_20260613T165226Z.md), [`CODEX_…`](episode-10/CODEX_CAMPAIGN_LOG_20260613T165248Z.md), [`CURSOR_…`](episode-10/CURSOR_CAMPAIGN_LOG_20260613T165224Z.md). |
+| [`episode-11/moderna/RUNBOOK.md`](episode-11/moderna/RUNBOOK.md) | Biotech KEEP — design-frozen. Live name **Public Portfolio Challenge: Biotech**. Do not rewrite or merge this body. |
+| [`episode-semis/RUNBOOK.md`](episode-semis/RUNBOOK.md) | Semiconductor S13 A — SMH-bar walk-forward, exam-only lockbox. **Now running** on Public `5OH79160`. |
 
-**Episode 11** can hold more than one live book. [`episode-11/moderna/`](episode-11/moderna/) is **Episode 11 Biotech Live** (Public `5OH86568`). **AI Semis Live** (Public `5OH79160`) is a sibling live book; its runbook is not in this repo yet.
+```
+episode-semis/
+├── README.md                      ← index for the Semis Public book
+├── RUNBOOK.md                     ← paste this; S13 A is design-frozen
+└── CAMPAIGN_LOG.md                ← facts already recorded (no invented fills)
+```
+
+**Episode 11** is the Biotech KEEP book at [`episode-11/moderna/`](episode-11/moderna/) — **Public Portfolio Challenge: Biotech** (Public `5OH86568`). The semiconductor book is a separate episode at [`episode-semis/`](episode-semis/) — **Public Portfolio Challenge: Semis** (Public `5OH79160`), now running S13 A. Do not steal the Episode 11 folder for chips.
 
 ---
 
