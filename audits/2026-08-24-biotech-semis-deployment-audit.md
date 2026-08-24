@@ -95,9 +95,9 @@ That is not the same as unattended broker execution. Automated order approval is
 
 ## BTC dust
 
-The Biotech account held `0.00007704 BTC-USD`, approximately six dollars at the audit quote. A market sell was staged as order `6a8c4eab7ae40153ecdda2ca`.
+The Biotech account held `0.00007704 BTC-USD`, approximately six dollars at the audit quote. Market sell order `6a8c4eab7ae40153ecdda2ca` filled at a submitted price of **$78,819.60**.
 
-Status at publication: **pending user approval, not filled**.
+Status at publication: **filled**. The Biotech account now has no remaining positions and **$5,500.09** in cash and buying power.
 
 ## What this proves
 
