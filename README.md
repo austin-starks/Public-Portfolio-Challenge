@@ -78,8 +78,8 @@ Three Public brokerage books. Each has its own folder. Do not merge them.
 | Book | Public | Capital | Live config | Runbook |
 | --- | --- | ---: | --- | --- |
 | **Public Portfolio Challenge: Original** | live id `69a7dc7acdb6bf6a4681d36c` | $25,000 | Episode 10 incumbent. Do not touch. | [`episode-10/`](episode-10/) |
-| **Public Portfolio Challenge: Biotech** | `5OH86568` · id `6a5e20a3ea0d6db55c69a171` | $5,500 | **EXIT-ONLY:** incompatible spread entry removed; exits retained; Constant. Auto-approve false. | [`episode-11/moderna/`](episode-11/moderna/) |
-| **Public Portfolio Challenge: Semis** | `5OH79160` · id `6a45f218e6b1f2131d1f26be` | $8,000 | **EXIT-ONLY:** incompatible spread entry removed; exits retained; Constant. Auto-approve false. | [`episode-semis/`](episode-semis/) |
+| **Public Portfolio Challenge: Biotech** | former `5OH86568` · historical id `6a5e20a3ea0d6db55c69a171` | $5,500 historical | Entry-disabled historical record after Public consolidation. | [`episode-11/moderna/`](episode-11/moderna/) |
+| **Public Portfolio Challenge: Semis + Biotech** | `5OH79160` · id `6a8cb433e3971b7c87943f11` | $13,500 | **CASH, NO STRATEGIES:** funded combined target; Constant; auto-approve false; awaiting owner review of the inactive long-call candidate. | [`episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md`](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md) |
 
 Semis method and the certified SMH comparison live in [`episode-semis/RUNBOOK.md`](episode-semis/RUNBOOK.md). Biotech KEEP stays in [`episode-11/moderna/RUNBOOK.md`](episode-11/moderna/RUNBOOK.md) — do not rewrite or merge that body.
 
@@ -87,7 +87,7 @@ Semis method and the certified SMH comparison live in [`episode-semis/RUNBOOK.md
 
 **August 24 cash-account addendum:** [`audits/2026-08-24-public-cash-account-calls-only-addendum.md`](audits/2026-08-24-public-cash-account-calls-only-addendum.md) records the temporary calls-only test, the return comparison that rejected it, restoration of both higher-return spread books, the cooldown diagnosis, and the options-level notable-event fix.
 
-**August 24 combined-book continuation:** [`episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md`](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md) supersedes that temporary restoration for the two cash accounts: both are exit-only while an execution-aware, long-call-only combined candidate waits for consolidated cash and a genuinely unseen forward window.
+**August 24 combined-book continuation:** [`episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md`](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md) supersedes that temporary restoration. Public cash is now consolidated in one empty target. The capital-gated, long-call-only candidate is inactive and waiting for owner review plus genuinely unseen forward evidence.
 
 ---
 
