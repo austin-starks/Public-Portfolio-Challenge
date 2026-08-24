@@ -93,6 +93,34 @@ Both live portfolios now use NexusTrade deployment frequency `Constant`, and rec
 
 That is not the same as unattended broker execution. Automated order approval is disabled on both accounts, and the automated-trading approval status is `NOT_STARTED`. Signals can evaluate continuously, but orders still require the account owner's review until the brokerage application and consent flow are completed.
 
+## Why the live books are not showing new option trades
+
+The two portfolios have different blockers.
+
+### Biotech: signals fire, but Public rejects the option level
+
+At the August 24 14:25 UTC audit snapshot, the Biotech book had produced **140 OpenOptionSignal events**, **702 option-resolution attempts**, and **562 broker rejections** since midnight UTC. Of those rejections, **560** reported `Option level required.` and two were classified as `UnderlyingIneligible`.
+
+This is not limited to outright calls. Public rejected both single-leg calls, including RXRX and SDGR, and resolved vertical spreads, including MRK and BMY, with the same option-level message. The signal and contract-resolution paths are working; the account's current Public options permission is the immediate execution blocker.
+
+Affordability is a secondary constraint. The strategy allocates **6%**, or about **$330**, per name. MRNA was selected, but the closest contract cost roughly **$535 to $630** during the audit, so that sleeve could not buy one contract. Other names either exceeded the allocation or resolved multi-leg templates to the same contract.
+
+Because rejected preflight attempts do not advance the `DaysSinceLastRebalanceOptionOrder` cooldown, Constant evaluation retries the same eligible set every few seconds. That explains the rejection volume. This audit records the behavior; it does not silently change the tested strategy.
+
+### Semis: a legacy canceled SNDK spread is holding the cooldown closed
+
+The Semis book produced **541 events** in the same snapshot window, but no `OpenOptionSignal`, new option `Order`, or `OrderRejected` events. Its entry gate currently reads **38 days since the last RebalanceOption order**, below the required **63 days**.
+
+The only portfolio orders are a canceled SNDK vertical created July 17, 2026:
+
+- Buy order `6a5a52b2c350658add1473c7`
+- Sell order `6a5a52b2c350658add1473c8`
+- Multi-leg group `6a5a52b2c350658add1473c6`
+
+Those old system-created orders are counted by the portfolio-wide cooldown even though both legs were canceled and the current S13 A strategies were installed later. On the present clock, the 63-day gate does not reopen until approximately **September 18, 2026**. Changing or resetting that gate would be a material live-strategy decision, so this audit leaves it unchanged.
+
+Automated approval is not the immediate blocker for either book. It becomes the next control only after the broker accepts an order: with automated approval disabled, an accepted order will wait for manual review.
+
 ## BTC dust
 
 The Biotech account held `0.00007704 BTC-USD`, approximately six dollars at the audit quote. Market sell order `6a8c4eab7ae40153ecdda2ca` filled at a submitted price of **$78,819.60**.
