@@ -81,6 +81,8 @@ Three Public brokerage books. Each has its own folder. Do not merge them.
 
 Semis method and the certified SMH comparison live in [`episode-semis/RUNBOOK.md`](episode-semis/RUNBOOK.md). Biotech KEEP stays in [`episode-11/moderna/RUNBOOK.md`](episode-11/moderna/RUNBOOK.md) — do not rewrite or merge that body.
 
+**August 24 deployment audit:** [`audits/2026-08-24-biotech-semis-deployment-audit.md`](audits/2026-08-24-biotech-semis-deployment-audit.md) records the PSNL, TECH, and PACB cleanup, calendar-matched Biotech control, fresh Semis re-certification, rejected MRNA-core and vertical-first alternatives, Constant-frequency verification, and the pending BTC-dust order.
+
 ---
 
 ## Agent bakeoff
