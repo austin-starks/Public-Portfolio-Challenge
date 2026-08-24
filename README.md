@@ -64,6 +64,7 @@ The live story is a blog series. **Episode 10 is the write-up of this repo in ac
 | **[Episode 1 →](https://nexustrade.io/blog/im-giving-an-ai-access-to-my-public-trading-account-heres-how-you-can-watch-it-destroy-25000-20260228)** | Where it started — why $25k, why Public, why total transparency. |
 | **[Episode 10 →](https://nexustrade.io/blog/claude-fable5-built-my-live-options-strategy-then-got-banned-20260614)** | The full story of Fable 5 running this runbook — every gate, engine bug, and dead end logged in [`FABLE_CAMPAIGN.MD`](episode-10/FABLE_CAMPAIGN.MD). |
 | **[Episode 10 on Medium →](https://medium.com/p/b5b2db76dc6c)** | Same article, syndicated on Medium — included here so readers who follow the challenge off-platform can find it without hunting. |
+| **[Episode 11 addendum →](episode-11/addendum/SHORT_TERM_DEBIT_SPREADS_20260824.md)** | Short-term debit-spread rule, matched walk-forward results, live-book changes, current cadence gates, and Public symbol eligibility. |
 
 **This repo is the open playbook.** Episode 10 documents one agent's run through it. The runbook is yours to replay with whatever model you have. [The agents don't just trade the account—they commit to this repo.](https://github.com/austin-starks/Public-Portfolio-Challenge/commits/main/)
 
@@ -76,8 +77,8 @@ Three Public brokerage books. Each has its own folder. Do not merge them.
 | Book | Public | Capital | Live config | Runbook |
 | --- | --- | ---: | --- | --- |
 | **Public Portfolio Challenge: Original** | live id `69a7dc7acdb6bf6a4681d36c` | $25,000 | Episode 10 incumbent. Do not touch. | [`episode-10/`](episode-10/) |
-| **Public Portfolio Challenge: Biotech** | `5OH86568` · id `6a5e20a3ea0d6db55c69a171` | $5,500 | **SPREAD BOOK RESTORED:** original 0.50-delta fallback ladder, Constant. Auto-approve false. | [`episode-11/moderna/`](episode-11/moderna/) |
-| **Public Portfolio Challenge: Semis** | `5OH79160` · id `6a45f218e6b1f2131d1f26be` | $8,000 | **SPREAD BOOK RESTORED:** 20%/25% OTM verticals, top 7, +300% TP, Constant. Auto-approve false. | [`episode-semis/`](episode-semis/) |
+| **Public Portfolio Challenge: Biotech** | `5OH86568` · id `6a5e20a3ea0d6db55c69a171` | $5,500 | **SHORT-TERM SPREAD BOOK:** long calls retained; debit verticals capped at 180 DTE; Constant. Auto-approve false. | [`episode-11/moderna/`](episode-11/moderna/) |
+| **Public Portfolio Challenge: Semis** | `5OH79160` · id `6a45f218e6b1f2131d1f26be` | $8,000 | **SHORT-TERM SPREAD BOOK:** 90-180 DTE vertical entry retained; Constant. Auto-approve false. | [`episode-semis/`](episode-semis/) |
 
 Semis method and the certified SMH comparison live in [`episode-semis/RUNBOOK.md`](episode-semis/RUNBOOK.md). Biotech KEEP stays in [`episode-11/moderna/RUNBOOK.md`](episode-11/moderna/RUNBOOK.md) — do not rewrite or merge that body.
 
@@ -221,6 +222,7 @@ episode-10/
 | [`episode-10/snapshots/`](episode-10/snapshots) | Baseline A/B and incumbent seed portfolios the runbook loads via `create_portfolio`. |
 | [`episode-10/addendum/`](episode-10/addendum) | Episode 10 entry/exit redesign addendum: runbook, campaign evidence, OOS comparison diagram, and bug note. |
 | [`episode-10/addendum/RAW_RETURN_VNEXT_RESULTS_20260817.md`](episode-10/addendum/RAW_RETURN_VNEXT_RESULTS_20260817.md) | Raw-return vNext sweep, GA, walk-forward, event audit, winners/losers, risk trade-offs, and deployment record. |
+| [`episode-11/addendum/SHORT_TERM_DEBIT_SPREADS_20260824.md`](episode-11/addendum/SHORT_TERM_DEBIT_SPREADS_20260824.md) | Episode 11 addendum: 180-DTE debit-spread ceiling, live Biotech/Semis replacements, matched walk-forward evidence, and symbol-level Public eligibility. |
 | Campaign logs | Per-run logs from each operator/agent: [`FABLE_CAMPAIGN.MD`](episode-10/FABLE_CAMPAIGN.MD), [`CLAUDE_CODE_…`](episode-10/CLAUDE_CODE_CAMPAIGN_LOG_20260613T165226Z.md), [`CODEX_…`](episode-10/CODEX_CAMPAIGN_LOG_20260613T165248Z.md), [`CURSOR_…`](episode-10/CURSOR_CAMPAIGN_LOG_20260613T165224Z.md). |
 | [`episode-11/moderna/RUNBOOK.md`](episode-11/moderna/RUNBOOK.md) | Biotech KEEP — design-frozen. Live name **Public Portfolio Challenge: Biotech**. Do not rewrite or merge this body. |
 | [`episode-semis/RUNBOOK.md`](episode-semis/RUNBOOK.md) | Semiconductor S13 A — SMH-bar walk-forward, exam-only lockbox. **Now running** on Public `5OH79160`. |
