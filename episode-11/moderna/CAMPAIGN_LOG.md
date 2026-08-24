@@ -36,7 +36,7 @@ Episode 10.
 | Selecting study | `6a8a7a9f2229e2cd48bfa2b7` (`crossFoldRobustSelection`, not fold argmax) |
 | Canonical watchlist | `6a88fe991037666dfebd096c` |
 | Do not mutate | `69a7dc7acdb6bf6a4681d36c` (incumbent Challenge / Baseline C) |
-| Do not mutate | `6a45f218e6b1f2131d1f26be` (**AI Semis Live**) |
+| Do not mutate | `6a45f218e6b1f2131d1f26be` (**Public Portfolio Challenge: Semis**) |
 | Lockbox | 2026-04-14 → 2026-08-18 (single touch; already used) |
 | WF span | 2022-01-01 → 2026-04-14 · 4 folds · 252-day OOS · validation 50% · anchored · Day · certification sweep |
 
