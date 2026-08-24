@@ -3,6 +3,8 @@
 **Date:** August 24, 2026
 **Scope:** Public Portfolio Challenge: Biotech and Public Portfolio Challenge: Semis
 
+> **Continuation status:** The first three-sleeve finalist still failed its one valid lockbox and remains rejected. Research continued only as diagnosis and candidate development. The current result is an inactive forward-test candidate, not a newly certified or deployed book.
+
 ## Why this campaign changed
 
 Public permits debit spreads only in the user's single margin account. These two newer Public accounts are cash accounts, so a strategy that depends on debit spreads cannot execute there even when the individual symbol supports spread trading.
@@ -66,6 +68,44 @@ The largest loss was the momentum sleeve's MRVL trade. On June 2, the resolver s
 
 The deeper failure was portfolio path dependence. On the already-burned window, MRNA alone returned +36.66%, MRNA plus momentum returned +80.12%, and MRNA plus pullback returned +17.09%, yet all three together returned -44.15%. Those decompositions are diagnostics, not new certification. Shared cash, whole-contract sizing, resolver prices, and the order in which sleeves consume buying power made the combined portfolio non-additive.
 
+## Post-lockbox continuation: execution-aware two-sleeve candidate
+
+The failed fill was not treated as permission to erase the lockbox. Instead, the next branch made two structural changes:
+
+1. every entry contract must have a bid of at least $0.05 and a bid-ask spread no wider than 10%; and
+2. the pullback sleeve was removed, leaving one MRNA core and one independently spaced semi momentum sleeve.
+
+The frozen forward candidate is chat portfolio `6a8cb278c57fd738a24f0409` with **$13,500.09** modeled capital:
+
+- **MRNA core:** 25% allocation, 5% OTM long call, 45-90 DTE, 10% maximum spread, MRNA above its 100-day SMA with positive 63-day rate of change, 42-day `DaysSinceStrategyFired` cooldown.
+- **Semi momentum:** 20% total budget, top one of NVDA, ANET, KLAC, TSM, MRVL, and LRCX by 126-day rate of change, 10% OTM long call, 45-90 DTE, 10% maximum spread, 42-day `DaysSinceStrategyFired` cooldown, `positionScope: strategy`.
+- **Exits:** close at 21 DTE, take profit at 150%, and retain the MRNA trend exit.
+- **Execution:** single-leg long calls only; automatic order approval false.
+
+### Fixed-book stability evidence
+
+The 81-cell allocation/liquidity sweep was `6a8cac0a73626b1004828728`. Its strongest region clustered around 25% MRNA, 20% semis, and a 10% spread cap rather than one isolated cell. Because that sweep used the historical search span, the following fixed-book studies are **stability diagnostics, not a fresh lockbox**:
+
+| Study | OOS folds | Mean | Median | Positive folds | Worst drawdown |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Five 240-day folds `6a8cad9ec57fd738a24ed742` | 108.20%, 112.73%, 76.59%, 3.76%, 46.77% | 69.61% | 76.59% | 5/5 | 67.05% |
+| Seven 180-day rolling folds `6a8cada5c57fd738a24ed7a4` | 2.62%, 16.29%, 45.01%, 94.72%, -47.27%, 85.78%, 62.64% | 37.11% | 45.01% | 6/7 | 57.78% |
+
+On the already-observed April 20-August 24 window, the exact candidate returned **+88.77%** with **38.46%** maximum drawdown at $13,500.09. That is diagnostic stress evidence only. The fills were economically plausible after the liquidity filter: the disastrous MRVL $24.41-to-$42.525 entry disappeared, while the candidate's submitted and filled prices remained close enough to represent tradable option markets.
+
+Capital sensitivity on that same observed window was -6.36% at $10,000, +27.83% at $12,000, +88.77% at $13,500.09, +101.70% at $15,000, and +81.80% at $17,500. The strategy therefore has a real whole-contract capital floor. It should not be deployed into either existing cash account by itself.
+
+### Rejected continuation branches
+
+- Shortening MRNA to ATM 30-60 DTE improved the ranked historical tail but returned -10.15% on the observed Moderna window.
+- A 21-day semi cadence produced four losing folds in the seven-fold rolling study.
+- Combining both changes lost roughly 49-53% across every tested account size from $10,000 to $17,500.
+- Positive-momentum and above-100-day-SMA semi filters did not remove the bad regime and weakened the broader fold record.
+- Universal and semi-only option stop losses reduced one losing regime but destroyed too much of the MRNA event payoff. They were rejected because MRNA is the thesis, not a sleeve to be silently capped.
+- A 63-day semi cooldown reduced the known bad regime but cut the five-fold mean from 69.61% to 28.99% and the observed Moderna-window result to 20.67%.
+
+The remaining bad rolling fold was a real strategy loss, not a rejected-order or impossible-fill artifact. ANET was the largest loser, with additional losses in MRNA and LRCX. That loss is part of the book's honest high-risk profile.
+
 ## Optimizer defect found during the campaign
 
 The cooldown sweep exposed a separate implementation bug. When a strategy's entire condition was a standalone `DaysSinceStrategyFired >= 21` rule, the `EntryCooldownDays` sweep wrapped it and appended a second `>= 42` rule instead of replacing it. The malformed candidates therefore had `21 days AND 42 days` while reporting only the new resolved parameter.
@@ -77,7 +117,7 @@ NexusTrade commit `b0dccadba5` replaces the standalone cooldown directly and add
 - Biotech portfolio `6a5e20a3ea0d6db55c69a171`: prior entry strategy `6a8c7b7501471d61b006b171` removed; exits retained; no positions or pending orders at the verification snapshot.
 - Semis portfolio `6a45f218e6b1f2131d1f26be`: prior entry strategy `6a8c70598be832eb562f9ec5` removed; exits retained; no positions or pending orders at the verification snapshot.
 - Original margin-account portfolio: untouched.
-- Combined research portfolio: preserved as an inactive chat portfolio only.
+- Combined forward candidate: chat portfolio `6a8cb278c57fd738a24f0409`, preserved inactive with manual approval and the exact two-sleeve specification above.
 - Deployment: none. A failed lockbox is a hard rejection even when the pre-lockbox walk-forward is exceptional.
 
-Because the April-August period has now been observed, it cannot be reused as an untouched lockbox. A future replacement needs a new point-in-time campaign and a genuinely unseen forward window. Before any eventual live deployment, the owner must also consolidate the desired cash into one Public account; NexusTrade cannot combine buying power across brokerage accounts.
+Because the April-August period has now been observed repeatedly, it cannot be reused as an untouched lockbox or relabeled as certification. The candidate is ready for a genuinely unseen forward window, but not live deployment. Before any eventual deployment, the owner must also consolidate the desired cash into one Public account; NexusTrade cannot combine buying power across brokerage accounts.

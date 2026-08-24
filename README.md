@@ -65,7 +65,7 @@ The live story is a blog series. **Episode 10 is the write-up of this repo in ac
 | **[Episode 10 →](https://nexustrade.io/blog/claude-fable5-built-my-live-options-strategy-then-got-banned-20260614)** | The full story of Fable 5 running this runbook — every gate, engine bug, and dead end logged in [`FABLE_CAMPAIGN.MD`](episode-10/FABLE_CAMPAIGN.MD). |
 | **[Episode 10 on Medium →](https://medium.com/p/b5b2db76dc6c)** | Same article, syndicated on Medium — included here so readers who follow the challenge off-platform can find it without hunting. |
 | **[Episode 11 addendum →](episode-11/addendum/SHORT_TERM_DEBIT_SPREADS_20260824.md)** | Short-term debit-spread rule, matched walk-forward results, live-book changes, current cadence gates, and Public symbol eligibility. |
-| **[Episode 11 combined-book research →](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md)** | Cash-account constraint, long-call-only search, walk-forward evidence, failed lockbox, event audit, and final no-deploy decision. |
+| **[Episode 11 combined-book research →](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md)** | Cash-account constraint, failed lockbox, execution audit, long-call continuation research, and the inactive forward candidate. |
 
 **This repo is the open playbook.** Episode 10 documents one agent's run through it. The runbook is yours to replay with whatever model you have. [The agents don't just trade the account—they commit to this repo.](https://github.com/austin-starks/Public-Portfolio-Challenge/commits/main/)
 
@@ -78,14 +78,16 @@ Three Public brokerage books. Each has its own folder. Do not merge them.
 | Book | Public | Capital | Live config | Runbook |
 | --- | --- | ---: | --- | --- |
 | **Public Portfolio Challenge: Original** | live id `69a7dc7acdb6bf6a4681d36c` | $25,000 | Episode 10 incumbent. Do not touch. | [`episode-10/`](episode-10/) |
-| **Public Portfolio Challenge: Biotech** | `5OH86568` · id `6a5e20a3ea0d6db55c69a171` | $5,500 | **SHORT-TERM SPREAD BOOK:** long calls retained; debit verticals capped at 180 DTE; Constant. Auto-approve false. | [`episode-11/moderna/`](episode-11/moderna/) |
-| **Public Portfolio Challenge: Semis** | `5OH79160` · id `6a45f218e6b1f2131d1f26be` | $8,000 | **SHORT-TERM SPREAD BOOK:** 90-180 DTE vertical entry retained; Constant. Auto-approve false. | [`episode-semis/`](episode-semis/) |
+| **Public Portfolio Challenge: Biotech** | `5OH86568` · id `6a5e20a3ea0d6db55c69a171` | $5,500 | **EXIT-ONLY:** incompatible spread entry removed; exits retained; Constant. Auto-approve false. | [`episode-11/moderna/`](episode-11/moderna/) |
+| **Public Portfolio Challenge: Semis** | `5OH79160` · id `6a45f218e6b1f2131d1f26be` | $8,000 | **EXIT-ONLY:** incompatible spread entry removed; exits retained; Constant. Auto-approve false. | [`episode-semis/`](episode-semis/) |
 
 Semis method and the certified SMH comparison live in [`episode-semis/RUNBOOK.md`](episode-semis/RUNBOOK.md). Biotech KEEP stays in [`episode-11/moderna/RUNBOOK.md`](episode-11/moderna/RUNBOOK.md) — do not rewrite or merge that body.
 
 **August 24 deployment audit:** [`audits/2026-08-24-biotech-semis-deployment-audit.md`](audits/2026-08-24-biotech-semis-deployment-audit.md) records the PSNL, TECH, and PACB cleanup, calendar-matched Biotech control, fresh Semis re-certification, rejected MRNA-core and vertical-first alternatives, Constant-frequency verification, and the completed BTC-dust cleanup.
 
 **August 24 cash-account addendum:** [`audits/2026-08-24-public-cash-account-calls-only-addendum.md`](audits/2026-08-24-public-cash-account-calls-only-addendum.md) records the temporary calls-only test, the return comparison that rejected it, restoration of both higher-return spread books, the cooldown diagnosis, and the options-level notable-event fix.
+
+**August 24 combined-book continuation:** [`episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md`](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md) supersedes that temporary restoration for the two cash accounts: both are exit-only while an execution-aware, long-call-only combined candidate waits for consolidated cash and a genuinely unseen forward window.
 
 ---
 
