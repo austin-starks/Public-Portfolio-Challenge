@@ -87,7 +87,7 @@ Semis method and the certified SMH comparison live in [`episode-semis/RUNBOOK.md
 
 **August 24 cash-account addendum:** [`audits/2026-08-24-public-cash-account-calls-only-addendum.md`](audits/2026-08-24-public-cash-account-calls-only-addendum.md) records the temporary calls-only test, the return comparison that rejected it, restoration of both higher-return spread books, the cooldown diagnosis, and the options-level notable-event fix.
 
-**August 24-25 combined-book continuation:** [`episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md`](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md) supersedes that temporary restoration. Public cash is now consolidated in one empty target. The corrected long-call-only candidate keeps MRNA concentrated, restores the 16-name biotech chain, and activates semis in the opposite XBI regime. It is inactive and waiting for owner review plus genuinely unseen forward evidence.
+**August 24-25 combined-book continuation:** [`episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md`](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md) supersedes that temporary restoration. Public cash is now consolidated in one empty target. The corrected long-call-only candidate ranks MRNA inside a quality-screened 14-name biotech chain and activates semis in the opposite XBI regime. It is inactive and waiting for owner review plus genuinely unseen forward evidence. The company, thesis, and option-access review for all 23 researched stocks is in the [`portfolio universe audit`](episode-11/addendum/PORTFOLIO_UNIVERSE_AUDIT_20260825.md).
 
 ---
 

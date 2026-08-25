@@ -165,58 +165,66 @@ NexusTrade commit `b0dccadba5` replaces the standalone cooldown directly and add
 
 Because the April-August period has now been observed repeatedly, it cannot be reused as an untouched lockbox or relabeled as certification. The cash is consolidated and the target is ready, but the candidate remains inactive until owner review. If approved, its next honest test is genuinely unseen forward behavior in that combined account; NexusTrade cannot combine buying power across separate brokerage accounts.
 
-## August 25 correction: restore the biotech thesis
+## August 25 final correction: rank MRNA, then audit every stock
 
-The MRNA-plus-semis draft solved the cash-account problem by deleting too much of the investment thesis. That was not an acceptable final answer. MRNA is still the direct bet, but the original article also argued for the neoantigen chain around it: the drug partner, the closest mRNA competitor, sequencing and diagnostics, liquid biopsy, research tools, and adjacent computational drug discovery.
+The first biotech-inclusive correction still hardcoded a separate 25% MRNA sleeve. That interpretation created concentration by construction. Moderna remains the causal thesis, and MRNA now earns entries through the same ranking and 6% per-name ceiling as every other biotech candidate.
 
-The corrected architecture uses three mutually aware entry regimes in one cash portfolio:
+I then audited all 23 stocks for business quality, thesis transmission, liquidity, and current option access. The full evidence is in the [portfolio universe audit](./PORTFOLIO_UNIVERSE_AUDIT_20260825.md).
 
-1. **MRNA core:** one 5% OTM call at 45-90 DTE, up to 25% of portfolio, when MRNA is above its 100-day SMA with positive 63-day rate of change. It uses a 21-day `DaysSinceStrategyFired` clock and closes at 21 DTE, +150%, or a confirmed trend break.
-2. **Biotech chain:** MRK, BNTX, RXRX, SDGR, ADPT, GH, NTRA, VCYT, ILMN, TWST, QGEN, TXG, TMO, DHR, A, BMY. When XBI is at or above its 200-day SMA and VIX is below 35, the book ranks the eligible names by 126-day momentum and sizes outright long calls at 6% per name with a 75% total cap. It tries 365-730 DTE first, then 180-365, 90-180, and finally 30-400 when the longer windows do not exist. These are single-leg calls, never long-dated verticals. The sleeve takes profit at +80% and exits at 90 DTE.
-3. **Semiconductor regime:** when XBI is below its 200-day SMA, rank NVDA, ANET, KLAC, TSM, MRVL, and LRCX by 126-day momentum and attempt only the top name. The entry is one 10% OTM call at 45-90 DTE, subject to a real bid and a 10% maximum spread, with a 20% total budget and a 42-day strategy clock. It closes at 21 DTE or +150%.
+The audit removed three names from the final ranker:
 
-The opposite XBI gates matter. The weak designs ran biotech and semis concurrently and let both sleeves consume cash in the same losing regimes. The corrected book allocates to the biotech chain when the biotech sector is healthy and uses semis as the alternate regime. MRNA remains separately eligible because it is the thesis, not a generic XBI constituent.
+- **RXRX** failed both tests. It had the weakest revenue, cash-flow, drawdown, and thesis-specificity combination.
+- **SDGR** is a credible computational-discovery company. Its relationship to Moderna's individualized therapy was too loose for the final book.
+- **BMY** is a strong large pharmaceutical company. Its oncology franchise and BioNTech partnership are adjacent rather than a dependency of V940.
 
-### Corrected pre-readout evidence
+The final biotech ranker is:
 
-The fixed source is chat portfolio `6a8cdcef3317b9f122a67740`. The exact inactive review clone is `6a8cdf9789dc23e08edb62bb`, **FINAL REVIEW — MRNA + Biotech/Semis XBI200 Regime Book**. Replaying either semantic object over March 7, 2022 through April 19, 2026 resolves to backtest `6a8cdf9df68259010d8f9e77`:
+**MRNA, MRK, BNTX, ADPT, GH, NTRA, VCYT, ILMN, TWST, QGEN, TXG, TMO, DHR, A**
 
-- **+327.80%** return;
-- **52.91%** maximum drawdown;
-- 19 of 23 names traded; and
-- 22.18% median capital deployment.
+The architecture has two opposite entry regimes:
+
+1. **Biotech regime:** when XBI is at or above its 200-day SMA and VIX is below 35, rank the 14 names by 126-day momentum after the trend filter. Size outright long calls at 6% per selected name with a 75% total cap and a seven-day `DaysSinceStrategyFired` clock. Try 365-730 DTE first, then 180-365, 90-180, and 30-400 when longer contracts do not exist. Take profit at +80% and exit at 90 DTE.
+2. **Semiconductor regime:** when XBI is below its 200-day SMA, rank NVDA, ANET, KLAC, TSM, MRVL, and LRCX by 126-day momentum and attempt only the top name. Buy one 10% OTM call at 45-90 DTE, subject to a real bid and a 10% maximum spread, with a 20% total budget and a 42-day strategy clock. Close at 21 DTE or +150%.
+
+Every entry is a single long call. There are no spreads or short legs. The semiconductor names are high-quality AI infrastructure companies used in the opposite XBI regime. They are not represented as material beneficiaries of one cancer-vaccine program.
+
+### Candidate comparison
+
+| Evidence | 17-name ranked MRNA | No RXRX | Mechanism-tight 14-name ranker |
+| --- | ---: | ---: | ---: |
+| Full pre-readout replay | **+274.91%** | +273.18% | +266.38% |
+| Full replay maximum drawdown | **46.97%** | 50.54% | 48.76% |
+| Full replay median deployment | **20.02%** | 19.68% | 17.86% |
+| Anchored OOS mean | **+35.09%** | +33.90% | +33.45% |
+| Anchored OOS median | +31.82% | +24.05% | **+38.67%** |
+| Anchored positive folds | 4/5 | 4/5 | 4/5 |
+| Rolling OOS mean | +29.31% | +45.46% | **+45.54%** |
+| Rolling OOS median | +29.56% | **+39.20%** | +29.92% |
+| Rolling positive folds | 6/7 | **7/7** | **7/7** |
+| Worst rolling drawdown | 40.26% | **33.61%** | 36.27% |
+
+The mechanism-tight version gives up 8.53 points of the full replay and 1.64 points of anchored mean versus the 17-name ranker. It improves anchored median by 6.85 points, rolling mean by 16.23 points, and rolling consistency from six positive folds to seven. That is enough to prefer the cleaner universe without pretending the result dominates every metric.
+
+### Final pre-readout evidence
+
+The fixed source is `6a8ce8012bafa06e1dad7466`. The exact inactive review clone is `6a8ce88aeca5765ba9cc1075`, **FINAL REVIEW — Quality-Screened Biotech/Semis XBI200**. Both resolve to pre-readout backtest `6a8ce80df68259010d8fa1dd` over March 7, 2022 through April 19, 2026:
+
+- **+266.38%** return;
+- **48.76%** maximum drawdown;
+- 16 of 20 names traded; and
+- **17.86%** median capital deployment.
 
 | Study | OOS folds | Mean | Median | Positive folds | Worst drawdown |
 | --- | --- | ---: | ---: | ---: | ---: |
-| Five-fold anchored `6a8cdcff89dc23e08edb45cd` | 49.28%, 12.54%, 80.63%, -38.14%, 69.17% | **34.70%** | **49.28%** | **4/5** | 67.05% |
-| Seven-fold rolling `6a8cdd0c3317b9f122a678be` | 4.24%, 52.89%, 62.45%, 8.02%, 22.69%, 13.41%, 74.44% | **34.02%** | **22.69%** | **7/7** | 50.83% |
+| Five-fold anchored `6a8ce81f2bafa06e1dad752a` | 63.16%, 38.67%, 69.72%, -23.11%, 18.81% | **33.45%** | **38.67%** | **4/5** | 62.08% |
+| Seven-fold rolling `6a8ce818eca5765ba9cc0b76` | 91.31%, 58.09%, 29.77%, 29.92%, 11.42%, 76.70%, 21.58% | **45.54%** | **29.92%** | **7/7** | 36.27% |
 
-The return was not rescued by one fold. All seven rolling OOS folds were positive. Increasing the MRNA core from 25% to 35% raised the full replay to +408.30%, but reduced rolling OOS to 6/7 positive and anchored OOS to 3/5 positive, including a -40.50% fold. Increasing the defensive semi budget to 40% also reduced rolling consistency and median return. Both higher-allocation variants were rejected.
-
-### Universe audit
-
-MRNA, MRK, and BNTX are the direct therapy, partner, and closest mRNA competitor. GH, NTRA, VCYT, ILMN, TWST, QGEN, TXG, TMO, DHR, and A cover tumor profiling, sequencing, diagnostics, and laboratory tooling. SDGR and ADPT add computational drug discovery and immune-response exposure. BMY is an adjacent oncology franchise. RXRX is the weakest company in the set on current revenue, cash-flow, and momentum evidence, so it is explicitly a speculative satellite capped at 6%, not a co-equal core holding.
-
-Two prospective quality changes were tested rather than assumed:
-
-| Prospective universe | Full replay | Anchored OOS | Rolling OOS | Observed Apr 20-Aug 18 replay |
-| --- | ---: | ---: | ---: | ---: |
-| Replace RXRX with TEM | +345.01% | 41.10% mean, 4/5 positive | 44.64% mean, 6/7 positive | -1.98% |
-| Remove RXRX, no replacement | +390.67% | 35.49% mean, 4/5 positive | 34.18% mean, 6/7 positive | +7.37% |
-| Frozen RXRX universe | +327.80% | 34.70% mean, 4/5 positive | 34.02% mean, **7/7 positive** | **+70.41%** |
-
-The April-August column is already burned and cannot select or certify a universe. It does expose the capital-path risk of swapping names after the fact. The frozen universe therefore stays for the owner-review candidate. TEM and no-RXRX remain inactive research branches until genuinely unseen data can distinguish them. The no-RXRX observed replay also warned that more than half of option pricings used modelled synthetic spreads instead of observed NBBO, another reason not to promote it from that window.
-
-### Observed-window execution audit
-
-Event backtest `6a8cdf83f68259010d8f9e6a` covered April 20 through August 18, ending before Moderna's August 19 readout. It returned **+70.41%** with **19.18%** maximum drawdown. This is a post-selection replay, not a new lockbox.
-
-The book filled 13 of 23 names. MRNA represented 47.94% of entry notional, so the portfolio still feels the direct bet. Twelve biotech-chain names also filled. The six semiconductors had zero resolution attempts because XBI stayed above its 200-day SMA during the window; that is the intended regime switch, not an execution failure. Median deployment was 20.30%, maximum deployment was 55.15%, and there were no days above 70% deployment.
+The already-observed April 20-August 18 replay returned **+20.86%** with **3.59%** maximum drawdown and **14.31%** median deployment. It is a stress diagnostic. The universe was selected after that period was known, so the result cannot become a new lockbox or decide the candidate by itself.
 
 ### Final owner-review state
 
-- Inactive review candidate: `6a8cdf9789dc23e08edb62bb`.
+- Inactive review candidate: `6a8ce88aeca5765ba9cc1075`.
 - Live target: `6a8cb433e3971b7c87943f11`, $13,500 cash, no positions, no strategies.
 - Live deployment frequency: `Constant`; alerts enabled; automatic approval false.
-- Structure audit: single-leg long calls only, no spreads, no short legs. MRNA and semis use 45-90 DTE. Only the biotech-chain sleeve may open longer-dated exposure, and every such position is an outright long call.
-- Deployment: none. Owner review is still required before cloning the eight strategies to the live target. Any resulting orders remain manual-approval only.
+- Structure audit: six strategies, single-leg long calls only, no spreads, no short legs, and no dedicated MRNA strategy.
+- Deployment: none. Owner review is still required before cloning the six strategies to the live target. Any resulting orders remain manual-approval only.
