@@ -183,7 +183,7 @@ The final biotech ranker is:
 
 The architecture has two opposite entry regimes:
 
-1. **Biotech regime:** when XBI is at or above its 200-day SMA and VIX is below 35, rank the 14 names by 126-day momentum after the trend filter. Size outright long calls at 6% per selected name with a 75% total cap and a seven-day `DaysSinceStrategyFired` clock. Try 365-730 DTE first, then 180-365, 90-180, and 30-400 when longer contracts do not exist. Take profit at +80% and exit at 90 DTE.
+1. **Biotech regime:** when XBI is at or above its 200-day SMA and VIX is below 35, filter the 14 names on price and momentum, then score the survivors by 63-day return divided by 63-day standard deviation. The inherited top-17 selection limit is a no-op after cutting the universe to 14; the risk-adjusted momentum weight determines priority for capped capital. Size outright long calls at 6% per selected name with a 75% total cap and a seven-day `DaysSinceStrategyFired` clock. Try 365-730 DTE first, then 180-365, 90-180, and 30-400 when longer contracts do not exist. Take profit at +80% and exit at 90 DTE.
 2. **Semiconductor regime:** when XBI is below its 200-day SMA, rank NVDA, ANET, KLAC, TSM, MRVL, and LRCX by 126-day momentum and attempt only the top name. Buy one 10% OTM call at 45-90 DTE, subject to a real bid and a 10% maximum spread, with a 20% total budget and a 42-day strategy clock. Close at 21 DTE or +150%.
 
 Every entry is a single long call. There are no spreads or short legs. The semiconductor names are high-quality AI infrastructure companies used in the opposite XBI regime. They are not represented as material beneficiaries of one cancer-vaccine program.
