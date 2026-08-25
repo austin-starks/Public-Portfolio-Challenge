@@ -65,7 +65,7 @@ The live story is a blog series. **Episode 10 is the write-up of this repo in ac
 | **[Episode 10 →](https://nexustrade.io/blog/claude-fable5-built-my-live-options-strategy-then-got-banned-20260614)** | The full story of Fable 5 running this runbook — every gate, engine bug, and dead end logged in [`FABLE_CAMPAIGN.MD`](episode-10/FABLE_CAMPAIGN.MD). |
 | **[Episode 10 on Medium →](https://medium.com/p/b5b2db76dc6c)** | Same article, syndicated on Medium — included here so readers who follow the challenge off-platform can find it without hunting. |
 | **[Episode 11 addendum →](episode-11/addendum/SHORT_TERM_DEBIT_SPREADS_20260824.md)** | Short-term debit-spread rule, matched walk-forward results, live-book changes, current cadence gates, and Public symbol eligibility. |
-| **[Episode 11 combined-book research →](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md)** | Cash-account constraint, failed lockbox, execution audit, long-call continuation research, and the inactive forward candidate. |
+| **[Episode 11 combined-book research →](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md)** | Cash-account constraint, failed lockbox, biotech-inclusive regime research, execution audit, and the inactive forward candidate. |
 
 **This repo is the open playbook.** Episode 10 documents one agent's run through it. The runbook is yours to replay with whatever model you have. [The agents don't just trade the account—they commit to this repo.](https://github.com/austin-starks/Public-Portfolio-Challenge/commits/main/)
 
@@ -79,7 +79,7 @@ Three Public brokerage books. Each has its own folder. Do not merge them.
 | --- | --- | ---: | --- | --- |
 | **Public Portfolio Challenge: Original** | live id `69a7dc7acdb6bf6a4681d36c` | $25,000 | Episode 10 incumbent. Do not touch. | [`episode-10/`](episode-10/) |
 | **Public Portfolio Challenge: Biotech** | former `5OH86568` · historical id `6a5e20a3ea0d6db55c69a171` | $5,500 historical | Entry-disabled historical record after Public consolidation. | [`episode-11/moderna/`](episode-11/moderna/) |
-| **Public Portfolio Challenge: Semis + Biotech** | `5OH79160` · id `6a8cb433e3971b7c87943f11` | $13,500 | **CASH, NO STRATEGIES:** funded combined target; Constant; auto-approve false; awaiting owner review of the inactive long-call candidate. | [`episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md`](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md) |
+| **Public Portfolio Challenge: Semis + Biotech** | `5OH79160` · id `6a8cb433e3971b7c87943f11` | $13,500 | **CASH, NO STRATEGIES:** funded combined target; Constant; auto-approve false; awaiting owner review of the MRNA + biotech-chain + semis regime candidate. | [`episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md`](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md) |
 
 Semis method and the certified SMH comparison live in [`episode-semis/RUNBOOK.md`](episode-semis/RUNBOOK.md). Biotech KEEP stays in [`episode-11/moderna/RUNBOOK.md`](episode-11/moderna/RUNBOOK.md) — do not rewrite or merge that body.
 
@@ -87,7 +87,7 @@ Semis method and the certified SMH comparison live in [`episode-semis/RUNBOOK.md
 
 **August 24 cash-account addendum:** [`audits/2026-08-24-public-cash-account-calls-only-addendum.md`](audits/2026-08-24-public-cash-account-calls-only-addendum.md) records the temporary calls-only test, the return comparison that rejected it, restoration of both higher-return spread books, the cooldown diagnosis, and the options-level notable-event fix.
 
-**August 24 combined-book continuation:** [`episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md`](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md) supersedes that temporary restoration. Public cash is now consolidated in one empty target. The capital-gated, long-call-only candidate is inactive and waiting for owner review plus genuinely unseen forward evidence.
+**August 24-25 combined-book continuation:** [`episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md`](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md) supersedes that temporary restoration. Public cash is now consolidated in one empty target. The corrected long-call-only candidate keeps MRNA concentrated, restores the 16-name biotech chain, and activates semis in the opposite XBI regime. It is inactive and waiting for owner review plus genuinely unseen forward evidence.
 
 ---
 
@@ -226,7 +226,7 @@ episode-10/
 | [`episode-10/addendum/`](episode-10/addendum) | Episode 10 entry/exit redesign addendum: runbook, campaign evidence, OOS comparison diagram, and bug note. |
 | [`episode-10/addendum/RAW_RETURN_VNEXT_RESULTS_20260817.md`](episode-10/addendum/RAW_RETURN_VNEXT_RESULTS_20260817.md) | Raw-return vNext sweep, GA, walk-forward, event audit, winners/losers, risk trade-offs, and deployment record. |
 | [`episode-11/addendum/SHORT_TERM_DEBIT_SPREADS_20260824.md`](episode-11/addendum/SHORT_TERM_DEBIT_SPREADS_20260824.md) | Episode 11 addendum: 180-DTE debit-spread ceiling, live Biotech/Semis replacements, matched walk-forward evidence, and symbol-level Public eligibility. |
-| [`episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md`](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md) | Episode 11 combined-book campaign: long calls only, three mechanism families, walk-forward finalist, failed frozen lockbox, optimizer cooldown fix, and no-deploy record. |
+| [`episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md`](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md) | Episode 11 combined-book campaign: long calls only, failed frozen lockbox, corrected biotech-inclusive XBI regime book, universe audit, optimizer cooldown fix, and no-deploy record. |
 | Campaign logs | Per-run logs from each operator/agent: [`FABLE_CAMPAIGN.MD`](episode-10/FABLE_CAMPAIGN.MD), [`CLAUDE_CODE_…`](episode-10/CLAUDE_CODE_CAMPAIGN_LOG_20260613T165226Z.md), [`CODEX_…`](episode-10/CODEX_CAMPAIGN_LOG_20260613T165248Z.md), [`CURSOR_…`](episode-10/CURSOR_CAMPAIGN_LOG_20260613T165224Z.md). |
 | [`episode-11/moderna/RUNBOOK.md`](episode-11/moderna/RUNBOOK.md) | Biotech KEEP — design-frozen. Live name **Public Portfolio Challenge: Biotech**. Do not rewrite or merge this body. |
 | [`episode-semis/RUNBOOK.md`](episode-semis/RUNBOOK.md) | Semiconductor S13 A — SMH-bar walk-forward, exam-only lockbox. **Now running** on Public `5OH79160`. |
