@@ -297,10 +297,13 @@ The $13,500 event trace contained 369 filled orders. Reconstructing open single-
 
 That confirms the implementation matches the clarified preference. It does not impose a permanent two-sector minimum. Either sleeve may remain in cash when its own gate or candidate filter fails.
 
-## Current state and remaining gate
+## Live forward deployment
 
 - The old Biotech and Semis portfolios were deleted. Their stale share links and snapshot embeds were removed from the article.
-- The funded live target is `6a8cb433e3971b7c87943f11`, with $13,500 cash, no holdings, and no strategies at the verification snapshot.
-- Deployment frequency is `Constant` and automatic order approval is off.
-- The fixed finalist remains an inactive chat portfolio. It has not been cloned into the funded account.
+- The funded Public target is `6a8cb433e3971b7c87943f11`. It began this deployment with $13,500 cash, $13,494.51 buying power, and no holdings.
+- The exact six-strategy finalist from chat portfolio `6a8ceee4c2086e65999c1900` was cloned into the funded account: two entry strategies and four matching exit strategies across the biotech and semiconductor sleeves.
+- Source and target conditions, universes, allocations, option legs, spacing rules, and exits match. The serializer omitted only two `eligibility: null` fields, which has no executable effect.
+- Deployment frequency is `Constant`. Portfolio-level automated approval and all six strategy-level automatic approval flags are off. No order can reach Public without manual approval.
+- The immediate post-deployment event audit found no signals, orders, rejections, or positions. No order was approved during deployment.
 - The April-August 2026 lockbox is burned. The first combined candidate failed it, and the replacement was designed after that result was known. The next honest test is forward trading, not another claim on the same dates.
+- The owner authorized the finalist as a high-risk live forward test on August 24, 2026. This is a deployment decision, not a claim that the replacement passed a pristine lockbox. Its genuinely unseen record begins with this deployment.
