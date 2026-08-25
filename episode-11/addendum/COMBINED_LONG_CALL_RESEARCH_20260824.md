@@ -154,7 +154,7 @@ The cooldown sweep exposed a separate implementation bug. When a strategy's enti
 
 NexusTrade commit `b0dccadba5` replaces the standalone cooldown directly and adds a regression test for this exact condition shape. The targeted cooldown tests passed 5/5, and the fix was deployed across the backtesting, optimizer, and live-trading Rust services. The manually authored finalist had one clean 42-day cooldown per sleeve, so this tooling bug does not rescue its failed lockbox.
 
-## Final live state and next gate
+## State after the first pass
 
 - The two former cash books were consolidated at Public. Their old NexusTrade rows no longer appear in the current live-portfolio list.
 - Combined live target `6a8cb433e3971b7c87943f11`: $13,500 cash, no positions, no strategies, `Constant` frequency, automatic approval false.
@@ -228,3 +228,79 @@ The already-observed April 20-August 18 replay returned **+20.86%** with **3.59%
 - Live deployment frequency: `Constant`; alerts enabled; automatic approval false.
 - Structure audit: six strategies, single-leg long calls only, no spreads, no short legs, and no dedicated MRNA strategy.
 - Deployment: none. Owner review is still required before cloning the six strategies to the live target. Any resulting orders remain manual-approval only.
+
+## Second pass: independent biotech and semiconductor sleeves
+
+The owner consolidated the cash into one Public account and deleted the two sector accounts. The replacement objective was clarified after the first regime design: holding biotech and semiconductors at the same time is preferred when both have valid setups. It is not mandatory. The book must not force an allocation to a weak sleeve, and it must not make the sectors mutually exclusive.
+
+The final candidate therefore uses two independent `RebalanceOption` strategies with `positionScope: strategy`:
+
+1. **Biotech sleeve:** MRNA, MRK, BNTX, ADPT, GH, NTRA, VCYT, ILMN, TWST, QGEN, TXG, TMO, DHR, and A. The portfolio gate requires XBI at or above its 200-day SMA and VIX below 35. Candidates pass if price is at or above the stock's 100-day SMA or 63-day rate of change is nonnegative. The sleeve ranks by 126-day rate of change, weights by 63-day return divided by 63-day volatility, allocates 6% per name, and caps the sleeve at 75%. Entries use single-leg delta-0.50 long calls, preferring 365-730 DTE with shorter single-call fallbacks. It takes profit at 80% and exits at 90 DTE.
+2. **Semiconductor sleeve:** NVDA, ANET, KLAC, TSM, MRVL, and LRCX. The portfolio gate requires SMH at or above its 100-day SMA and VIX below 35. Candidates must be at or above their own 100-day SMA with nonnegative 63-day rate of change. The sleeve selects the top one by 126-day rate of change and attempts a 10% OTM long call at 45-90 DTE. It is spaced by `DaysSinceStrategyFired >= 42`, capped at 15% of the portfolio, takes profit at 100%, and exits at 28 DTE.
+
+There are no option spreads and no short option legs. The two sleeve caps sum to 90%, so simultaneous ownership is possible without making it compulsory.
+
+### Architecture screen
+
+Three independent-sleeve variants were screened against the earlier mutually exclusive regime book. The aggregate semiconductor gate was the only difference between the variants.
+
+| Candidate | Portfolio | Full replay | Anchored mean / median | Rolling mean / median | Rolling positive |
+| --- | --- | ---: | ---: | ---: | ---: |
+| Earlier XBI regime switch | `6a8ce88aeca5765ba9cc1075` | +266.38% | +33.45% / +38.67% | +45.54% / +29.92% | 7/7 |
+| Independent sleeves, SMH 200-day gate | `6a8cecb6687ce0e30a053949` | +310.90% | +56.26% / +16.68% | +57.27% / +47.45% | 5/7 |
+| Independent sleeves, SMH 100-day gate | `6a8cecbbeca5765ba9cc34df` | +260.80% | +64.40% / +72.52% | +75.89% / +67.21% | 5/7 |
+| Independent sleeves, no aggregate SMH gate | `6a8cecc2eca5765ba9cc350e` | +1,248.15% | +46.82% / +72.52% | not advanced | not advanced |
+
+The ungated design's full replay was spectacular, but it did not improve the independent evidence. The SMH 100-day gate advanced because it produced the best anchored and rolling median among the gated mixed-sleeve designs and allowed all six semiconductor names to fill.
+
+### Parameter sweep and robust fixed configuration
+
+Walk-forward sweep `6a8ceeb4eca5765ba9cc4165` tested 27 combinations:
+
+- semiconductor total budget: 15%, 20%, or 25%;
+- semiconductor take-profit threshold: 100%, 150%, or 200%; and
+- semiconductor time exit: 14, 21, or 28 DTE.
+
+The adaptive fold winners reported +84.30% mean and +122.78% median OOS return, with four of five folds positive. That result cannot be deployed as one fixed book. The cross-fold robust selection was the 15% budget, 100% profit target, and 28 DTE exit. Its materialized chat portfolio is `6a8ceee4c2086e65999c1900`.
+
+Fixed-parameter anchored certification `6a8cef81eca5765ba9cc48dd` returned:
+
+| Fold | OOS return | Maximum drawdown |
+| ---: | ---: | ---: |
+| 1 | +1.99% | 32.51% |
+| 2 | +119.56% | 42.05% |
+| 3 | -42.96% | 55.42% |
+| 4 | +124.42% | 26.17% |
+| 5 | +122.78% | 44.32% |
+| **Aggregate** | **+65.16% mean / +119.56% median** | **55.42% worst** |
+
+Four of five anchored folds were positive. Fixed-parameter rolling study `6a8cefd1eca5765ba9cc4b6a` returned:
+
+| Fold | OOS return | Maximum drawdown |
+| ---: | ---: | ---: |
+| 1 | +39.46% | 27.73% |
+| 2 | -5.43% | 42.05% |
+| 3 | +213.70% | 33.05% |
+| 4 | -59.18% | 74.33% |
+| 5 | +41.22% | 26.17% |
+| 6 | +50.12% | 30.91% |
+| 7 | -68.64% | 79.90% |
+| **Aggregate** | **+30.18% mean / +39.46% median** | **79.90% worst** |
+
+Four of seven rolling folds were positive. This is a high-return, high-variance candidate. It improves the owner's preferred return statistics and sector participation, but it is less consistent than the earlier regime switch.
+
+### Full replay, breadth, and simultaneous holdings
+
+The $13,500 event backtest `6a8cefb8f68259010d8fa462` returned +1,579.62% with a 64.07% maximum drawdown and 12.63% median deployment. All 20 eligible names filled. The $25,000 breadth check `6a8cefbcf68259010d8fa463` also traded all 20 names and returned +732.21%, with a 52.66% maximum drawdown and 17.05% median deployment.
+
+The $13,500 event trace contained 369 filled orders. Reconstructing open single-call positions after each evaluation timestamp found 127 timestamps with at least one biotech and at least one semiconductor position open together. The first overlap, on July 20, 2022, held TWST with KLAC and NVDA. The final replay timestamp, April 16, 2026, held TXG, TWST, MRNA, BNTX, TMO, and ILMN alongside KLAC.
+
+That confirms the implementation matches the clarified preference. It does not impose a permanent two-sector minimum. Either sleeve may remain in cash when its own gate or candidate filter fails.
+
+## Current state and remaining gate
+
+- The old Biotech and Semis portfolios were deleted. Their stale share links and snapshot embeds were removed from the article.
+- The funded live target is `6a8cb433e3971b7c87943f11`, with $13,500 cash, no holdings, and no strategies at the verification snapshot.
+- Deployment frequency is `Constant` and automatic order approval is off.
+- The fixed finalist remains an inactive chat portfolio. It has not been cloned into the funded account.
+- The April-August 2026 lockbox is burned. The first combined candidate failed it, and the replacement was designed after that result was known. The next honest test is forward trading, not another claim on the same dates.
