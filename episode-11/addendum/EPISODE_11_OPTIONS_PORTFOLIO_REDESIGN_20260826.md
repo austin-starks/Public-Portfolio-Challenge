@@ -194,24 +194,21 @@ The live portfolio was re-read after certification:
 - unrealized P/L: -$165, or -27.97%; and
 - no Pending, Accepted, Pending User Approval, or Partially Filled orders.
 
-The QGEN call is not being force-sold merely because the strategy architecture changed. QGEN remains in the thesis universe, the final strategy uses portfolio-wide position scope, and the existing call should count against its QGEN allocation. The live reconciliation must verify that it will not stage a duplicate QGEN order.
+The QGEN call was not force-sold merely because the strategy architecture changed. QGEN remains in the thesis universe, the final strategy uses portfolio-wide position scope, and the existing call counts against its QGEN allocation.
 
-No live orders were created, approved, canceled, or submitted. No live strategy was changed. Automatic order approval remains disabled.
-
-## Deployment boundary
+## Deployment record
 
 The exact research portfolio is:
 
 - Final candidate: `6a8f7ea36c9d5ad71a63775d`
 - Certified source: `6a8f7c8c6c9d5ad71a636b36`
+- Legacy sector-gated paper portfolio: `6a8f9b0ec67c177db82d5b0f`
+- Live Public portfolio: `6a8cb433e3971b7c87943f11`
+- Current-book reconciliation: `6a8f9b603a0c760d5849f380`
 
-Before any live mutation:
+Austin explicitly approved preserving the current strategies in paper and replacing the live strategy set. The live mutation removed six strategies and added 29 exact semantic copies from the final candidate. The account identity, history, cash and existing QGEN contract were preserved. Portfolio-level automated approval and all 29 strategy-level automatic approvals remain disabled.
 
-1. re-read live holdings and pending orders;
-2. produce a dry reconciliation that preserves the existing QGEN call;
-3. inspect exact contracts, quotes, spreads, quantities, and total capital;
-4. verify no order reprices outside the owner's approved price envelope; and
-5. obtain Austin's explicit approval for the strategy replacement and every live order.
+The post-deployment current-book reconciliation resolved a $13,335.02 NAV. Its target was the same single QGEN contract already held. It produced zero orders, $0 estimated cost, $0 realized P/L, no wash-sale flags and no canceled orders. No QGEN exit condition fired, and no duplicate QGEN order was created. Future live orders still require Austin's manual approval.
 
 ## Engine defects found during certification
 

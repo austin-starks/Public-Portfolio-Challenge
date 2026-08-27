@@ -56,7 +56,7 @@ In February 2026 I deposited **$25,000** into a live [Public](https://public.com
 
 Not paper. Not a backtest screenshot. **Real money, documented in real time.**
 
-The live story is a blog series. **Episode 11 is the current chapter:** Grok Bot built separate biotech and semiconductor books, I funded a $13,500 Public account, then rejected the sector-gated construction and reopened the entire design. The final research candidate uses one allocator across 26 thesis-approved companies, passed four of five out-of-sample folds, and remains staged for owner-approved reconciliation. The exact evidence and deployment boundary are in [`episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md`](episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md).
+The live story is a blog series. **Episode 11 is the current chapter:** Grok Bot built separate biotech and semiconductor books, I funded a $13,500 Public account, then rejected the sector-gated construction and reopened the entire design. The final allocator covers 26 thesis-approved companies, passed four of five out-of-sample folds, and replaced the live strategy set on August 26 after the old book was preserved in paper. The exact evidence, deployment and zero-order reconciliation are in [`episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md`](episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md).
 
 | | |
 | --- | --- |
@@ -68,9 +68,9 @@ The live story is a blog series. **Episode 11 is the current chapter:** Grok Bot
 | **[Episode 11 on Medium →](https://medium.com/p/72e144ae4143)** | The synchronized Medium edition. |
 | **[Episode 11 addendum →](episode-11/addendum/SHORT_TERM_DEBIT_SPREADS_20260824.md)** | Short-term debit-spread rule, matched walk-forward results, live-book changes, current cadence gates, and Public symbol eligibility. |
 | **[Episode 11 combined-book research →](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md)** | Cash-account constraint, failed lockbox, biotech-inclusive regime research, execution audit, and the inactive forward candidate. |
-| **[Episode 11 final redesign →](episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md)** | One 26-company allocator, company-level gates, five-fold evidence, full event replay, current holdings audit, and the owner-approval boundary. |
+| **[Episode 11 final redesign →](episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md)** | One 26-company allocator, company-level gates, five-fold evidence, full event replay, live deployment, and the zero-order reconciliation. |
 
-**This repo is the open playbook.** Episode 10 documents one agent's full run through it. Episode 11 shows the research continuing after deployment, including the rejected designs and the final no-mutation boundary. The runbook is yours to replay with whatever model you have. [The agents don't just trade the account—they commit to this repo.](https://github.com/austin-starks/Public-Portfolio-Challenge/commits/main/)
+**This repo is the open playbook.** Episode 10 documents one agent's full run through it. Episode 11 shows the research continuing after deployment, including the rejected designs, the exact replacement and the live reconciliation. The runbook is yours to replay with whatever model you have. [The agents don't just trade the account—they commit to this repo.](https://github.com/austin-starks/Public-Portfolio-Challenge/commits/main/)
 
 ---
 
@@ -82,7 +82,7 @@ Three Public brokerage books. Each has its own folder. Do not merge them.
 | --- | --- | ---: | --- | --- |
 | **Public Portfolio Challenge: Original** | live id `69a7dc7acdb6bf6a4681d36c` | $25,000 | Episode 10 incumbent. Do not touch. | [`episode-10/`](episode-10/) |
 | **Public Portfolio Challenge: Biotech** | former `5OH86568` · historical id `6a5e20a3ea0d6db55c69a171` | $5,500 historical | Entry-disabled historical record after Public consolidation. | [`episode-11/moderna/`](episode-11/moderna/) |
-| **Public Portfolio Challenge: Semis + Biotech** | `5OH79160` · id `6a8cb433e3971b7c87943f11` | $13,500 | Current six-strategy sector-gated book with one QGEN call. The certified 26-company central-allocator replacement is research-only; no replacement or orders have been submitted. | [`episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md`](episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md) |
+| **Public Portfolio Challenge: Semis + Biotech** | `5OH79160` · id `6a8cb433e3971b7c87943f11` | $13,500 | Live 29-strategy implementation: one 26-company allocator, two global exits and 26 company exits. One QGEN call remains held; automatic approval is off. | [`episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md`](episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md) |
 
 Semis method and the certified SMH comparison live in [`episode-semis/RUNBOOK.md`](episode-semis/RUNBOOK.md). Biotech KEEP stays in [`episode-11/moderna/RUNBOOK.md`](episode-11/moderna/RUNBOOK.md) — do not rewrite or merge that body.
 
@@ -92,7 +92,7 @@ Semis method and the certified SMH comparison live in [`episode-semis/RUNBOOK.md
 
 **August 24-25 combined-book continuation:** [`episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md`](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md) records the consolidation step and the proposed XBI-regime candidate. That candidate ranked MRNA inside a quality-screened biotech chain and activated semis in the opposite XBI regime. It was never deployed and is now superseded by the August 26 redesign. The company, thesis, and option-access review for the researched stocks is in the [`portfolio universe audit`](episode-11/addendum/PORTFOLIO_UNIVERSE_AUDIT_20260825.md).
 
-**August 26 final redesign:** [`episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md`](episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md) supersedes the proposed XBI-regime candidate. It uses one central allocator across 26 thesis-approved companies, removes XBI and SMH vetoes, and was certified at the actual $13,500 account size. The live strategies and QGEN holding remain unchanged until an owner-approved reconciliation.
+**August 26 final redesign:** [`episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md`](episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md) supersedes the proposed XBI-regime candidate. It uses one central allocator across 26 thesis-approved companies, removes XBI and SMH vetoes, and was certified at the actual $13,500 account size. The rejected six-strategy book is preserved in paper portfolio `6a8f9b0ec67c177db82d5b0f`. The validated 29-strategy object now runs on the live Public account, and its current-book reconciliation required no orders.
 
 ---
 
