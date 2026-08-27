@@ -56,18 +56,21 @@ In February 2026 I deposited **$25,000** into a live [Public](https://public.com
 
 Not paper. Not a backtest screenshot. **Real money, documented in real time.**
 
-The live story is a blog series. **Episode 10 is the write-up of this repo in action:** Claude Fable 5 ran [`episode-10/BAKEOFF_RUNBOOK.md`](episode-10/BAKEOFF_RUNBOOK.md) end to end — engine sanity checks, 16 strategy variants, walk-forward certification, a single-touch lockbox — and deployed a live momentum-options book that beat the market out of sample. Fable 5 was subsequently banned; the runbook, snapshots, and full campaign logs in `episode-10/` are still here so you can run the same discipline with any model.
+The live story is a blog series. **Episode 11 is the current chapter:** Grok Bot built separate biotech and semiconductor books, I funded a $13,500 Public account, then rejected the sector-gated construction and reopened the entire design. The final research candidate uses one allocator across 26 thesis-approved companies, passed four of five out-of-sample folds, and remains staged for owner-approved reconciliation. The exact evidence and deployment boundary are in [`episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md`](episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md).
 
 | | |
 | --- | --- |
-| **[Full series →](https://nexustrade.io/blog/series/public-portfolio-challenge)** | Ten episodes and counting: model bakeoffs, deploy day, production bugs, week-one gains, panic sells, engine rewrites, and the open runbook. |
+| **[Full series →](https://nexustrade.io/blog/series/public-portfolio-challenge)** | Eleven episodes and counting: model bakeoffs, deploy day, production bugs, week-one gains, panic sells, engine rewrites, and the open runbook. |
 | **[Episode 1 →](https://nexustrade.io/blog/im-giving-an-ai-access-to-my-public-trading-account-heres-how-you-can-watch-it-destroy-25000-20260228)** | Where it started — why $25k, why Public, why total transparency. |
 | **[Episode 10 →](https://nexustrade.io/blog/claude-fable5-built-my-live-options-strategy-then-got-banned-20260614)** | The full story of Fable 5 running this runbook — every gate, engine bug, and dead end logged in [`FABLE_CAMPAIGN.MD`](episode-10/FABLE_CAMPAIGN.MD). |
 | **[Episode 10 on Medium →](https://medium.com/p/b5b2db76dc6c)** | Same article, syndicated on Medium — included here so readers who follow the challenge off-platform can find it without hunting. |
+| **[Episode 11 →](https://nexustrade.io/blog/moderna-basically-cured-cancer-i-used-grok-bot-to-create-a-trading-strategy-20260823)** | Grok Bot's original thesis books, the funded $13,500 account, and the August 26 redesign that removed XBI and SMH vetoes. |
+| **[Episode 11 on Medium →](https://medium.com/p/72e144ae4143)** | The synchronized Medium edition. |
 | **[Episode 11 addendum →](episode-11/addendum/SHORT_TERM_DEBIT_SPREADS_20260824.md)** | Short-term debit-spread rule, matched walk-forward results, live-book changes, current cadence gates, and Public symbol eligibility. |
 | **[Episode 11 combined-book research →](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md)** | Cash-account constraint, failed lockbox, biotech-inclusive regime research, execution audit, and the inactive forward candidate. |
+| **[Episode 11 final redesign →](episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md)** | One 26-company allocator, company-level gates, five-fold evidence, full event replay, current holdings audit, and the owner-approval boundary. |
 
-**This repo is the open playbook.** Episode 10 documents one agent's run through it. The runbook is yours to replay with whatever model you have. [The agents don't just trade the account—they commit to this repo.](https://github.com/austin-starks/Public-Portfolio-Challenge/commits/main/)
+**This repo is the open playbook.** Episode 10 documents one agent's full run through it. Episode 11 shows the research continuing after deployment, including the rejected designs and the final no-mutation boundary. The runbook is yours to replay with whatever model you have. [The agents don't just trade the account—they commit to this repo.](https://github.com/austin-starks/Public-Portfolio-Challenge/commits/main/)
 
 ---
 
@@ -79,7 +82,7 @@ Three Public brokerage books. Each has its own folder. Do not merge them.
 | --- | --- | ---: | --- | --- |
 | **Public Portfolio Challenge: Original** | live id `69a7dc7acdb6bf6a4681d36c` | $25,000 | Episode 10 incumbent. Do not touch. | [`episode-10/`](episode-10/) |
 | **Public Portfolio Challenge: Biotech** | former `5OH86568` · historical id `6a5e20a3ea0d6db55c69a171` | $5,500 historical | Entry-disabled historical record after Public consolidation. | [`episode-11/moderna/`](episode-11/moderna/) |
-| **Public Portfolio Challenge: Semis + Biotech** | `5OH79160` · id `6a8cb433e3971b7c87943f11` | $13,500 | **CASH, NO STRATEGIES:** funded combined target; Constant; auto-approve false; awaiting owner review of the MRNA + biotech-chain + semis regime candidate. | [`episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md`](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md) |
+| **Public Portfolio Challenge: Semis + Biotech** | `5OH79160` · id `6a8cb433e3971b7c87943f11` | $13,500 | Current six-strategy sector-gated book with one QGEN call. The certified 26-company central-allocator replacement is research-only; no replacement or orders have been submitted. | [`episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md`](episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md) |
 
 Semis method and the certified SMH comparison live in [`episode-semis/RUNBOOK.md`](episode-semis/RUNBOOK.md). Biotech KEEP stays in [`episode-11/moderna/RUNBOOK.md`](episode-11/moderna/RUNBOOK.md) — do not rewrite or merge that body.
 
@@ -87,7 +90,9 @@ Semis method and the certified SMH comparison live in [`episode-semis/RUNBOOK.md
 
 **August 24 cash-account addendum:** [`audits/2026-08-24-public-cash-account-calls-only-addendum.md`](audits/2026-08-24-public-cash-account-calls-only-addendum.md) records the temporary calls-only test, the return comparison that rejected it, restoration of both higher-return spread books, the cooldown diagnosis, and the options-level notable-event fix.
 
-**August 24-25 combined-book continuation:** [`episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md`](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md) supersedes that temporary restoration. Public cash is now consolidated in one empty target. The corrected long-call-only candidate ranks MRNA inside a quality-screened 14-name biotech chain and activates semis in the opposite XBI regime. It is inactive and waiting for owner review plus genuinely unseen forward evidence. The company, thesis, and option-access review for all 23 researched stocks is in the [`portfolio universe audit`](episode-11/addendum/PORTFOLIO_UNIVERSE_AUDIT_20260825.md).
+**August 24-25 combined-book continuation:** [`episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md`](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md) records the consolidation step and the proposed XBI-regime candidate. That candidate ranked MRNA inside a quality-screened biotech chain and activated semis in the opposite XBI regime. It was never deployed and is now superseded by the August 26 redesign. The company, thesis, and option-access review for the researched stocks is in the [`portfolio universe audit`](episode-11/addendum/PORTFOLIO_UNIVERSE_AUDIT_20260825.md).
+
+**August 26 final redesign:** [`episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md`](episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md) supersedes the proposed XBI-regime candidate. It uses one central allocator across 26 thesis-approved companies, removes XBI and SMH vetoes, and was certified at the actual $13,500 account size. The live strategies and QGEN holding remain unchanged until an owner-approved reconciliation.
 
 ---
 
@@ -103,7 +108,6 @@ Four agents received the same Episode 10 discipline. The useful result is not a 
 | [Claude Fable 5](episode-10/FABLE_CAMPAIGN.MD#head-to-head-for-deploy-both-measured-directly-on-the-deployable-object) | **+88.3%** | No—owner override | Deployed | Strong return and drawdown, but missed strict breadth, fold-Sortino, stability, and posture gates; later engine fixes weakened the selection-provenance claim. |
 
 **Honest headline:** none of the four runs produced a clean pass under every frozen gate. Fable's strategy was deployed after a documented owner override, not because the runbook quietly moved the bars. Follow the links for fold-level evidence and every failure.
-
 ---
 
 ## What this repo gives you
@@ -227,6 +231,7 @@ episode-10/
 | [`episode-10/addendum/RAW_RETURN_VNEXT_RESULTS_20260817.md`](episode-10/addendum/RAW_RETURN_VNEXT_RESULTS_20260817.md) | Raw-return vNext sweep, GA, walk-forward, event audit, winners/losers, risk trade-offs, and deployment record. |
 | [`episode-11/addendum/SHORT_TERM_DEBIT_SPREADS_20260824.md`](episode-11/addendum/SHORT_TERM_DEBIT_SPREADS_20260824.md) | Episode 11 addendum: 180-DTE debit-spread ceiling, live Biotech/Semis replacements, matched walk-forward evidence, and symbol-level Public eligibility. |
 | [`episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md`](episode-11/addendum/COMBINED_LONG_CALL_RESEARCH_20260824.md) | Episode 11 combined-book campaign: long calls only, failed frozen lockbox, corrected biotech-inclusive XBI regime book, universe audit, optimizer cooldown fix, and no-deploy record. |
+| [`episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md`](episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md) | Episode 11 final redesign: actual $13,500 capital, 26 thesis-approved companies, company-level timing, one allocator, five-fold evidence, full event replay, and no live mutation without owner approval. |
 | Campaign logs | Per-run logs from each operator/agent: [`FABLE_CAMPAIGN.MD`](episode-10/FABLE_CAMPAIGN.MD), [`CLAUDE_CODE_…`](episode-10/CLAUDE_CODE_CAMPAIGN_LOG_20260613T165226Z.md), [`CODEX_…`](episode-10/CODEX_CAMPAIGN_LOG_20260613T165248Z.md), [`CURSOR_…`](episode-10/CURSOR_CAMPAIGN_LOG_20260613T165224Z.md). |
 | [`episode-11/moderna/RUNBOOK.md`](episode-11/moderna/RUNBOOK.md) | Biotech KEEP — design-frozen. Live name **Public Portfolio Challenge: Biotech**. Do not rewrite or merge this body. |
 | [`episode-semis/RUNBOOK.md`](episode-semis/RUNBOOK.md) | Semiconductor S13 A — SMH-bar walk-forward, exam-only lockbox. **Now running** on Public `5OH79160`. |
@@ -374,6 +379,8 @@ Nothing in this repository should place a trade by itself. Review every strategy
 | [Episode 1](https://nexustrade.io/blog/im-giving-an-ai-access-to-my-public-trading-account-heres-how-you-can-watch-it-destroy-25000-20260228) | How the challenge began |
 | [Episode 10](https://nexustrade.io/blog/claude-fable5-built-my-live-options-strategy-then-got-banned-20260614) | Fable 5 ran this runbook and deployed a live book — full story + links to campaign logs |
 | [Episode 10 on Medium](https://medium.com/p/b5b2db76dc6c) | Syndicated copy of the same article (for readers off NexusTrade) |
+| [Episode 11](https://nexustrade.io/blog/moderna-basically-cured-cancer-i-used-grok-bot-to-create-a-trading-strategy-20260823) | Grok Bot's biotech and semiconductor experiment, plus the certified August 26 portfolio redesign |
+| [Episode 11 on Medium](https://medium.com/p/72e144ae4143) | Synchronized Medium edition |
 | [Developers](https://nexustrade.io/developers) | MCP setup |
 | [MCP tools reference](https://nexustrade.io/docs/api-reference/mcp-tools-utility) | Every tool the runbook can call |
 | [API overview](https://nexustrade.io/docs/api-reference/overview) | REST + auth |
