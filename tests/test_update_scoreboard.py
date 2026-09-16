@@ -22,6 +22,7 @@ class ScoreboardTests(unittest.TestCase):
             "performance": {
                 "gains": {"allTime": 10},
                 "statistics": {"maxDrawdown": 4.25},
+                "updatedAt": "2026-03-11T20:05:00.000Z",
             }
         }
         spy = {
@@ -52,6 +53,7 @@ class ScoreboardTests(unittest.TestCase):
             "performance": {
                 "gains": {"allTime": 9.5},
                 "statistics": {"maxDrawdown": 1},
+                "updatedAt": "2026-03-10T13:40:00Z",
             }
         }
         spy = {
@@ -62,6 +64,30 @@ class ScoreboardTests(unittest.TestCase):
         }
 
         with self.assertRaisesRegex(ValueError, "differ"):
+            MODULE.build_scoreboard(portfolio, performance, spy)
+
+    def test_rejects_performance_older_than_latest_history_point(self):
+        portfolio = {
+            "history": [
+                {"time": "2026-03-09T13:34:06Z", "value": 25000},
+                {"time": "2026-03-10T18:30:00Z", "value": 27500},
+            ]
+        }
+        performance = {
+            "performance": {
+                "gains": {"allTime": 10},
+                "statistics": {"maxDrawdown": 1},
+                "updatedAt": "2026-03-10T18:27:30Z",
+            }
+        }
+        spy = {
+            "history": [
+                {"time": "2026-03-09T15:45:00", "value": 100},
+                {"time": "2026-03-10T15:45:00", "value": 101},
+            ]
+        }
+
+        with self.assertRaisesRegex(MODULE.SnapshotMismatchError, "predates"):
             MODULE.build_scoreboard(portfolio, performance, spy)
 
     def test_replaces_only_generated_block(self):

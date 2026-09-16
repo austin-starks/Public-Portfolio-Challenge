@@ -7,6 +7,7 @@ import argparse
 import json
 import math
 import pathlib
+import time
 import urllib.request
 from datetime import datetime, timezone
 from email.utils import parsedate_to_datetime
@@ -25,6 +26,12 @@ PERFORMANCE_URL = (
 SPY_URL = f"{API_ROOT}/stock/SPY/history/price?brokerage=Public"
 START_MARKER = "<!-- SCOREBOARD:START -->"
 END_MARKER = "<!-- SCOREBOARD:END -->"
+SNAPSHOT_ATTEMPTS = 20
+SNAPSHOT_RETRY_SECONDS = 30
+
+
+class SnapshotMismatchError(ValueError):
+    """The performance summary and the history describe different moments."""
 
 
 def fetch_json(url: str) -> dict[str, Any]:
@@ -101,10 +108,19 @@ def build_scoreboard(
     statistics = performance.get("statistics")
     if not isinstance(gains, dict) or not isinstance(statistics, dict):
         raise ValueError("performance gains or statistics are missing")
+    updated_at = performance.get("updatedAt")
+    if not isinstance(updated_at, str):
+        raise ValueError("performance.updatedAt is missing")
+    if parse_datetime(updated_at) < as_of:
+        raise SnapshotMismatchError(
+            f"performance summary from {updated_at} predates the latest "
+            f"portfolio history point at {as_of.isoformat()}"
+        )
     reported_return = finite_number(gains.get("allTime"), "gains.allTime")
     if abs(reported_return - calculated_return) > 0.05:
-        raise ValueError(
-            "portfolio history and reported all-time return differ by more than 0.05pp"
+        raise SnapshotMismatchError(
+            "portfolio history and reported all-time return differ by more than 0.05pp "
+            f"({calculated_return:+.4f}% vs {reported_return:+.4f}% as of {as_of.isoformat()})"
         )
 
     spy_window = [
@@ -181,6 +197,32 @@ def replace_scoreboard(readme: str, rendered: str) -> str:
     return readme[:start] + rendered + readme[end:]
 
 
+def fetch_scoreboard(
+    attempts: int = SNAPSHOT_ATTEMPTS,
+    retry_seconds: float = SNAPSHOT_RETRY_SECONDS,
+) -> dict[str, Any]:
+    spy_history_payload = fetch_json(SPY_URL)
+    attempt = 1
+    while True:
+        # Performance first: reading it queues a refresh when it is stale, and
+        # history read afterwards cannot hold a point the summary never saw.
+        performance_payload = fetch_json(PERFORMANCE_URL)
+        portfolio_history_payload = fetch_json(HISTORY_URL)
+        try:
+            return build_scoreboard(
+                portfolio_history_payload, performance_payload, spy_history_payload
+            )
+        except SnapshotMismatchError as error:
+            if attempt >= attempts:
+                raise
+            print(
+                f"Attempt {attempt}/{attempts}: {error}. Retrying in {retry_seconds:.0f}s.",
+                flush=True,
+            )
+            time.sleep(retry_seconds)
+            attempt += 1
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -190,11 +232,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    scoreboard = build_scoreboard(
-        fetch_json(HISTORY_URL),
-        fetch_json(PERFORMANCE_URL),
-        fetch_json(SPY_URL),
-    )
+    scoreboard = fetch_scoreboard()
     readme_path = args.repo_root / "README.md"
     data_path = args.repo_root / "data" / "scoreboard.json"
     readme_path.write_text(
