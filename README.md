@@ -22,9 +22,9 @@
 <!-- SCOREBOARD:START -->
 | Account value | Total return | Return vs. SPY | Max drawdown | Days live |
 | ---: | ---: | ---: | ---: | ---: |
-| $30,593.31 | +22.37% | +6.79 pp (SPY +15.58%) | −12.21% | 182 |
+| $29,813.85 | +19.26% | +5.60 pp (SPY +13.65%) | −12.34% | 190 |
 
-<sub>As of September 7, 2026. Same-window comparison begins with the first stored live observation. [Portfolio data](https://nexustrade.io/api/share-portfolio/portfolio/69a7dc7cf99e43688fcec567/history) · [Performance data](https://nexustrade.io/api/share-portfolio/69a7dc7cf99e43688fcec567/performance) · [SPY data](https://nexustrade.io/api/stock/SPY/history/price?brokerage=Public) · refreshed weekly by GitHub Actions.</sub>
+<sub>As of September 15, 2026. Same-window comparison begins with the first stored live observation. [Portfolio data](https://nexustrade.io/api/share-portfolio/portfolio/69a7dc7cf99e43688fcec567/history) · [Performance data](https://nexustrade.io/api/share-portfolio/69a7dc7cf99e43688fcec567/performance) · [SPY data](https://nexustrade.io/api/stock/SPY/history/price?brokerage=Public) · refreshed weekly by GitHub Actions.</sub>
 <!-- SCOREBOARD:END -->
 
 <br />
