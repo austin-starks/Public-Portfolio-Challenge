@@ -40,7 +40,7 @@ Episode 10.
 | Lockbox | 2026-04-14 → 2026-08-18 (single touch; already used) |
 | WF span | 2022-01-01 → 2026-04-14 · 4 folds · 252-day OOS · validation 50% · anchored · Day · certification sweep |
 
-**Frozen 20:** MRNA MRK BNTX PSNL RXRX SDGR ADPT GH NTRA VCYT ILMN TWST QGEN TXG PACB TMO DHR A TECH BMY
+**Frozen 20 (researched and frozen by Grok Bot):** MRNA MRK BNTX PSNL RXRX SDGR ADPT GH NTRA VCYT ILMN TWST QGEN TXG PACB TMO DHR A TECH BMY
 
 ---
 

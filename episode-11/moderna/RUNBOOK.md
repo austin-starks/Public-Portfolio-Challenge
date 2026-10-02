@@ -6,16 +6,30 @@
 >
 > **This is not a new bakeoff.** KEEP is design-frozen. Do not invent a replacement book. Do not
 > re-run failed neighborhoods as if they were unknown. Do not touch the lockbox again.
+>
+> **Status since 2026-08-24:** this book's live target no longer trades. Its entry strategies were
+> removed when Public's cash-account spread restriction was confirmed, and its cash was consolidated
+> into **Public Portfolio Challenge: Semis + Biotech** (`6a8cb433e3971b7c87943f11`), which runs a
+> different 26-company allocator ([`../LIVE_ALLOCATOR_RUNBOOK.md`](../LIVE_ALLOCATOR_RUNBOOK.md)).
+> KEEP's rules continue as the paper control **Moderna Trading Bot: Original Grok Paper**
+> ([shared page](https://nexustrade.io/shared-portfolio/6a8d07f817356dfe9cc71f11)). Use this file to
+> operate or audit that frozen book. Do not use it to mutate the live Semis + Biotech account.
 
 ---
 
-## Owner's thesis (READ FIRST — fixed priors, not things to re-litigate)
+## Thesis and frozen picks (READ FIRST: fixed priors, not things to re-litigate)
 
 Sector re-rating after the **2026-08-19** Moderna/Merck **intismeran autogene + Keytruda** Phase 3
 melanoma readout. The universe is the **neoantigen / mRNA value chain**.
 
+**Who decided what.** Austin supplied the thesis brief and the experiment rules. **Grok Bot**
+(xAI's autonomous agent) researched and froze the 20 names below, designed and swept the candidate
+mechanisms and assembled KEEP. Austin did not pick the companies. Grok Bot's own research transcript
+is not in this repo; see [`../GROK_BOT_CAMPAIGN_LOG.md`](../GROK_BOT_CAMPAIGN_LOG.md).
+
 - **`MRNA` is required in the universe.** It is **not** required as a sleeve. High beta is the intent.
-- Do not add, drop, or substitute names. Do not spend effort questioning the picks.
+- The 20 names are Grok Bot's frozen selection. This runbook operates the frozen book, so do not add,
+  drop, or substitute names here. A different universe is a new sibling book with its own record.
 - **Owner override:** the deploy bar is **not** Episode 10 Gate 4 vs Baseline C
   (`+59.33%` / Sortino `3.02`). The bar is a **very good Challenge-class book**.
 
@@ -69,7 +83,7 @@ those numbers either — name the override.
 | `interval` | Day |
 | Certification engine | sweep (`engine_kind: sweep`, `certification: true`) |
 
-### Frozen 20 (do not change)
+### Frozen 20, selected by Grok Bot (do not change)
 
 `MRNA` `MRK` `BNTX` `PSNL` `RXRX` `SDGR` `ADPT` `GH` `NTRA` `VCYT` `ILMN` `TWST` `QGEN` `TXG` `PACB` `TMO` `DHR` `A` `TECH` `BMY`
 

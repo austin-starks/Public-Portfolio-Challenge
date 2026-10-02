@@ -82,7 +82,7 @@ Three Public brokerage books. Each has its own folder. Do not merge them.
 | --- | --- | ---: | --- | --- |
 | **Public Portfolio Challenge: Original** | live id `69a7dc7acdb6bf6a4681d36c` | $25,000 | Episode 10 incumbent. Do not touch. | [`episode-10/`](episode-10/) |
 | **Public Portfolio Challenge: Biotech** | former `5OH86568` · historical id `6a5e20a3ea0d6db55c69a171` | $5,500 historical | Entry-disabled historical record after Public consolidation. | [`episode-11/moderna/`](episode-11/moderna/) |
-| **Public Portfolio Challenge: Semis + Biotech** | `5OH79160` · id `6a8cb433e3971b7c87943f11` | $13,500 | Live 29-strategy implementation: one 26-company allocator, two global exits and 26 company exits. One QGEN call remains held; automatic approval is off. | [`episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md`](episode-11/addendum/EPISODE_11_OPTIONS_PORTFOLIO_REDESIGN_20260826.md) |
+| **Public Portfolio Challenge: Semis + Biotech** | `5OH79160` · id `6a8cb433e3971b7c87943f11` | $13,500 | Live 29-strategy implementation since 2026-08-26 CT: one allocator over Grok Bot's names minus PSNL (26 companies), two global exits and 26 company exits. Designed by Codex. Orders and results vs SPY: [`episode-11/FORWARD_TEST_LOG.md`](episode-11/FORWARD_TEST_LOG.md). | [`episode-11/LIVE_ALLOCATOR_RUNBOOK.md`](episode-11/LIVE_ALLOCATOR_RUNBOOK.md) |
 
 Semis method and the certified SMH comparison live in [`episode-semis/RUNBOOK.md`](episode-semis/RUNBOOK.md). Biotech KEEP stays in [`episode-11/moderna/RUNBOOK.md`](episode-11/moderna/RUNBOOK.md) — do not rewrite or merge that body.
 
