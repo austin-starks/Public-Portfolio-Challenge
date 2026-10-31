@@ -207,6 +207,7 @@ Episodes 1–9 predate the current repository format. Their folders preserve the
 | 7 | Hit a close-order failure and rebuilt the risk engine around it. | Failure documented and remediated | [`episode-07/`](episode-07/) |
 | 8 | Published the week-one gain with the live book visible. | Live snapshot; not forward evidence | [`episode-08/`](episode-08/) |
 | 9 | Documented the gain, the panic sell, and the human override risk. | Failure documented | [`episode-09/`](episode-09/) |
+| 11 | Can hold more than one live book; Moderna / AI-biotech is documented. | Per-book — see folder | [`episode-11/`](episode-11/) |
 
 ```
 episode-10/
